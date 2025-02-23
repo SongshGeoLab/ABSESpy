@@ -7,7 +7,7 @@
 
 import pytest
 
-from abses.utils.regex import is_class_name, is_module_name
+from abses.utils.regex import is_camel_name, is_snake_name
 
 
 @pytest.mark.parametrize(
@@ -35,7 +35,7 @@ from abses.utils.regex import is_class_name, is_module_name
 )
 def test_module_name(name: str, expected: bool):
     """test the module name"""
-    assert is_module_name(name) == expected
+    assert is_snake_name(name) == expected
 
 
 @pytest.mark.parametrize(
@@ -67,4 +67,4 @@ def test_module_name(name: str, expected: bool):
 )
 def test_class_name(name: str, expected: bool):
     """test the class name"""
-    assert is_class_name(name) == expected
+    assert is_camel_name(name) == expected

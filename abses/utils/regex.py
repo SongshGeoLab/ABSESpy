@@ -20,7 +20,7 @@ MODULE_NAME = re.compile(r"^[a-z][a-z0-9_]*[a-z0-9]$|^[a-z]$")
 CAMEL_NAME = re.compile(r"^[A-Z][a-zA-Z0-9]*$")
 
 
-def is_module_name(name: str) -> bool:
+def is_snake_name(name: str) -> bool:
     """Check if the name is a valid module name.
 
     Args:
@@ -30,17 +30,17 @@ def is_module_name(name: str) -> bool:
         bool: If the name is a valid module name, return True, otherwise return False
 
     Examples:
-        >>> is_module_name("module_name")
+        >>> is_snake_name("module_name")
         True
-        >>> is_module_name("module-name")
+        >>> is_snake_name("module-name")
         False
-        >>> is_module_name("ModuleName")
+        >>> is_snake_name("ModuleName")
         False
     """
     return bool(MODULE_NAME.match(name))
 
 
-def is_class_name(name: str) -> bool:
+def is_camel_name(name: str) -> bool:
     """Check if the name is a valid class name.
 
     Args:
@@ -50,9 +50,9 @@ def is_class_name(name: str) -> bool:
         bool: If the name is a valid class name, return True, otherwise return False
 
     Examples:
-        >>> is_class_name("ClassName")
+        >>> is_camel_name("ClassName")
         True
-        >>> is_class_name("class-name")
+        >>> is_camel_name("class-name")
         False
     """
     return bool(CAMEL_NAME.match(name))
