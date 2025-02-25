@@ -8,31 +8,26 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from pathlib import Path
 from typing import (
-    Any,
     Dict,
     Optional,
     Set,
     final,
 )
 
-from mesa.model import Model, RNGLike, SeedLike
 from omegaconf import DictConfig
 
-from abses.utils.args import merge_parameters
 from abses.utils.func import iter_apply_func_to
 from abses.utils.regex import is_snake_name
 
-from .types import (
-    Experiment,
-    HowCheckName,
+from .primitives import State
+from .protocols import (
     MainModelProtocol,
     ModelElement,
     ModuleProtocol,
     Observable,
     Observer,
-    State,
+    StateManagerProtocol,
     SubSystemProtocol,
     Variable,
 )
@@ -135,100 +130,12 @@ class BaseModelElement(ABC, ModelElement):
     p = params
 
 
-class BaseMainModel(Model, MainModelProtocol, ABC):
-    """基础主模型实现"""
+class BaseStateManager(ABC, StateManagerProtocol):
+    """基础状态管理器实现"""
 
-    def __init__(
-        self,
-        parameters: DictConfig = DictConfig({}),
-        seed: int | None = None,
-        rng: RNGLike | SeedLike | None = None,
-        run_id: int | None = None,
-        experiment: Experiment | None = None,
-        **kwargs: Any,
-    ) -> None:
-        self._names: Set[str] = set()
-        super().__init__(seed=seed, rng=rng)
-        self._exp = experiment
-        self._run_id = run_id
-        self._settings = merge_parameters(parameters, **kwargs)
-
-    @property
-    def settings(self) -> DictConfig:
-        """获取主模型的配置"""
-        return self._settings
-
-    @property
-    def name(self) -> str:
-        """获取主模型的名称"""
-        default_name = self.__class__.__name__
-        return self.settings.get("name", default_name)
-
-    @property
-    def outpath(self) -> Path:
-        """获取主模型的输出路径"""
-        path = self.settings.get("outpath", None)
-        if path is None:
-            return Path.cwd() / self.name
-        return Path(path)
-
-    @property
-    def exp(self) -> Experiment | None:
-        """获取主模型的实验"""
-        return self._exp
-
-    @property
-    def version(self) -> str:
-        """获取主模型的版本"""
-        return self.settings.get("version")
-
-    @property
-    def datasets(self) -> DictConfig:
-        """Available datasets for the model.
-
-        Returns:
-            DictConfig containing dataset configurations.
-        """
-        return self.settings.get("ds", DictConfig({}))
-
-    # alias for model's datasets
-    ds = datasets
-
-    @property
-    def params(self) -> DictConfig:
-        """获取主模型的参数配置"""
-        return self.settings.get("model", DictConfig({}))
-
-    # @property
-    # def nature(self) -> BaseNature:
-    #     """获取主模型的自然空间"""
-    #     return self._nature
-
-    # space = nature
-
-    def add_name(self, name: str, check: Optional[HowCheckName] = None) -> None:
-        """检查名称是否有效"""
-        if check not in ["unique", "exists"] and check is not None:
-            raise ValueError(f"Invalid check name method: {check}")
-        in_names = name in self._names
-        if check == "unique" and in_names:
-            raise ValueError(f"Name '{name}' already exists.")
-        if check == "exists" and not in_names:
-            raise ValueError(f"Name '{name}' does not exist.")
-        self._names.add(name)
-
-
-class BaseModule(BaseModelElement, Observer, ModuleProtocol, ABC):
-    """基础模块实现"""
-
-    def __init__(self, model: MainModelProtocol, name: Optional[str] = None) -> None:
-        super().__init__(model, name)
+    def __init__(self) -> None:
         self._state = State.NEW
         self._open = True
-
-    def __repr__(self) -> str:
-        flag = "open" if self.opening else "closed"
-        return f"<{self.name}: {flag}>"
 
     @property
     def state(self) -> State:
@@ -257,6 +164,34 @@ class BaseModule(BaseModelElement, Observer, ModuleProtocol, ABC):
         """重置模块"""
         self._state = State.NEW
         self._open = opening
+
+    def initialize(self) -> None:
+        """初始化模块"""
+        pass
+
+    def setup(self) -> None:
+        """设置模块"""
+        pass
+
+    def step(self) -> None:
+        """步进模块"""
+        pass
+
+    def end(self) -> None:
+        """结束模块"""
+        pass
+
+
+class BaseModule(BaseModelElement, BaseStateManager, Observer, ModuleProtocol, ABC):
+    """基础模块实现"""
+
+    def __init__(self, model: MainModelProtocol, name: Optional[str] = None) -> None:
+        BaseModelElement.__init__(self, model, name)
+        BaseStateManager.__init__(self)
+
+    def __repr__(self) -> str:
+        flag = "open" if self.opening else "closed"
+        return f"<{self.name}: {flag}>"
 
     @final
     def _initialize(self):

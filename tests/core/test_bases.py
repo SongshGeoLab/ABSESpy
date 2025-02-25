@@ -12,13 +12,13 @@ import pytest
 from omegaconf import DictConfig, OmegaConf
 
 from abses.core.base import (
-    BaseMainModel,
     BaseModelElement,
     BaseModule,
     BaseObservable,
     BaseObserver,
     State,
 )
+from abses.core.model import MainModel
 
 
 class MockObserver(BaseObserver):
@@ -231,7 +231,7 @@ class TestBaseModelElement:
         assert isinstance(element_empty.params, DictConfig)
 
 
-class ConcreteMainModel(BaseMainModel):
+class ConcreteMainModel(MainModel):
     """用于测试的具体主模型类"""
 
     pass
