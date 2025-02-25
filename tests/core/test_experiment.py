@@ -13,7 +13,7 @@
 import pytest
 
 from abses import MainModel
-from abses.experiment import Experiment
+from abses.core.experiment import Experiment
 from tests.helper import RandomAddingMod
 
 
@@ -71,7 +71,7 @@ class TestExperimentRandom:
     @pytest.fixture(autouse=True)
     def setup_class(self):
         """在每个测试类运行前重置实验管理器"""
-        from abses.job_manager import ExperimentManager
+        from abses.core.job_manager import ExperimentManager
 
         # 保存当前的实例
         self._original_instance = getattr(ExperimentManager, "_instance")

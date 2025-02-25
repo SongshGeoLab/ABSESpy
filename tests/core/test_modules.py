@@ -9,7 +9,7 @@ from typing import Set, Type
 
 import pytest
 
-from abses.core.base import BaseMainModel, BaseModule, BaseSubSystem, State
+from abses.core.base import BaseModule, BaseSubSystem, State
 
 
 class ConcreteModule(BaseModule):
@@ -26,12 +26,6 @@ class ConcreteSubSystem(BaseSubSystem):
         self.add_module(module)
         assert module in self.modules
         return module
-
-
-@pytest.fixture
-def mock_model():
-    """创建模拟的主模型"""
-    return BaseMainModel(parameters={"test_module": {"param1": "value1"}})
 
 
 class TestSubSystemInitialization:
