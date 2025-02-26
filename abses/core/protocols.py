@@ -13,6 +13,7 @@ from typing import (
     Deque,
     Dict,
     Iterator,
+    List,
     Optional,
     Protocol,
     Set,
@@ -21,11 +22,13 @@ from typing import (
 )
 
 if TYPE_CHECKING:
-    from datetime import datetime
     from pathlib import Path
 
+    from mesa.agent import AgentSet
     from mesa.model import RNGLike, SeedLike
     from omegaconf import DictConfig
+    from pendulum import DateTime
+    from pendulum.duration import Duration
 
     from abses.core.primitives import State
     from abses.core.types import (
@@ -42,13 +45,16 @@ class ExperimentProtocol(Protocol):
 
 
 @runtime_checkable
-class TimeDriver(Protocol):
+class TimeDriverProtocol(Protocol):
     """时间驱动协议"""
 
-    @property
-    def current(self) -> datetime: ...
-    def step(self, steps: int = 1) -> None: ...
-    def reset(self) -> None: ...
+    dt: DateTime
+    duration: Duration
+    end_at: DateTime | None | int
+    start_dt: DateTime | None
+
+    def go(self, steps: int = 1) -> None: ...
+    def to(self, dt: DateTime | str) -> None: ...
 
 
 @runtime_checkable
@@ -123,6 +129,8 @@ class ModelElement(Observable, Protocol):
     def model(self) -> MainModelProtocol: ...
     @property
     def params(self) -> DictConfig: ...
+    @property
+    def tick(self) -> int: ...
 
 
 @runtime_checkable
@@ -134,6 +142,8 @@ class MainModelProtocol(ModelElement, Protocol):
     seed: int | None = None
     rng: RNGLike | SeedLike | None = None
     experiment: ExperimentProtocol | None = None
+    steps: int = 0
+    running: bool = True
 
     def add_name(self, name: str, check: Optional[HowCheckName] = None) -> None: ...
 
@@ -151,6 +161,10 @@ class MainModelProtocol(ModelElement, Protocol):
     def human(self) -> HumanSystemProtocol: ...
     @property
     def nature(self) -> NatureSystemProtocol: ...
+    @property
+    def agent_types(self) -> List[AgentType]: ...
+    @property
+    def agent_by_type(self) -> Dict[AgentType, AgentSet]: ...
 
 
 @runtime_checkable
