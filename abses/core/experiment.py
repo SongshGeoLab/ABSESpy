@@ -5,8 +5,8 @@
 # GitHub   : https://github.com/SongshGeo
 # Website: https://cv.songshgeo.com/
 
-"""This file is for multiple-run experiment.
-"""
+"""This file is for multiple-run experiment."""
+
 from __future__ import annotations
 
 import copy
@@ -47,8 +47,8 @@ from joblib import Parallel, delayed
 from omegaconf import DictConfig, OmegaConf
 from tqdm.auto import tqdm
 
-from abses.job_manager import ExperimentManager
-from abses.main import MainModel
+from abses import MainModel
+from abses.core.job_manager import ExperimentManager
 
 Configurations: TypeAlias = DictConfig | str | Dict[str, Any]
 T = TypeVar("T")
@@ -101,9 +101,7 @@ def relative_path_from_to(from_path: Path, to_path: Path) -> Path:
             break
 
     # 计算从起始路径到公共父目录的距离
-    relative_from = Path(
-        *[".."] * (len(from_path.relative_to(common_ancestor).parts))
-    )
+    relative_from = Path(*[".."] * (len(from_path.relative_to(common_ancestor).parts)))
     # 计算从公共父目录到目标路径的距离
     relative_to = to_path.relative_to(common_ancestor)
 
@@ -183,9 +181,9 @@ class Experiment:
             cfg = _parse_path(cast(str, cfg))
         if isinstance(cfg, Path):
             cfg = self._load_hydra_cfg(cfg)
-        assert isinstance(
-            cfg, (DictConfig, dict)
-        ), f"cfg must be a DictConfig, got {type(cfg)}."
+        assert isinstance(cfg, (DictConfig, dict)), (
+            f"cfg must be a DictConfig, got {type(cfg)}."
+        )
         self._cfg = cfg
 
     def _is_hydra_parallel(self) -> bool:
@@ -279,10 +277,12 @@ class Experiment:
         self,
         cfg: DictConfig | Dict[str, Any],
         overrides: Optional[Dict[str, str | Iterable[Number]]] = None,
-    ) -> Iterator[DictConfig]:
+    ) -> Iterator[Tuple[DictConfig, Dict[str, Any]]]:
         """Parse the config."""
         if overrides is None:
-            return iter([cfg])
+            if isinstance(cfg, dict):
+                cfg = DictConfig(cfg)
+            return iter([(cfg, {})])  # type: ignore[return-value]
         if isinstance(cfg, dict):
             cfg = DictConfig(cfg)
         keys, values = zip(*overrides.items())
@@ -335,9 +335,7 @@ class Experiment:
     #     config = OmegaConf.merge(config, logging_cfg)
     #     return config
 
-    def _get_seed(
-        self, repeat_id: int, job_id: Optional[int] = None
-    ) -> Optional[int]:
+    def _get_seed(self, repeat_id: int, job_id: Optional[int] = None) -> Optional[int]:
         """获取每次运行的随机种子
 
         使用基础种子初始化随机数生成器，为每次运行生成唯一的随机种子。
@@ -468,9 +466,7 @@ class Experiment:
                 self._manager.add_a_hook(hook_func=hook)
         elif isinstance(hooks, dict):
             for hook_name, hook_func in hooks.items():
-                self._manager.add_a_hook(
-                    hook_func=hook_func, hook_name=hook_name
-                )
+                self._manager.add_a_hook(hook_func=hook_func, hook_name=hook_name)
         else:
             raise TypeError(f"Invalid hooks type: {type(hooks)}.")
 

@@ -9,179 +9,172 @@
 PyTest fixtures.
 """
 
-import pendulum
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+import geopandas as gpd
+import numpy as np
 import pytest
+from hydra import compose, initialize
+from shapely.geometry import Point
 
 from abses import MainModel
+from abses.agents.actor import Actor
+from abses.utils.data import load_data
+
+if TYPE_CHECKING:
+    from abses.space.cells import PatchCell
+    from abses.space.patch import PatchModule
 
 
-# 添加一个 pytest 钩子函数，确保在每个测试函数运行前都设置时区为 None
-@pytest.fixture(autouse=True, scope="function")
-def reset_timezone():
-    """确保每个测试函数运行前都设置时区为 None"""
-    pendulum.set_local_timezone(None)
-    yield
-    # 测试结束后再次设置，以确保后续测试不受影响
-    pendulum.set_local_timezone(None)
+@pytest.fixture(name="model")
+def mock_model_fixture():
+    """创建模拟的主模型"""
+
+    class TestModel(MainModel):
+        """测试用模型"""
+
+        name = "Test"
+
+    return TestModel(parameters={"test_module": {"param1": "value1"}})
+
+
+@pytest.fixture(name="mock_model")
+def mock_model_fixture_alias():
+    """创建模拟的主模型"""
+
+    class TestModel(MainModel):
+        """测试用模型"""
+
+        name = "Test"
+
+    return TestModel(parameters={"test_module": {"param1": "value1"}})
+
+
+@pytest.fixture(name="test_config")
+def test_config():
+    """Test config"""
+    with initialize(version_base=None, config_path="config"):
+        cfg = compose(config_name="test_config.yaml")
+    return cfg
+
+
+@pytest.fixture(name="water_quota_config")
+def test_water_quota_config():
+    """Test config"""
+    with initialize(version_base=None, config_path="config"):
+        cfg = compose(config_name="water_quota.yaml")
+    return cfg
+
+
+@pytest.fixture(name="main_config")
+def test_main_config():
+    """Test main config"""
+    # 加载项目层面的配置
+    with initialize(version_base=None, config_path="config"):
+        cfg = compose(config_name="testing")
+    return cfg
+
+
+class Farmer(Actor):
+    """测试用，另一个类别的主体"""
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.metric = 0.1
+
+
+class Admin(Actor):
+    """测试用，另一个类别的主体"""
+
+
+class City(Actor):
+    """测试用，每个城市的主体"""
+
+
+@pytest.fixture(name="testing_breeds")
+def testing_breeds_fixture() -> dict:
+    """一系列用于测试的主体类型。"""
+    return {
+        "Farmer": Farmer,
+        "Admin": Admin,
+        "City": City,
+        "Actor": Actor,
+    }
 
 
 @pytest.fixture
-def mock_model():
-    """创建模拟的主模型"""
-    return MainModel(parameters={"test_module": {"param1": "value1"}})
+def farmer_cls(testing_breeds):
+    """用于测试的农民类型"""
+    return testing_breeds.get("Farmer")
 
 
-# import geopandas as gpd
-# import numpy as np
-# import pytest
-# from hydra import compose, initialize
-# from shapely.geometry import Point
-
-# from abses import Actor, MainModel
-# from abses.space.cells import PatchCell
-# from abses.space.patch import PatchModule
-# from abses.utils.data import load_data
+@pytest.fixture
+def admin_cls(testing_breeds):
+    """用于测试的管理者类型"""
+    return testing_breeds.get("Admin")
 
 
-# @pytest.fixture(name="test_config")
-# def test_config():
-#     """Test config"""
-#     with initialize(version_base=None, config_path="config"):
-#         cfg = compose(config_name="test_config.yaml")
-#     return cfg
+@pytest.fixture(name="module", scope="function")
+def mock_module(mock_model: MainModel) -> PatchModule:
+    """创建一个（2*2）的斑块模块"""
+    module: PatchModule = mock_model.nature.create_module(shape=(2, 2), resolution=1)
+    module.apply_raster(np.arange(4).reshape(module.shape3d), attr_name="init_value")
+    return module
 
 
-# @pytest.fixture(name="water_quota_config")
-# def test_water_quota_config():
-#     """Test config"""
-#     with initialize(version_base=None, config_path="config"):
-#         cfg = compose(config_name="water_quota.yaml")
-#     return cfg
+@pytest.fixture(name="cell_0_0", scope="function")
+def mock_cell_0_0(module) -> PatchCell:
+    """获取模块的第 (0, 0) 个斑块"""
+    return module.array_cells[0, 0]
 
 
-# @pytest.fixture(name="main_config")
-# def test_main_config():
-#     """Test main config"""
-#     # 加载项目层面的配置
-#     with initialize(version_base=None, config_path="config"):
-#         cfg = compose(config_name="testing")
-#     return cfg
+@pytest.fixture(name="cell_0_1", scope="function")
+def mock_cell_0_1(module) -> PatchCell:
+    """获取模块的第 (0, 1) 个斑块"""
+    return module.array_cells[0, 1]
 
 
-# class Farmer(Actor):
-#     """测试用，另一个类别的主体"""
-
-#     def __init__(self, *args, **kwargs) -> None:
-#         super().__init__(*args, **kwargs)
-#         self.metric = 0.1
+@pytest.fixture(name="cell_1_0", scope="function")
+def mock_cell_1_0(module) -> PatchCell:
+    """获取模块的第 (1, 0) 个斑块"""
+    return module.array_cells[1, 0]
 
 
-# class Admin(Actor):
-#     """测试用，另一个类别的主体"""
+@pytest.fixture(name="cell_1_1", scope="function")
+def mock_cell_1_1(module) -> PatchCell:
+    """获取模块的第 (1, 1) 个斑块"""
+    return module.array_cells[1, 1]
 
 
-# class City(Actor):
-#     """测试用，每个城市的主体"""
+@pytest.fixture(name="cells", scope="function")
+def mock_cells(module: PatchModule) -> list:
+    """获取模块的所有斑块"""
+    return module.array_cells
 
 
-# @pytest.fixture(name="testing_breeds")
-# def testing_breeds_fixture() -> dict:
-#     """一系列用于测试的主体类型。"""
-#     return {
-#         "Farmer": Farmer,
-#         "Admin": Admin,
-#         "City": City,
-#         "Actor": Actor,
-#     }
+@pytest.fixture(name="ternary_m", scope="function")
+def mock_ternary_model(module: PatchModule) -> MainModel:
+    """创建一个包含三个主体的模型"""
+    model = module.model
+    model.agents.new(Actor, num=1, singleton=True)
+    model.agents.new(City, num=1, singleton=True)
+    model.agents.new(Farmer, num=1, singleton=True)
+    return model
 
 
-# @pytest.fixture
-# def farmer_cls(testing_breeds):
-#     """用于测试的农民类型"""
-#     return testing_breeds.get("Farmer")
+@pytest.fixture(name="farmland_data")
+def mock_farmland_data():
+    """测试用的华南农业数据集"""
+    return load_data("farmland.tif")
 
 
-# @pytest.fixture
-# def admin_cls(testing_breeds):
-#     """用于测试的管理者类型"""
-#     return testing_breeds.get("Admin")
-
-
-# @pytest.fixture(name="model", scope="function")
-# def mock_model() -> MainModel:
-#     """创建一个模型"""
-
-#     class TestModel(MainModel):
-#         """测试用模型"""
-
-#         name = "Test"
-
-#     return TestModel()
-
-
-# @pytest.fixture(name="module", scope="function")
-# def mock_module(model: MainModel) -> PatchModule:
-#     """创建一个（2*2）的斑块模块"""
-#     module: PatchModule = model.nature.create_module(
-#         how="from_resolution", shape=(2, 2)
-#     )
-#     module.apply_raster(
-#         np.arange(4).reshape(module.shape3d), attr_name="init_value"
-#     )
-#     return module
-
-
-# @pytest.fixture(name="cell_0_0", scope="function")
-# def mock_cell_0_0(module) -> PatchCell:
-#     """获取模块的第 (0, 0) 个斑块"""
-#     return module.array_cells[0, 0]
-
-
-# @pytest.fixture(name="cell_0_1", scope="function")
-# def mock_cell_0_1(module) -> PatchCell:
-#     """获取模块的第 (0, 1) 个斑块"""
-#     return module.array_cells[0, 1]
-
-
-# @pytest.fixture(name="cell_1_0", scope="function")
-# def mock_cell_1_0(module) -> PatchCell:
-#     """获取模块的第 (1, 0) 个斑块"""
-#     return module.array_cells[1, 0]
-
-
-# @pytest.fixture(name="cell_1_1", scope="function")
-# def mock_cell_1_1(module) -> PatchCell:
-#     """获取模块的第 (1, 1) 个斑块"""
-#     return module.array_cells[1, 1]
-
-
-# @pytest.fixture(name="cells", scope="function")
-# def mock_cells(module: PatchModule) -> list:
-#     """获取模块的所有斑块"""
-#     return module.array_cells
-
-
-# @pytest.fixture(name="ternary_m", scope="function")
-# def mock_ternary_model(module: PatchModule) -> MainModel:
-#     """创建一个包含三个主体的模型"""
-#     model = module.model
-#     model.agents.new(Actor, num=1, singleton=True)
-#     model.agents.new(City, num=1, singleton=True)
-#     model.agents.new(Farmer, num=1, singleton=True)
-#     return model
-
-
-# @pytest.fixture(name="farmland_data")
-# def mock_farmland_data():
-#     """测试用的华南农业数据集"""
-#     return load_data("farmland.tif")
-
-
-# @pytest.fixture(name="points_gdf")
-# def mock_points_gdf():
-#     """测试用的点数据集"""
-#     data = {
-#         "index": [0, 1, 2],
-#         "geometry": [Point(0, 0), Point(1, 1), Point(2, 2)],
-#     }
-#     return gpd.GeoDataFrame(data, crs="epsg:4326")
+@pytest.fixture(name="points_gdf")
+def mock_points_gdf():
+    """测试用的点数据集"""
+    data = {
+        "index": [0, 1, 2],
+        "geometry": [Point(0, 0), Point(1, 1), Point(2, 2)],
+    }
+    return gpd.GeoDataFrame(data, crs="epsg:4326")

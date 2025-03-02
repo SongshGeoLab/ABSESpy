@@ -9,9 +9,11 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from typing import (
+    Any,
     Dict,
     Optional,
     Set,
+    Type,
     final,
 )
 
@@ -29,6 +31,7 @@ from .protocols import (
     Observer,
     StateManagerProtocol,
     SubSystemProtocol,
+    TimeDriverProtocol,
     Variable,
 )
 
@@ -64,7 +67,7 @@ class BaseObserver(ABC, Observer):
     """基础观察者实现"""
 
     @abstractmethod
-    def update(self, subject: Observable) -> None:
+    def update(self, subject: Observable, *args: Any, **kwargs: Any) -> None:
         """当被观察对象发生变化时调用"""
         pass
 
@@ -92,10 +95,10 @@ class BaseObservable(ABC, Observable):
         """移除观察者"""
         self._observers.discard(observer)
 
-    def notify(self) -> None:
+    def notify(self, *args: Any, **kwargs: Any) -> None:
         """通知所有观察者"""
         for observer in self._observers:
-            observer.update(self)
+            observer.update(self, *args, **kwargs)
 
 
 class BaseModelElement(ABC, ModelElement):
@@ -108,6 +111,12 @@ class BaseModelElement(ABC, ModelElement):
     @property
     def model(self) -> MainModelProtocol:
         return self._model
+
+    @model.setter
+    def model(self, model: MainModelProtocol) -> None:
+        if not isinstance(model, MainModelProtocol):
+            raise TypeError(f"Model must be a MainModelProtocol, but got {type(model)}")
+        self._model = model
 
     @property
     def name(self) -> str:
@@ -128,6 +137,16 @@ class BaseModelElement(ABC, ModelElement):
         return self.model.settings.get(self.name, DictConfig({}))
 
     p = params
+
+    @property
+    def tick(self) -> int:
+        """Returns the current tick."""
+        return self.model.steps
+
+    @property
+    def time(self) -> TimeDriverProtocol:
+        """Returns the current time."""
+        return self.model.time
 
 
 class BaseStateManager(ABC, StateManagerProtocol):
@@ -185,7 +204,12 @@ class BaseStateManager(ABC, StateManagerProtocol):
 class BaseModule(BaseModelElement, BaseStateManager, Observer, ModuleProtocol, ABC):
     """基础模块实现"""
 
-    def __init__(self, model: MainModelProtocol, name: Optional[str] = None) -> None:
+    def __init__(
+        self,
+        model: MainModelProtocol,
+        *,
+        name: Optional[str] = None,
+    ) -> None:
         BaseModelElement.__init__(self, model, name)
         BaseStateManager.__init__(self)
 
@@ -193,35 +217,45 @@ class BaseModule(BaseModelElement, BaseStateManager, Observer, ModuleProtocol, A
         flag = "open" if self.opening else "closed"
         return f"<{self.name}: {flag}>"
 
+    def __str__(self) -> str:
+        return self.name
+
     @final
     def _initialize(self):
         """
         Initialization before handle parameters.
         """
-        self.initialize()
+        # Wrap the user-defined step method
+        self._user_setup = self.setup
+        self.setup = self._setup
+        self._user_step = self.step
+        self.step = self._step
+        self._user_end = self.end
+        self.end = self._end
         self.set_state(State.INIT)
+        self.initialize()
 
     @final
-    def _setup(self):
+    def _setup(self, *args, **kwargs):
         """
         Initialization after handle parameters.
         """
-        self.setup()
+        self._user_setup(*args, **kwargs)
         self.set_state(State.READY)
 
     @final
-    def _step(self):
+    def _step(self, *args, **kwargs):
         """
         Called every time step.
         """
-        self.step()
+        self._user_step(*args, **kwargs)
 
     @final
-    def _end(self):
+    def _end(self, *args, **kwargs):
         """
         Called at the end of the simulation.
         """
-        self.end()
+        self._user_end(*args, **kwargs)
         self.set_state(State.COMPLETE)
 
 
@@ -229,8 +263,9 @@ class BaseSubSystem(BaseModule, SubSystemProtocol, ABC):
     """基础子系统实现"""
 
     def __init__(self, model: MainModelProtocol, name: Optional[str] = None) -> None:
-        super().__init__(model, name)
+        super().__init__(model, name=name)
         self._modules: Set[BaseModule] = set()
+        self._major_layer: Optional[BaseModule] = None
 
     @property
     def modules(self) -> Set[BaseModule]:
@@ -270,18 +305,88 @@ class BaseSubSystem(BaseModule, SubSystemProtocol, ABC):
         self.end()
         super().set_state(State.COMPLETE)
 
+    def __repr__(self) -> str:
+        flag = "open" if self.opening else "closed"
+        return f"<{self.name} ({str(self.major_layer)}): {flag}>"
+
+    def __getattr__(self, name: str) -> Any:
+        """Delegates attribute access to major_layer when not found in BaseNature.
+
+        Args:
+            name: Name of the attribute being accessed.
+
+        Returns:
+            Value of the attribute from major_layer.
+
+        Raises:
+            AttributeError: If no major layer is set or attribute not found.
+        """
+        if name.startswith("_"):
+            return super().__getattribute__(name)
+        try:
+            return super().__getattribute__(name)
+        except AttributeError as e:
+            if self._major_layer is None:
+                raise AttributeError(
+                    f"Attribute '{name}' not found in BaseNature and no major layer is set"
+                ) from e
+            try:
+                return getattr(self._major_layer, name)
+            except AttributeError as e2:
+                raise AttributeError(
+                    f"Attribute '{name}' not found in either BaseNature or major layer ({self._major_layer.name})"
+                ) from e2
+
+    @property
+    def major_layer(self) -> Optional[BaseModule]:
+        """Primary raster layer of the nature module.
+
+        Returns:
+            The current major layer, or None if not set.
+        """
+        return self._major_layer
+
+    @major_layer.setter
+    def major_layer(self, layer: BaseModule) -> None:
+        """Sets the major layer for this nature module.
+
+        Args:
+            layer: PatchModule instance to set as major layer.
+
+        Raises:
+            TypeError: If layer is not a PatchModule instance.
+
+        Note:
+            If the layer has a CRS different from nature's current CRS,
+            nature's CRS will be updated to match.
+        """
+        if layer not in self.modules:
+            raise ValueError(f"{layer} is not in {self}.")
+        self._major_layer = layer
+
     def add_module(self, module: BaseModule):
-        """Create a module."""
+        """Add a module."""
         # check name
         self.model.add_name(module.name, check="unique")
         # attach to model
         self.attach(module)
         # add to modules
         self.modules.add(module)
+        if self.is_empty:
+            self.major_layer = module
+        return module
 
     @abstractmethod
-    def create_module(self, model: BaseModule) -> BaseModule:
+    def create_module(
+        self,
+        module_cls: Type[BaseModule],
+        *args: Any,
+        **kwargs: Any,
+    ) -> BaseModule:
         """Create a module."""
+        module = module_cls(model=self.model, *args, **kwargs)
+        self.add_module(module)
+        return module
 
 
 # class _DynamicVariable:

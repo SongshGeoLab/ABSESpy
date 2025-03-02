@@ -13,7 +13,6 @@ from datetime import datetime
 from functools import cached_property, total_ordering, wraps
 from typing import (
     TYPE_CHECKING,
-    Any,
     Callable,
     Deque,
     Dict,
@@ -108,7 +107,7 @@ class TimeDriver(BaseModelElement, TimeDriverProtocol):
     providing access to all datetime attributes and methods.
     """
 
-    _instances: Dict[MainModelProtocol[Any, Any], TimeDriver] = {}
+    _instances: Dict[MainModelProtocol, TimeDriver] = {}
     _lock = threading.Lock()
 
     def __new__(cls, model: MainModelProtocol):
@@ -173,7 +172,7 @@ class TimeDriver(BaseModelElement, TimeDriverProtocol):
         if isinstance(self.end_at, int):
             return self.end_at
         # If end_at is a datetime object, calculate the expected ticks
-        if isinstance(self.end_at, (datetime, DateTime)):
+        if isinstance(self.end_at, DateTime):
             if self.duration is None:
                 raise RuntimeError("No duration settings.")
             # 使用 pendulum 的 diff 方法计算差异
@@ -228,7 +227,7 @@ class TimeDriver(BaseModelElement, TimeDriverProtocol):
             # 使用 += 操作符添加 duration
             self.dt += self.duration
         if self.should_end:
-            self._model.running = False
+            self.model.running = False
 
     def go(self, ticks: int = 1) -> None:
         """Advance simulation time by a given number of ticks."""

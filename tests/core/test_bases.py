@@ -16,9 +16,9 @@ from abses.core.base import (
     BaseModule,
     BaseObservable,
     BaseObserver,
-    State,
 )
 from abses.core.model import MainModel
+from abses.core.primitives import State
 
 
 class MockObserver(BaseObserver):
@@ -159,13 +159,14 @@ class TestBaseModelElement:
 
         场景：
         1. 确保返回正确的模型实例
-        2. 确保模型实例不可修改
+        2. 确保模型实例可以被修改，但必须是 MainModelProtocol 类型
         """
         element = BaseModelElement(model=mock_model)
         assert element.model == mock_model
-        # 确保 model 属性不可修改
-        with pytest.raises(AttributeError):
-            element.model = Mock()
+
+        # 测试使用非 MainModelProtocol 类型修改 model 属性会引发 TypeError
+        with pytest.raises(TypeError):
+            element.model = "not a model"
 
     @pytest.mark.parametrize(
         "element_name,expected_params",
@@ -208,14 +209,13 @@ class TestBaseModelElement:
         """测试属性不可变性
 
         场景：
-        1. 确保所有属性都是只读的
+        1. 确保 name 和 params 属性是只读的
         """
         with pytest.raises(AttributeError):
             element.name = "new_name"
         with pytest.raises(AttributeError):
             element.params = {}
-        with pytest.raises(AttributeError):
-            element.model = Mock()
+        # model 属性是可以修改的，只要是 MainModelProtocol 类型
 
     def test_dict_config_conversion(self, mock_model):
         """测试 DictConfig 转换
@@ -329,7 +329,7 @@ class TestBaseMainModel:
         assert model_with_version.version == "1.0.0"
 
         model_without_version = ConcreteMainModel()
-        assert model_without_version.version is None
+        assert model_without_version.version == "v0"
 
     def test_datasets_access(self, base_params):
         """测试数据集访问
@@ -534,9 +534,23 @@ class TestBaseModule:
     def test_module_name_inheritance(self, mock_model, name, expected_name):
         """测试模块名称继承
 
-        场景：
-        1. 显式指定名称
-        2. 使用默认类名
+        验证:
+        1. 当显式指定名称时，模块应使用该名称
+        2. 当未指定名称时，模块应使用类名
         """
         named_module = ConcreteModule(mock_model, name=name)
         assert named_module.name == expected_name
+
+    def test_repr_format(self, mock_model):
+        """测试模块的字符串表示
+
+        验证:
+        模块的 __repr__ 方法应返回包含名称和状态的字符串
+        """
+
+        class TestModule(BaseModule):
+            pass
+
+        module = TestModule(mock_model, name="test_module")
+        assert "test_module" in repr(module)
+        assert "open" in repr(module)

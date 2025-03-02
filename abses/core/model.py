@@ -12,12 +12,11 @@ The main modelling framework of ABSESpy.
 from __future__ import annotations
 
 import functools
-import json
-from datetime import datetime
 from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Any,
+    Callable,
     Dict,
     Optional,
     Set,
@@ -25,30 +24,30 @@ from typing import (
     Type,
 )
 
-import pandas as pd
 from mesa import Model
 from omegaconf import DictConfig
 
 from abses import __version__
-
-# from abses.utils.datacollector import ABSESpyDataCollector
-# from abses.agents.container import _ModelAgentsContainer
+from abses.agents.container import _ModelAgentsContainer
 from abses.core.base import BaseStateManager
+from abses.core.primitives import DEFAULT_INIT_ORDER, DEFAULT_RUN_ORDER
 from abses.core.protocols import (
+    ActorsListProtocol,
     ExperimentProtocol,
     MainModelProtocol,
     SubSystemProtocol,
 )
+from abses.core.time_driver import TimeDriver
 from abses.human.human import BaseHuman
 from abses.space.nature import BaseNature
 from abses.utils.args import merge_parameters
+from abses.utils.datacollector import ABSESpyDataCollector
 from abses.utils.logging import (
     formatter,
     log_session,
     logger,
     setup_logger_info,
 )
-from abses.utils.time import TimeDriver
 from abses.viz.viz_model import _VizModel
 
 if TYPE_CHECKING:
@@ -58,7 +57,7 @@ if TYPE_CHECKING:
         H,
         HowCheckName,
         N,
-        SubSystemType,
+        SubSystemName,
     )
 
 
@@ -116,15 +115,15 @@ class MainModel(Model, BaseStateManager, MainModelProtocol):
         self._exp = experiment
         self._run_id: Optional[int] = run_id
         self._settings = merge_parameters(parameters, **kwargs)
+        self._time = TimeDriver(model=self)  # type: ignore[abstract]
         self._setup_subsystems(human_class, nature_class)
-        # self._agents_handler = _ModelAgentsContainer(
-        #     model=self, max_len=kwargs.get("max_agents", None)
-        # )
-        self._time = TimeDriver(model=self)
-        # self.datacollector: ABSESpyDataCollector = ABSESpyDataCollector(
-        #     parameters.get("reports", {})
-        # )
-        self._do_each("_initialize", order=("nature", "human"))
+        self._agents_handler = _ModelAgentsContainer(
+            model=self, max_len=kwargs.get("max_agents", None)
+        )
+        self.datacollector: ABSESpyDataCollector = ABSESpyDataCollector(
+            parameters.get("reports", {})
+        )
+        self.do_each("_initialize", order=DEFAULT_INIT_ORDER)
 
     @functools.cached_property
     def name(self) -> str:
@@ -143,26 +142,25 @@ class MainModel(Model, BaseStateManager, MainModelProtocol):
     @functools.cached_property
     def version(self) -> str:
         """获取主模型的版本"""
-        return self.settings.get("version")
+        return str(self.settings.get("version", "v0"))
 
     @property
-    def running(self) -> bool:
-        """获取主模型的运行状态"""
-        return self.running
+    def steps(self) -> int:
+        """获取主模型的步数"""
+        return self._steps
 
-    @running.setter
-    def running(self, value: bool) -> None:
-        """设置主模型的运行状态"""
-        if not isinstance(value, bool):
-            raise ValueError("Running must be a boolean.")
-        self.running = value
+    @steps.setter
+    def steps(self, steps: int) -> None:
+        """设置主模型的步数"""
+        self._steps = steps
+        if steps > 0:
+            self.time.go(steps)
 
     def __deepcopy__(self, memo):
         return self
 
     def __repr__(self) -> str:
-        version = self._version
-        return f"<{self.name}-{version}({self.state})>"
+        return f"<[{self.version}] {self.name}({self.state.name})>"
 
     def _logging_begin(self) -> None:
         """Logging the beginning of the model."""
@@ -206,17 +204,33 @@ class MainModel(Model, BaseStateManager, MainModelProtocol):
         self._human = human_class(self)
         self._nature = nature_class(self)
 
-    def _do_each(
+    def do_each(
         self,
-        _func: str,
-        order: Tuple[SubSystemType, ...] = ("model", "nature", "human"),
+        func: str | Callable,
+        order: Tuple[SubSystemName, ...] = DEFAULT_RUN_ORDER,
         **kwargs: Any,
-    ) -> None:
+    ) -> Dict[SubSystemName, Any]:
+        """执行每个子系统
+
+        Args:
+            func: 函数名或可调用对象
+            order: 子系统顺序
+            **kwargs: 其他参数
+        """
         _obj = {"model": self, "nature": self.nature, "human": self.human}
+        result = {}
         for name in order:
             if name not in _obj:
                 raise ValueError(f"{name} is not a valid component.")
-            getattr(_obj[name], _func)(**kwargs)
+            if isinstance(func, str):
+                callable_func = getattr(_obj[name], func)
+            else:
+                callable_func = func
+            if not callable(callable_func):
+                raise ValueError(f"{name}.{func} is not callable.")
+            callable_func(**kwargs)
+            result[name] = _obj[name]
+        return result
 
     def _setup_logger(self, log_cfg: Dict[str, Any]) -> None:
         if not log_cfg:
@@ -275,29 +289,29 @@ class MainModel(Model, BaseStateManager, MainModelProtocol):
         """
         return self._settings
 
-    # @property
-    # def agents(self) -> _ModelAgentsContainer:
-    #     """Container managing all agents in the model.
+    @property
+    def agents(self) -> _ModelAgentsContainer:
+        """Container managing all agents in the model.
 
-    #     Provides methods for:
-    #     - Accessing agents: agents.select()
-    #     - Creating agents: agents.new(Actor, num=3)
-    #     - Registering agent types: agents.register(Actor)
-    #     - Triggering events: agents.trigger()
+        Provides methods for:
+        - Accessing agents: agents.select()
+        - Creating agents: agents.new(Actor, num=3)
+        - Registering agent types: agents.register(Actor)
+        - Triggering events: agents.trigger()
 
-    #     Returns:
-    #         The model's agent container instance.
-    #     """
-    #     return self._agents_handler
+        Returns:
+            The model's agent container instance.
+        """
+        return self._agents_handler
 
-    # @property
-    # def actors(self) -> BaseAgent:
-    #     """List of all agents currently on the earth.
+    @property
+    def actors(self) -> ActorsListProtocol:
+        """List of all agents currently on the earth.
 
-    #     Returns:
-    #         ActorsList containing all agents in PatchCells.
-    #     """
-    #     return self.agents.select("on_earth")
+        Returns:
+            ActorsList containing all agents in PatchCells.
+        """
+        return self.agents.select("on_earth")
 
     @property
     def human(self) -> SubSystemProtocol:
@@ -347,7 +361,10 @@ class MainModel(Model, BaseStateManager, MainModelProtocol):
         """
         return _VizModel(self)
 
-    def run_model(self, steps: Optional[int] = None) -> None:
+    def run_model(
+        self,
+        order: Tuple[SubSystemName, ...] = DEFAULT_RUN_ORDER,
+    ) -> None:
         """Executes the model simulation.
 
         Runs through the following phases:
@@ -358,13 +375,11 @@ class MainModel(Model, BaseStateManager, MainModelProtocol):
         Args:
             steps: Number of steps to run. If None, runs until self.running is False.
         """
-        self._setup()
+        self.do_each("setup", order=order)
         while self.running is True:
             self.time.go()
-            self._step()
-            if self.time.tick == steps:
-                self.running = False
-        self._end()
+            self.do_each("step", order=order)
+        self.do_each("end", order=order)
 
     def setup(self) -> None:
         """Users can custom what to do when the model is setup and going to start running."""
@@ -375,62 +390,21 @@ class MainModel(Model, BaseStateManager, MainModelProtocol):
     def end(self) -> None:
         """Users can custom what to do when the model is end."""
 
-    def _setup(self) -> None:
-        """Custom setup actions before model execution.
+    # def summary(self, verbose: bool = False) -> pd.DataFrame:
+    #     """Generates a summary report of the model's current state.
 
-        Override this method to define initialization logic.
-        Executed once at the start of run_model().
-        """
-        self._do_each("_setup", order=("model", "nature", "human"))
-        self.setup()
-        msg = f"Nature: {str(self.nature.modules)}\nHuman: {str(self.human.modules)}\n"
-        log_session(title="Setting-up", msg=msg)
+    #     Args:
+    #         verbose: If True, includes additional details about model and agent variables.
 
-    def _step(self) -> None:
-        """Single step of model execution.
-
-        Override this method to define the core simulation logic.
-        Executed repeatedly during run_model().
-        """
-        self._do_each("_step", order=("model", "nature", "human"))
-        self.datacollector.collect(self)
-        self._logging_step()
-
-    def _end(self) -> None:
-        """Custom cleanup actions after model execution.
-
-        Override this method to define finalization logic.
-        Executed once at the end of run_model().
-        """
-        self._do_each("_end", order=("nature", "human", "model"))
-        if not hasattr(self.datacollector, "final_reporters"):
-            logger.warning("No final reporters have been defined.")
-            return
-        result = self.datacollector.get_final_vars_report(self)
-        msg = (
-            "The model is ended.\n"
-            f"Total ticks: {self.time.tick}\n"
-            f"Final result: {json.dumps(result, indent=4)}\n"
-        )
-        log_session(title="Ending Run", msg=msg)
-        logger.bind(no_format=True).info(f"{datetime.now()}\n\n\n")
-        logger.remove()
-
-    def summary(self, verbose: bool = False) -> pd.DataFrame:
-        """Generates a summary report of the model's current state.
-
-        Args:
-            verbose: If True, includes additional details about model and agent variables.
-
-        Returns:
-            DataFrame containing model statistics and state information.
-        """
-        print(f"Using ABSESpy version: {self.version}")
-        # Basic reports
-        to_report = {"name": self.name, "state": self.state, "tick": self.time.tick}
-        for breed in self.agents_by_type:
-            to_report[breed] = self.agents.has(breed)
-        if verbose:
-            to_report["model_vars"] = self.datacollector.model_reporters.keys()
-            to_report["agent_vars"] = self.datacollector.agent_reporters.keys()
-        return pd.Series(to_report)
+    #     Returns:
+    #         DataFrame containing model statistics and state information.
+    #     """
+    #     print(f"Using ABSESpy version: {self.version}")
+    #     # Basic reports
+    #     to_report = {"name": self.name, "state": self.state, "tick": self.time.tick}
+    #     for breed in self.agents_by_type:
+    #         to_report[breed] = self.agents.has(breed)
+    #     if verbose:
+    #         to_report["model_vars"] = self.datacollector.model_reporters.keys()
+    #         to_report["agent_vars"] = self.datacollector.agent_reporters.keys()
+    #     return pd.Series(to_report)
