@@ -23,6 +23,7 @@ from __future__ import annotations
 
 from typing import (
     TYPE_CHECKING,
+    Callable,
     Iterable,
     List,
     Literal,
@@ -51,8 +52,11 @@ H = TypeVar("H", bound=HumanSystemProtocol)
 
 # 容器相关类型
 if TYPE_CHECKING:
+    from datetime import datetime
+
     import numpy as np
     import xarray as xr
+    from pendulum import DateTime
     from shapely import Geometry
 
     from abses.agents.actor import Actor
@@ -74,4 +78,11 @@ if TYPE_CHECKING:
     UniqueID: TypeAlias = Union[str, int]
     UniqueIDs: TypeAlias = List[Optional[UniqueID]]
 
-    SubSystemType: TypeAlias = Literal["model", "nature", "human"]
+    SubSystemName: TypeAlias = Literal["model", "nature", "human"]
+    DateOrTick: TypeAlias = DateTime | int
+    DateTimeOrStr: TypeAlias = Union[datetime, str]
+
+    Selection: TypeAlias = Union[str, Iterable[bool]]
+    Trigger: TypeAlias = Union[Callable, str]
+    Breeds: TypeAlias = Union[str, List[str], Tuple[str]]
+    GeoType: TypeAlias = Literal["Point", "Shape"]

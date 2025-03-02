@@ -144,6 +144,7 @@ class TestLifecycleMethods:
         sys = ConcreteSubSystem(model=mock_model)
         sys.create_module(ConcreteModule, name="test1")
         sys.create_module(ConcreteModule, name="test2")
+        sys._initialize()
         return sys
 
     def test_setup_method(self, lifecycle_system):
