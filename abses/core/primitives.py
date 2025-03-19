@@ -10,6 +10,8 @@ from __future__ import annotations
 from enum import IntEnum
 from typing import TYPE_CHECKING, Tuple
 
+import pyproj
+
 if TYPE_CHECKING:
     from abses.core.types import SubSystemName
 
@@ -50,4 +52,26 @@ FMT_DATETIME = "%Y-%m-%d %H:%M:%S"
 DEFAULT_INIT_ORDER: Tuple[SubSystemName, ...] = ("nature", "human")
 DEFAULT_RUN_ORDER: Tuple[SubSystemName, ...] = ("model", "nature", "human")
 
-DEFAULT_CRS = "epsg:4326"
+
+def normalize_crs(crs) -> pyproj.CRS:
+    """Normalize CRS to ensure consistent representation.
+
+    Args:
+        crs: CRS specification (string, int, or CRS object)
+
+    Returns:
+        Normalized CRS object
+    """
+    if isinstance(crs, pyproj.CRS):
+        return pyproj.CRS.from_epsg(crs.to_epsg())
+    if isinstance(crs, (str, int)):
+        if isinstance(crs, str) and crs.isdigit():
+            crs = int(crs)
+        if isinstance(crs, int):
+            return pyproj.CRS.from_epsg(crs)
+        return pyproj.CRS.from_string(crs)
+    raise ValueError(f"Unsupported CRS specification: {crs}")
+
+
+# Default coordinate reference system (WGS84)
+DEFAULT_CRS = normalize_crs("epsg:4326")

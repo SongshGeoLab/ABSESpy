@@ -34,8 +34,8 @@ from abses.core.primitives import DEFAULT_INIT_ORDER, DEFAULT_RUN_ORDER
 from abses.core.protocols import (
     ActorsListProtocol,
     ExperimentProtocol,
-    MainModelProtocol,
-    SubSystemProtocol,
+    HumanSystemProtocol,
+    NatureSystemProtocol,
 )
 from abses.core.time_driver import TimeDriver
 from abses.human.human import BaseHuman
@@ -48,20 +48,17 @@ from abses.utils.logging import (
     logger,
     setup_logger_info,
 )
-from abses.viz.viz_model import _VizModel
 
 if TYPE_CHECKING:
     from mesa.model import RNGLike, SeedLike
 
     from abses.core.types import (
-        H,
         HowCheckName,
-        N,
         SubSystemName,
     )
 
 
-class MainModel(Model, BaseStateManager, MainModelProtocol):
+class MainModel(Model, BaseStateManager):
     """Base class of a main ABSESpy model.
 
     A MainModel instance represents the core simulation environment that coordinates
@@ -87,8 +84,8 @@ class MainModel(Model, BaseStateManager, MainModelProtocol):
     def __init__(
         self,
         parameters: DictConfig = DictConfig({}),
-        human_class: Optional[Type[H]] = None,
-        nature_class: Optional[Type[N]] = None,
+        human_class: Type[HumanSystemProtocol] = BaseHuman,
+        nature_class: Type[NatureSystemProtocol] = BaseNature,
         run_id: Optional[int] = None,
         seed: Optional[int] = None,
         rng: Optional[RNGLike | SeedLike] = None,
@@ -185,8 +182,8 @@ class MainModel(Model, BaseStateManager, MainModelProtocol):
 
     def _setup_subsystems(
         self,
-        human_class: Optional[Type[H]] = None,
-        nature_class: Optional[Type[N]] = None,
+        human_class: Type[HumanSystemProtocol] = BaseHuman,
+        nature_class: Type[NatureSystemProtocol] = BaseNature,
     ) -> None:
         """设置子系统
 
@@ -195,12 +192,6 @@ class MainModel(Model, BaseStateManager, MainModelProtocol):
             nature_class: 自然子系统类
         """
         # 使用默认实现
-        if human_class is None:
-            human_class = BaseHuman
-        if nature_class is None:
-            nature_class = BaseNature
-
-        # 创建实例
         self._human = human_class(self)
         self._nature = nature_class(self)
 
@@ -314,14 +305,14 @@ class MainModel(Model, BaseStateManager, MainModelProtocol):
         return self.agents.select("on_earth")
 
     @property
-    def human(self) -> SubSystemProtocol:
+    def human(self) -> HumanSystemProtocol:
         """The Human subsystem."""
         return self._human
 
     social = human
 
     @property
-    def nature(self) -> SubSystemProtocol:
+    def nature(self) -> NatureSystemProtocol:
         """The Nature subsystem."""
         return self._nature
 
@@ -352,17 +343,9 @@ class MainModel(Model, BaseStateManager, MainModelProtocol):
     # alias for model's datasets
     ds = datasets
 
-    @functools.cached_property
-    def plot(self) -> _VizModel:
-        """Visualization interface for the model.
-
-        Returns:
-            _VizModel instance for creating model visualizations.
-        """
-        return _VizModel(self)
-
     def run_model(
         self,
+        steps: Optional[int] = None,
         order: Tuple[SubSystemName, ...] = DEFAULT_RUN_ORDER,
     ) -> None:
         """Executes the model simulation.
@@ -375,17 +358,24 @@ class MainModel(Model, BaseStateManager, MainModelProtocol):
         Args:
             steps: Number of steps to run. If None, runs until self.running is False.
         """
+        run_times = 0
         self.do_each("setup", order=order)
         while self.running is True:
             self.time.go()
             self.do_each("step", order=order)
+            run_times += 1
+            if steps is not None and run_times >= steps:
+                break
         self.do_each("end", order=order)
 
     def setup(self) -> None:
         """Users can custom what to do when the model is setup and going to start running."""
 
     def step(self) -> None:
-        """A step of the model."""
+        """A step of the model.
+        By default, collect data at each step.
+        """
+        self.datacollector.collect(self)
 
     def end(self) -> None:
         """Users can custom what to do when the model is end."""

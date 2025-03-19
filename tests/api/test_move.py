@@ -11,10 +11,10 @@ from typing import Tuple
 
 import pytest
 
-from abses._bases.errors import ABSESpyError
-from abses.actor import Actor
-from abses.cells import PatchCell
-from abses.main import MainModel
+from abses import MainModel
+from abses.agents.actor import Actor
+from abses.space.cells import PatchCell
+from abses.utils.errors import ABSESpyError
 
 
 class TestMovements:
@@ -51,7 +51,6 @@ class TestMovements:
         """Test raises error when move wrongly."""
         # arrange
         new_module = model.nature.create_module(
-            how="from_resolution",
             shape=(1, 2),
             name="temporal_testing",
         )

@@ -18,6 +18,7 @@ from copy import deepcopy
 from numbers import Number
 from pathlib import Path
 from typing import (
+    TYPE_CHECKING,
     Any,
     Callable,
     Dict,
@@ -28,7 +29,6 @@ from typing import (
     Tuple,
     Type,
     TypeVar,
-    cast,
 )
 
 import pandas as pd
@@ -47,12 +47,15 @@ from joblib import Parallel, delayed
 from omegaconf import DictConfig, OmegaConf
 from tqdm.auto import tqdm
 
-from abses import MainModel
 from abses.core.job_manager import ExperimentManager
+from abses.core.model import MainModel
 
 Configurations: TypeAlias = DictConfig | str | Dict[str, Any]
 T = TypeVar("T")
 HookFunc: TypeAlias = Callable[[MainModel, Optional[int], Optional[int]], Any]
+
+if TYPE_CHECKING:
+    from abses.core.protocols import MainModelProtocol
 
 
 def _parse_path(relative_path: str) -> Path:
@@ -110,7 +113,7 @@ def relative_path_from_to(from_path: Path, to_path: Path) -> Path:
 
 
 def run_single(
-    model_cls: Type[MainModel],
+    model_cls: Type[MainModelProtocol],
     cfg: DictConfig,
     key: Tuple[int, int],
     seed: Optional[int] = None,
@@ -150,13 +153,11 @@ class Experiment:
 
     def __init__(
         self,
-        model_cls: Type[MainModel],
+        model_cls: Type[MainModelProtocol],
         cfg: Configurations,
         seed: Optional[int] = None,
         **kwargs,
     ):
-        if not issubclass(model_cls, MainModel):
-            raise TypeError(f"Type {type(model_cls)} is invalid.")
         self._job_id = 0
         self._extra_kwargs = kwargs
         self._overrides: Dict[str, Any] = {}
@@ -165,7 +166,7 @@ class Experiment:
         self.cfg = cfg
 
     @property
-    def model_cls(self) -> Type[MainModel]:
+    def model_cls(self) -> Type[MainModelProtocol]:
         """Model class."""
         return self._manager.model_cls
 
@@ -175,10 +176,10 @@ class Experiment:
         return self._cfg
 
     @cfg.setter
-    def cfg(self, cfg: DictConfig):
+    def cfg(self, cfg: DictConfig | str | Path):
         # 如果配置是路径，则利用 Hydra API先清洗配置
         if isinstance(cfg, str):
-            cfg = _parse_path(cast(str, cfg))
+            cfg = _parse_path(cfg)
         if isinstance(cfg, Path):
             cfg = self._load_hydra_cfg(cfg)
         assert isinstance(cfg, (DictConfig, dict)), (
@@ -194,7 +195,7 @@ class Experiment:
 
     @classmethod
     def new(
-        cls, model_cls: Type[MainModel], cfg: Configurations, **kwargs
+        cls, model_cls: Type[MainModelProtocol], cfg: Configurations, **kwargs
     ) -> "Experiment":
         """Create a new experiment for the singleton class `Experiment`.
         This method will delete all currently available exp results and settings.
@@ -460,7 +461,7 @@ class Experiment:
     ) -> None:
         """Add hooks to the experiment."""
         if hasattr(hooks, "__call__"):
-            hooks = [cast(HookFunc, hooks)]
+            hooks = [hooks]
         if isinstance(hooks, (list, tuple)):
             for hook in hooks:
                 self._manager.add_a_hook(hook_func=hook)
@@ -473,7 +474,7 @@ class Experiment:
 
 def _call_hook_with_optional_args(
     hook_func: Callable,
-    model: MainModel,
+    model: MainModelProtocol,
     job_id: Optional[int] = None,
     repeat_id: Optional[int] = None,
 ) -> Any:

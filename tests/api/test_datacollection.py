@@ -5,25 +5,24 @@
 # GitHub   : https://github.com/SongshGeo
 # Website: https://cv.songshgeo.com/
 
-"""测试数据收集器。
-"""
+"""测试数据收集器。"""
 
 from typing import Dict, Type
 
 import pytest
 
 from abses import MainModel
-from abses.actor import Actor
+from abses.agents.actor import Actor
 
 
 class TestDataCollector:
     """Testing data collector"""
 
     @pytest.fixture(name="model_cfg")
-    def mock_model(self, test_config) -> MainModel:
+    def mock_model_fixture(self, test_config) -> MainModel:
         """This is a mock model for data collecting tests.
-        To use it, you need to include 'model' as an argument of a test case.
-        Without `name='model'`, the fixture will be function's name: `mock_model` instead.
+        To use it, you need to include 'model_cfg' as an argument of a test case.
+        Without `name='model_cfg'`, the fixture will be function's name: `mock_model` instead.
         """
         return MainModel(parameters=test_config, seed=42)
 

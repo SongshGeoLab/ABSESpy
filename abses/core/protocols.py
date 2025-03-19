@@ -10,31 +10,38 @@ from __future__ import annotations
 from typing import (
     TYPE_CHECKING,
     Any,
-    Deque,
     Dict,
     Iterator,
     List,
     Optional,
     Protocol,
     Set,
+    Tuple,
     TypeVar,
     runtime_checkable,
 )
 
+import numpy as np
+
+from abses.core.primitives import DEFAULT_RUN_ORDER, State
+
 if TYPE_CHECKING:
     from pathlib import Path
 
+    import networkx as nx
+    import pyproj
     from mesa.agent import AgentSet
     from mesa.model import RNGLike, SeedLike
     from omegaconf import DictConfig
     from pendulum import DateTime
     from pendulum.duration import Duration
 
-    from abses.core.primitives import State
     from abses.core.types import (
         AgentID,
         HowCheckName,
         Position,
+        SubSystemName,
+        UniqueID,
     )
 
 
@@ -52,31 +59,34 @@ class TimeDriverProtocol(Protocol):
     duration: Duration
     end_at: DateTime | None | int
     start_dt: DateTime | None
+    tick: int
 
     def go(self, steps: int = 1) -> None: ...
     def to(self, dt: DateTime | str) -> None: ...
 
 
 @runtime_checkable
-class Variable(Protocol):
+class VariableProtocol(Protocol):
     """变量协议"""
 
     _max_length: int = 1
-    _history: Deque[Any]
 
     @property
     def obj(self) -> ModelElement: ...
     @property
     def name(self) -> str: ...
-    @property
-    def value(self) -> Any: ...
-
-    def update(self, value: Any) -> None: ...
 
 
 @runtime_checkable
-class DynamicVariable(Variable, Protocol):
+class DynamicVariableProtocol(VariableProtocol, Protocol):
     """动态变量协议"""
+
+    attrs: Dict[str, Any]
+
+    @property
+    def cache(self) -> Any: ...
+    @property
+    def now(self) -> Any: ...
 
 
 @runtime_checkable
@@ -93,7 +103,7 @@ class Observable(Protocol):
     @property
     def observers(self) -> Set[Observer]: ...
     @property
-    def variables(self) -> Dict[str, Variable]: ...
+    def variables(self) -> Dict[str, VariableProtocol]: ...
 
     def attach(self, observer: Observer) -> None: ...
     def detach(self, observer: Observer) -> None: ...
@@ -139,13 +149,23 @@ class MainModelProtocol(ModelElement, Protocol):
 
     parameters: DictConfig | None | Dict = None
     run_id: int | None = None
-    seed: int | None = None
+    _seed: int | None = None
     rng: RNGLike | SeedLike | None = None
     experiment: ExperimentProtocol | None = None
     steps: int = 0
     running: bool = True
+    datacollector: Any
+    random: np.random.Generator
+
+    def __new__(cls, *args: Any, **kwargs: Any) -> MainModelProtocol: ...
+    def __init__(self, *args: Any, **kwargs: Any) -> None: ...
 
     def add_name(self, name: str, check: Optional[HowCheckName] = None) -> None: ...
+    def run_model(
+        self,
+        steps: Optional[int] = None,
+        order: Tuple[SubSystemName, ...] = DEFAULT_RUN_ORDER,
+    ) -> None: ...
 
     @property
     def settings(self) -> DictConfig: ...
@@ -162,9 +182,9 @@ class MainModelProtocol(ModelElement, Protocol):
     @property
     def nature(self) -> NatureSystemProtocol: ...
     @property
-    def agent_types(self) -> List[AgentType]: ...
+    def agent_types(self) -> List[type[ActorProtocol]]: ...
     @property
-    def agent_by_type(self) -> Dict[AgentType, AgentSet]: ...
+    def agent_by_type(self) -> Dict[type[ActorProtocol], AgentSet]: ...
     @property
     def agents(self) -> AgentsContainerProtocol: ...
     @property
@@ -173,6 +193,12 @@ class MainModelProtocol(ModelElement, Protocol):
     def time(self) -> TimeDriverProtocol: ...
     @property
     def params(self) -> DictConfig: ...
+    @property
+    def agents_by_type(self) -> dict[type, ActorsListProtocol]: ...
+
+    def deregister_agent(self, agent: "ActorProtocol") -> None:
+        """Deregister an agent from the model."""
+        ...
 
 
 @runtime_checkable
@@ -200,9 +226,11 @@ class SubSystemProtocol(ModuleProtocol, Protocol):
     @property
     def modules(self) -> Dict[str, ModuleProtocol]: ...
 
-    def create_module(self, name: str, *args: Any, **kwargs: Any) -> ModuleProtocol: ...
+    def create_module(self, name: str, *args: Any, **kwargs: Any) -> Any: ...
     def register(self, component: ModuleProtocol) -> None: ...
     def unregister(self, component: ModuleProtocol) -> None: ...
+    def get_raster(self, *args: Any, **kwargs: Any) -> Any: ...
+    def get_graph(self, *args: Any, **kwargs: Any) -> Any: ...
 
 
 @runtime_checkable
@@ -227,9 +255,11 @@ class ActorProtocol(Observer, ModelElement, Protocol):
     unique_id: AgentID
     pos: Optional[Position]
     alive: bool
+    model: MainModelProtocol
+    indices: Optional[Position]
 
-    @property
-    def indices(self) -> Optional[Position]: ...
+    def __init__(self, model: MainModelProtocol, **kwargs: Any) -> None: ...
+
     @property
     def move(self) -> _MovementsProtocol: ...
     @property
@@ -238,33 +268,129 @@ class ActorProtocol(Observer, ModelElement, Protocol):
     def on_earth(self) -> bool: ...
     @property
     def at(self) -> PatchCellProtocol | None: ...
+    @property
+    def crs(self) -> pyproj.CRS: ...
     def die(self) -> None: ...
     def moving(self) -> bool: ...
+    def update(self, subject: Observable) -> None: ...
+    def step(self) -> None: ...
+    def initialize(self) -> None: ...
+    def setup(self) -> None: ...
+    def end(self) -> None: ...
 
 
 AgentType = TypeVar("AgentType", bound="ActorProtocol")
 
 
 class ActorsListProtocol(Protocol):
-    """ActorsList协议"""
+    """代理列表协议"""
 
+    model: MainModelProtocol
+
+    def __iter__(self) -> Iterator[ActorProtocol]: ...
     def __len__(self) -> int: ...
     def __getitem__(self, index: int) -> ActorProtocol: ...
-    def __iter__(self) -> Iterator[ActorProtocol]: ...
+    def append(self, actor: ActorProtocol) -> None: ...
+    def remove(self, actor: ActorProtocol) -> None: ...
+    def select(self, how: str = "all", **kwargs: Any) -> ActorsListProtocol: ...
+    def array(self, attr: str) -> np.ndarray: ...
+    def item(self, index: int) -> ActorProtocol: ...
 
-    def select(self, **kwargs: Any) -> ActorsListProtocol: ...
+    @property
+    def random(self) -> Any: ...
+    @property
+    def plot(self) -> Any: ...
 
 
 class AgentsContainerProtocol(Protocol):
-    """AgentsContainer协议"""
+    """代理容器协议"""
 
+    model: MainModelProtocol
+
+    def __iter__(self) -> Iterator[ActorProtocol]: ...
     def __len__(self) -> int: ...
     def __getitem__(self, index: int) -> ActorProtocol: ...
-    def __iter__(self) -> Iterator[ActorProtocol]: ...
+
+    def add(self, agent: ActorProtocol) -> None: ...
+    def remove(self, agent: ActorProtocol) -> None: ...
+    def get_by_id(self, agent_id: AgentID) -> Optional[ActorProtocol]: ...
+    def get_by_type(self, agent_type: type) -> ActorsListProtocol: ...
+    def get_all(self) -> ActorsListProtocol: ...
+    def select(self, *args: Any, **kwargs: Any) -> ActorsListProtocol: ...
+    @property
+    def is_full(self) -> bool: ...
+
+    @property
+    def agents_by_type(self) -> dict[type, ActorsListProtocol]: ...
 
 
 @runtime_checkable
-class HumanSystemProtocol(SubSystemProtocol, Protocol):
+class PatchCellProtocol(Protocol):
+    """PatchCell协议"""
+
+    ...
+
+
+@runtime_checkable
+class LinkNodeProtocol(Protocol):
+    """LinkNode协议"""
+
+    ...
+
+
+@runtime_checkable
+class LinkContainerProtocol(Protocol):
+    """LinkContainer协议"""
+
+    links: Tuple[str, ...]
+
+    def _cache_node(self, node: LinkNodeProtocol) -> UniqueID: ...
+    def _get_node(self, node_id: UniqueID) -> LinkNodeProtocol: ...
+    def _register_link(
+        self, link_name: str, source: LinkNodeProtocol, target: LinkNodeProtocol
+    ) -> None: ...
+    def has_link(
+        self, link_name: str, source: LinkNodeProtocol, target: LinkNodeProtocol
+    ) -> Tuple[bool, bool]: ...
+    def add_a_link(
+        self,
+        link_name: str,
+        source: LinkNodeProtocol,
+        target: LinkNodeProtocol,
+        mutual: bool = False,
+    ) -> None: ...
+    def remove_a_link(
+        self,
+        link_name: str,
+        source: LinkNodeProtocol,
+        target: LinkNodeProtocol,
+        mutual: bool = False,
+    ) -> None: ...
+    def linked(
+        self,
+        node: LinkNodeProtocol,
+        link_name: Optional[str | list[str]] = None,
+        direction: Optional[str] = None,
+        default: Any = ...,
+    ) -> Set[LinkNodeProtocol]: ...
+    def owns_links(
+        self, node: LinkNodeProtocol, direction: Optional[str] = None
+    ) -> Tuple[str, ...]: ...
+    def get_graph(
+        self, link_name: str, directions: bool = False
+    ) -> "nx.Graph | nx.DiGraph": ...
+    def clean_links_of(
+        self,
+        node: LinkNodeProtocol,
+        link_name: Optional[str] = None,
+        direction: Optional[str] = None,
+    ) -> None: ...
+
+    ...
+
+
+@runtime_checkable
+class HumanSystemProtocol(SubSystemProtocol, LinkContainerProtocol, Protocol):
     """添加 @runtime_checkable 使得可以在运行时检查"""
 
     ...
@@ -274,11 +400,7 @@ class HumanSystemProtocol(SubSystemProtocol, Protocol):
 class NatureSystemProtocol(SubSystemProtocol, Protocol):
     """添加 @runtime_checkable 使得可以在运行时检查"""
 
-    ...
-
-
-@runtime_checkable
-class PatchCellProtocol(Protocol):
-    """PatchCell协议"""
+    @property
+    def crs(self) -> pyproj.CRS: ...
 
     ...

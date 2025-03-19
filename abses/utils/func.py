@@ -16,7 +16,9 @@ from typing import (
     Dict,
     Iterable,
     List,
+    Literal,
     Optional,
+    Sequence,
     Tuple,
     TypeVar,
     cast,
@@ -28,7 +30,7 @@ from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 from scipy import ndimage
 
-from abses.tools.regex import CAMEL_NAME
+from abses.utils.regex import CAMEL_NAME
 
 try:
     from typing import TypeAlias
@@ -71,9 +73,7 @@ def get_buffer(
         raise ValueError(f"Radius must be positive int, not {radius}.")
     connectivity = 2 if moor else 1
     struct = ndimage.generate_binary_structure(2, connectivity)
-    result = ndimage.binary_dilation(
-        array, structure=struct, iterations=radius
-    )
+    result = ndimage.binary_dilation(array, structure=struct, iterations=radius)
     if annular and radius > 1:
         interior = ndimage.binary_dilation(
             array, structure=struct, iterations=radius - 1
@@ -95,7 +95,7 @@ def make_list(element: Any, keep_none: bool = False) -> List:
     return element
 
 
-def iter_func(elements: str) -> Callable:
+def iter_apply_func_to(elements: str) -> Callable:
     """
     A decorator broadcasting function to all elements if available.
 
@@ -204,8 +204,7 @@ def clean_attrs(
     all_attrs: Iterable[str],
     include: Optional[IncludeFlag],
     exclude: Optional[Iterable[str]] = None,
-) -> Dict[str, str]:
-    ...
+) -> Dict[str, str]: ...
 
 
 @overload
@@ -213,8 +212,7 @@ def clean_attrs(
     all_attrs: Iterable[str],
     include: Dict[str, str],
     exclude: Optional[Iterable[str]] = None,
-) -> Dict[str, str]:
-    ...
+) -> Dict[str, str]: ...
 
 
 def clean_attrs(
@@ -245,3 +243,82 @@ def clean_attrs(
     if exclude:
         selected -= set(make_list(exclude))
     return list(selected)
+
+
+def search_unique_key(
+    to_search: Sequence[str],
+    valid_keys: Sequence[str],
+    default: Optional[str] = None,
+    when_multiple: Literal["error", "first", "last", "all"] = "error",
+) -> str | Sequence[str] | None:
+    """
+    Get the unique key from the possible keys.
+
+    Parameters:
+        to_search:
+            The keys to search.
+        valid_keys:
+            The possible keys.
+        default:
+            The default key if no match is found.
+        when_multiple:
+            What to do if multiple keys are found.
+
+    Examples:
+        >>> search_unique_key(
+            to_search=["b", "c", "d"],
+            valid_keys=["a", "b"],
+        )
+        "b"
+        >>> search_unique_key(
+            to_search=["a", "b", "c"],
+            valid_keys=["a", "b"],
+            when_multiple="error",
+        )
+        ValueError("Multiple keys found: ['a', 'b']")
+        >>> search_unique_key(
+            to_search=["a", "b", "c"],
+            valid_keys=["a", "b"],
+            when_multiple="first",
+        )
+        "a"
+
+    Returns:
+        The unique key.
+    """
+    if len(to_search) == 0:
+        return default
+
+    # 将可迭代对象转换为集合以提高查找效率
+    valid_keys_set = set(valid_keys)
+
+    # 找出所有匹配的键
+    matched_keys = [key for key in to_search if key in valid_keys_set]
+
+    # 如果没有找到匹配的键，返回默认值
+    if not matched_keys:
+        return default
+
+    # 如果只找到一个匹配的键，直接返回
+    if len(matched_keys) == 1:
+        return matched_keys[0]
+
+    # 处理找到多个匹配键的情况
+    if when_multiple == "error":
+        raise ValueError(f"Multiple keys found: {matched_keys}")
+    elif when_multiple == "first":
+        return matched_keys[0]
+    elif when_multiple == "last":
+        return matched_keys[-1]
+    elif when_multiple == "all":
+        return matched_keys
+    raise ValueError(f"Invalid value for when_multiple: {when_multiple}")
+
+
+def get_only_item(agents: Sequence[Any]) -> Any:
+    """Select one agent"""
+    if len(agents) == 0:
+        raise ValueError("No agent found.")
+    if len(agents) == 1:
+        return agents[0]
+    raise ValueError("More than one agent.")

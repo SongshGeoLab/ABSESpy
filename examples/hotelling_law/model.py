@@ -129,7 +129,6 @@ class Hotelling(MainModel):
         layer = self.nature.create_module(
             cell_cls=Customer,
             name="market",
-            how="from_resolution",
             shape=(10, 10),
         )
 

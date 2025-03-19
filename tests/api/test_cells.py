@@ -16,9 +16,9 @@ import numpy as np
 import pytest
 
 from abses import ActorsList
-from abses.actor import Actor
-from abses.main import MainModel
-from abses.tools.func import get_buffer
+from abses.agents.actor import Actor
+from abses.core.model import MainModel
+from abses.utils.func import get_buffer
 
 
 class TestCellNeighboring:
@@ -27,7 +27,7 @@ class TestCellNeighboring:
     @pytest.fixture(name="array_cells")
     def cells_list(self, model: MainModel):
         """模拟一个斑块模块，包含5*5个格子"""
-        module = model.nature.modules.new(how="from_resolution", shape=(5, 5))
+        module = model.nature.create_module(shape=(5, 5))
         return module.array_cells
 
     @staticmethod

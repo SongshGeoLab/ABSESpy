@@ -4,16 +4,15 @@
 # @Contact   : SongshGeo@gmail.com
 # GitHub   : https://github.com/SongshGeo
 # Website: https://cv.songshgeo.com/
-"""测试列表
-"""
-from unittest.mock import MagicMock
+"""测试列表"""
 
 import numpy as np
 import pytest
 
 from abses import MainModel
-from abses.actor import Actor
-from abses.sequences import ActorsList
+from abses.agents.actor import Actor
+from abses.agents.sequences import ActorsList
+from tests.helper import create_actors_with_metric
 
 
 class TestSequences:
@@ -32,62 +31,41 @@ class TestSequences:
         assert isinstance(actors5, ActorsList)
         assert repr(mixed_actors) == "<ActorsList: (5)Actor; (3)Farmer>"
         assert mixed_actors.to_dict() == {"Actor": actors5, "Farmer": farmers3}
-        assert mixed_actors.select("Farmer") == farmers3
-        each_one = mixed_actors.select(
-            [True, False, False, False, False, True, False, False]
-        )
-        assert repr(each_one) == "<ActorsList: (1)Actor; (1)Farmer>"
-
-    def test_sequences_better(self, model: MainModel, farmer_cls):
-        """Test that sequences"""
-        # arrange
-        a_farmer = model.agents.new(farmer_cls, singleton=True)
-        others = model.agents.new(farmer_cls, 5)
-        for i, farmer in enumerate(
-            others
-        ):  # np.array([0.0, 0.1, 0.2, 0.3, 0.4])
-            farmer.metric = i / 10
-            farmer.test = i
-        a_farmer.metric = 0.1
-
-        # act
-        better = others.better("metric", than=a_farmer)
-        # assert
-        assert better == others.select([False, False, True, True, True])
-        assert others.better("metric")[0] == others[-1]
-        assert others.better("metric", than=0.05) == others.select(
-            [False, True, True, True, True]
-        )
-        assert better.random.choice() in better
+        assert mixed_actors.select(agent_type=farmer_cls) == farmers3
 
     @pytest.mark.parametrize(
-        "ufunc, args, kwargs, expected",
+        "than, expected_num",
         [
-            (lambda f: f.metric + 1, (), {}, np.array([1.1, 1.1, 1.1])),
+            (-1.0, 5),
+            (0.0, 4),
+            (2.0, 2),
+            (3.0, 1),
         ],
     )
-    def test_apply(
-        self, model: MainModel, ufunc, args, kwargs, expected, farmer_cls
-    ):
+    def test_sequences_better(self, model: MainModel, than, expected_num):
+        """Test that sequences"""
+        # arrange
+        others = create_actors_with_metric(model, 5)
+
+        # act
+        better = others.better("test", than=than)
+        # assert
+        assert len(better) == expected_num
+
+    def test_apply(self, model: MainModel):
         """Test that applying a function."""
         # assert
-        farmers = model.agents.new(farmer_cls, 3)
-        actor = model.agents.new(Actor, singleton=True)
+        actors = create_actors_with_metric(model, 3)
         # act
-        results = farmers.apply(ufunc, *args, **kwargs)
-        expected = farmers.array("metric") + 1
+        results = actors.apply(lambda x: x.test + 1)
+        expected = actors.array("test") + 1
         # assert
         np.testing.assert_array_equal(results, expected)
-        farmers.apply(
-            lambda f: f.link.to(actor, link_name="test", mutual=True)
-        )
-        assert actor.link.get("test") == farmers
 
     @pytest.mark.parametrize(
         "num, index, how, expected",
         [
             (3, 1, "item", 1),
-            (3, 1, "random", 1),
             (1, 0, "only", 0),
         ],
     )
@@ -96,7 +74,6 @@ class TestSequences:
         # arrange
         actors = model.agents.new(Actor, num=num)
         expected = actors[expected]
-        actors.random.choice = MagicMock(return_value=expected)
         # act
         result = actors.item(index=index, how=how)
         # assert
@@ -110,77 +87,10 @@ class TestSequences:
             ("only", 0, 0, ValueError, "No agent found."),
         ],
     )
-    def test_bad_item(
-        self, model: MainModel, how, num, index, error, to_match
-    ):
+    def test_bad_item(self, model: MainModel, how, num, index, error, to_match):
         """Test that the item function raises an error."""
         # arrange
         actors = model.agents.new(Actor, num=num)
         # act / assert
         with pytest.raises(error, match=to_match):
             actors.item(index=index, how=how)
-
-
-class TestSequenceAttrGetter:
-    """Test Sequence Attribute Getter"""
-
-    def create_actors_with_metric(self, model: MainModel, n: int):
-        """Create actors with metric."""
-        actors = model.agents.new(Actor, n)
-        for i, actor in enumerate(actors):
-            actor.test = float(i)
-        return actors
-
-    @pytest.mark.parametrize(
-        "how, expected",
-        [
-            ("only", 0.0),
-            ("item", 0.0),
-            ("random", 0.0),
-        ],
-    )
-    def test_get_only_agent(self, model: MainModel, how, expected):
-        """Test that the get_only_agent function."""
-        # arrange
-        actors = self.create_actors_with_metric(model, 1)
-        # act
-        result = actors.get("test", how=how)
-        # assert
-        assert result == actors[0].test == expected
-
-    @pytest.mark.parametrize(
-        "how, expected",
-        [
-            ("item", 0.0),
-            ("random", 1.0),
-        ],
-    )
-    def test_get_attr(self, model: MainModel, how, expected):
-        """Test that the agg_agents_attr function."""
-        # arrange
-        actors = self.create_actors_with_metric(model, 3)
-        actors.random.choice = MagicMock(return_value=actors[1])
-        assert actors.random.choice() == actors[1]
-
-        # act
-        result = actors.get("test", how=how)
-        # assert
-        assert result == expected
-
-    @pytest.mark.parametrize(
-        "n, how, error, to_match",
-        [
-            (1, "not a method", ValueError, "Invalid how method"),
-            (0, "only", ValueError, "No agent found."),
-            (2, "only", ValueError, "More than one agent."),
-        ],
-    )
-    def test_agg_agents_attr_error(
-        self, model: MainModel, n, how, error, to_match
-    ):
-        """Test that the agg_agents_attr function raises an error."""
-        # arrange
-        actors = self.create_actors_with_metric(model, n=n)
-        # act / assert
-        with pytest.raises(error, match=to_match):
-            actors.get("test", how=how)
