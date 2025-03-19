@@ -11,38 +11,45 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Optional, Tuple
 
 from mesa_geo.raster_layers import RasterBase
 from pyproj import CRS
 
-from abses._bases.errors import ABSESpyError
-from abses._bases.objects import _BaseObj
-from abses.container import _CellAgentsContainer
-from abses.links import TargetName, _LinkNodeCell
+from abses.agents.container import _CellAgentsContainer
+from abses.core.base import BaseModelElement
+from abses.core.protocols import ActorProtocol
+from abses.human.links import _LinkNodeCell
+from abses.utils.errors import ABSESpyError
 
 if TYPE_CHECKING:
-    from abses.nature import PatchModule
-    from abses.sequences import ActorsList
-
-try:
-    from typing import TypeAlias
-except ImportError:
-    from typing_extensions import TypeAlias
-
-Pos: TypeAlias = Tuple[int, int]
+    from abses.core.types import ActorsList, Pos, TargetName
+    from abses.space.patch import PatchModule
 
 
-def raster_attribute(
-    func: Callable[[Any], Union[str | int | float]]
-) -> property:
+def raster_attribute(func_or_property):
     """Turn the method into a property that the patch can extract.
+
+    This decorator can be used in two ways:
+    1. As a simple decorator for a method: @raster_attribute
+    2. With an existing property that has getter and setter: @property_name.setter
+
     Example:
         ```
         class TestCell(Cell):
+            # Simple usage
             @raster_attribute
-            def test:
+            def test(self):
                 return 1
+
+            # With setter
+            @raster_attribute
+            def state(self):
+                return self._state
+
+            @state.setter
+            def state(self, value):
+                self._state = value
 
         # Using this test cell to create a PatchModule.
         module = PatchModule.from_resolution(
@@ -54,7 +61,7 @@ def raster_attribute(
         # now, the attribute 'test' of TestCell can be accessible in the module, as spatial data (i.e., raster layer).
 
         >>> module.cell_properties
-        >>> set('test')
+        >>> set('test', 'state')
 
         >>> array = module.get_raster('test')
         >>> np.array([
@@ -64,11 +71,19 @@ def raster_attribute(
         ])
         ```
     """
-    setattr(func, "is_decorated", True)
-    return property(func)
+    if isinstance(func_or_property, property):
+        # 如果已经是一个 property，保留其 getter 和 setter
+        prop = func_or_property
+        setattr(prop.fget, "is_decorated", True)
+        return prop
+    else:
+        # 如果是一个普通方法，将其转换为 property
+        func = func_or_property
+        setattr(func, "is_decorated", True)
+        return property(func)
 
 
-class PatchCell(_LinkNodeCell, _BaseObj):
+class PatchCell(_LinkNodeCell, BaseModelElement, ActorProtocol):
     """A patch cell of a `RasterLayer`.
     Subclassing this class to create a custom cell.
     When class attribute `max_agents` is assigned,
@@ -89,7 +104,7 @@ class PatchCell(_LinkNodeCell, _BaseObj):
         indices: Pos,
         pos: Optional[Pos] = None,
     ):
-        _BaseObj.__init__(self, model=layer.model, observer=True)
+        BaseModelElement.__init__(self, model=layer.model)
         _LinkNodeCell.__init__(self)
         self.indices = indices
         self.pos = pos
@@ -151,7 +166,7 @@ class PatchCell(_LinkNodeCell, _BaseObj):
         self._layer = layer
         # set agents container
         self._agents = _CellAgentsContainer(
-            layer.model, cell=self, max_len=getattr(self, "max_agents", None)
+            layer.model, cell=self, max_len=getattr(self, "max_agents", float("inf"))
         )
 
     def get(
@@ -174,8 +189,8 @@ class PatchCell(_LinkNodeCell, _BaseObj):
         Raises:
             AttributeError: Attribute value of the associated patch cell.
         """
-        if attr in self.layer.dynamic_variables:
-            self.layer.dynamic_var(attr_name=attr)
+        # if attr in self.layer.dynamic_variables:
+        #     self.layer.dynamic_var(attr_name=attr)
         return super().get(attr=attr, target=target, default=default)
 
     def neighboring(
@@ -184,7 +199,7 @@ class PatchCell(_LinkNodeCell, _BaseObj):
         radius: int = 1,
         include_center: bool = False,
         annular: bool = False,
-    ) -> ActorsList[PatchCell]:
+    ) -> ActorsList["PatchCell"]:
         """Get the grid around the patch.
 
         Parameters:

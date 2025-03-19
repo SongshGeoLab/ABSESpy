@@ -10,7 +10,6 @@
 from __future__ import annotations
 
 import functools
-from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -23,15 +22,7 @@ from typing import (
     Tuple,
     Type,
     Union,
-    cast,
 )
-
-try:
-    from typing import TypeAlias
-except ImportError:
-    from typing_extensions import TypeAlias
-
-from typing import TypeVar
 
 import geopandas as gpd
 import numpy as np
@@ -46,243 +37,26 @@ from numpy.typing import NDArray
 from rasterio.enums import Resampling
 from shapely import Geometry
 
-from abses._bases.errors import ABSESpyError
-from abses._bases.modules import Module, _ModuleFactory
-from abses.actor import Actor
-from abses.cells import PatchCell
-from abses.random import ListRandom
-from abses.sequences import ActorsList
-from abses.tools.func import get_buffer, set_null_values
-from abses.viz.viz_nature import _VizNature
-
-T = TypeVar("T", bound=PatchCell)
+from abses.agents.actor import Actor
+from abses.agents.sequences import ActorsList
+from abses.core.base import BaseModule
+from abses.core.primitives import DEFAULT_CRS
+from abses.space.cells import PatchCell
+from abses.utils.errors import ABSESpyError
+from abses.utils.func import get_buffer, set_null_values
+from abses.utils.random import ListRandom
 
 if TYPE_CHECKING:
-    from abses.main import MainModel
-
-CRS = "epsg:4326"
-CellFilter: TypeAlias = Optional[str | np.ndarray | xr.DataArray | Geometry]
-Raster: TypeAlias = Union[
-    np.ndarray,
-    xr.DataArray,
-    xr.Dataset,
-]
+    from abses.core.types import (
+        CellFilter,
+        MainModelProtocol,
+        Number,
+        Raster,
+        T,
+    )
 
 
-class _PatchModuleFactory(_ModuleFactory):
-    def __init__(self, father) -> None:
-        super().__init__(father)
-        self.default_cls = PatchModule
-
-    def __getitem__(self, name: str) -> PatchModule:
-        return self.modules[name]
-
-    def from_resolution(
-        self,
-        model: MainModel[Any, Any],
-        name: Optional[str] = None,
-        shape: Coordinate = (10, 10),
-        crs: Optional[pyproj.CRS | str] = CRS,
-        resolution: Union[int, float] = 1,
-        module_cls: Optional[type[PatchModule]] = None,
-        cell_cls: type[PatchCell] = PatchCell,
-    ) -> PatchModule:
-        """Create a layer from resolution.
-
-        Parameters:
-            model:
-                ABSESpy Model that the new module belongs.
-            name:
-                Name of the new module.
-                If None (by default), using lowercase of the '__class__.__name__'.
-                E.g., class Module -> module.
-            shape:
-                Array shape (height, width) of the new module.
-                For example, `shape=(3, 5)` means the new module stores 15 cells.
-            crs:
-                Coordinate Reference Systems.
-                If passing a string object, should be able to parsed by `pyproj`.
-                By default, we use CRS = "epsg:4326".
-            resolution:
-                Spatial Resolution when creating the coordinates.
-                By default 1, it means shape (3, 5) will generate coordinates:
-                {y: [0, 1, 2], x: [0, 1, 2, 3, 4]}.
-                Similar, when using resolution=0.1,
-                it will be {y: [.0, .1, .2], x: [.0, .1, .2, .3, .4]}.
-            cell_cls:
-                Class type of `PatchCell` to create.
-
-        Returns:
-            A new instance of self ("PatchModule").
-        """
-        to_create = cast(PatchModule, self._check_cls(module_cls=module_cls))
-        height, width = shape
-        total_bounds = [0, 0, width * resolution, height * resolution]
-        return to_create(
-            model,
-            name=name,
-            width=width,
-            height=height,
-            crs=crs,
-            total_bounds=total_bounds,
-            cell_cls=cell_cls,
-        )
-
-    def copy_layer(
-        self,
-        model: MainModel[Any, Any],
-        layer: PatchModule,
-        name: Optional[str] = None,
-        module_cls: Optional[Type[PatchModule]] = None,
-        cell_cls: Type[PatchCell] = PatchCell,
-    ) -> PatchModule:
-        """Copy an existing layer to create a new layer.
-
-        Parameters:
-            model:
-                ABSESpy Model that the new module belongs.
-            layer:
-                Another layer to copy.
-                These attributes will be copied:
-                including the coordinates, the crs, and the shape.
-            name:
-                Name of the new module.
-                If None (by default), using lowercase of the '__class__.__name__'.
-                E.g., class Module -> module.
-            cell_cls:
-                Class type of `PatchCell` to create.
-
-        Returns:
-            A new instance of self ("PatchModule").
-        """
-        if not isinstance(layer, PatchModule):
-            raise TypeError(f"{layer} is not a valid PatchModule.")
-        to_create = cast(PatchModule, self._check_cls(module_cls=module_cls))
-        return to_create(
-            model=model,
-            name=name,
-            width=layer.width,
-            height=layer.height,
-            crs=layer.crs,
-            total_bounds=layer.total_bounds,
-            cell_cls=cell_cls,
-        )
-
-    def from_xarray(
-        self,
-        xda: xr.DataArray,
-        model: MainModel[Any, Any],
-        module_cls: Optional[Type[PatchModule]] = None,
-        name: str | None = None,
-        attr_name: str | None = None,
-        apply_raster: bool = False,
-        masked: bool = True,
-        cell_cls: type[PatchCell] = PatchCell,
-        **kwargs,
-    ) -> PatchModule:
-        """Create a new module instance from `xarray.DataArray` data."""
-        # 如果 y 轴是从小到大的，反转它
-        if xda.y[0].item() < xda.y[-1].item():
-            xda.data = np.flipud(xda.data)
-        # 创建模块
-        to_create = cast(PatchModule, self._check_cls(module_cls=module_cls))
-        module: PatchModule = to_create(
-            model=model,
-            name=name,
-            width=xda.rio.width,
-            height=xda.rio.height,
-            crs=xda.rio.crs,
-            total_bounds=xda.rio.bounds(),
-            cell_cls=cell_cls,
-        )
-        if masked:
-            module.mask = xda.notnull().to_numpy()
-        if apply_raster:
-            module.apply_raster(xda.to_numpy(), attr_name=attr_name, **kwargs)
-        return module
-
-    def from_vector(
-        self,
-        vector_file: str | Path | gpd.GeoDataFrame,
-        resolution: Tuple[float, float] | float,
-        model: MainModel[Any, Any],
-        module_cls: Optional[Type[PatchModule]] = None,
-        name: str | None = None,
-        attr_name: Optional[str] = None,
-        apply_raster: bool = False,
-        masked: bool = True,
-        cell_cls: type[PatchCell] = PatchCell,
-    ) -> PatchModule:
-        """Create a layer module from a shape file."""
-        if isinstance(vector_file, (str, Path)):
-            gdf = gpd.read_file(vector_file)
-        elif isinstance(vector_file, gpd.GeoDataFrame):
-            gdf = vector_file
-        else:
-            raise TypeError(f"Unsupported vector {type(vector_file)}.")
-        if attr_name is None:
-            gdf, attr_name = gdf.reset_index(), "index"
-        if isinstance(resolution, float):
-            resolution = (resolution, resolution)
-        xda = make_geocube(gdf, measurements=[attr_name], resolution=resolution)[
-            attr_name
-        ]
-        return self.from_xarray(
-            xda=xda,
-            model=model,
-            module_cls=module_cls,
-            name=name,
-            attr_name=attr_name,
-            apply_raster=apply_raster,
-            masked=masked,
-            cell_cls=cell_cls,
-        )
-
-    def from_file(
-        self,
-        raster_file: str,
-        model: MainModel[Any, Any],
-        cell_cls: type[PatchCell] = PatchCell,
-        module_cls: Optional[Type[PatchModule]] = None,
-        name: str | None = None,
-        attr_name: str | None = None,
-        apply_raster: bool = False,
-        band: int = 1,
-        masked: bool = True,
-        **kwargs: Any,
-    ) -> PatchModule:
-        """Create a raster layer module from a file.
-
-        Parameters:
-            raster_file:
-                File path of a geo-tiff dataset.
-            model:
-                ABSESpy Model that the new module belongs.
-            attr_name:
-                Assign a attribute name to the loaded raster data.
-            name:
-                Name of the new module.
-                If None (by default), using lowercase of the '__class__.__name__'.
-                E.g., class Module -> module.
-            cell_cls:
-                Class type of `PatchCell` to create.
-
-        """
-        xda = rioxarray.open_rasterio(raster_file, masked=masked, **kwargs)
-        xda = xda.sel(band=band)
-        return self.from_xarray(
-            xda=xda,
-            model=model,
-            module_cls=module_cls,
-            name=name,
-            attr_name=attr_name,
-            apply_raster=apply_raster,
-            masked=masked,
-            cell_cls=cell_cls,
-        )
-
-
-class PatchModule(Module, RasterLayer):
+class PatchModule(BaseModule, RasterLayer):
     """Base class for managing raster-based spatial modules in ABSESpy.
 
     Inherits from both Module and RasterLayer to provide comprehensive spatial data management.
@@ -307,29 +81,211 @@ class PatchModule(Module, RasterLayer):
 
     def __init__(
         self,
-        model: MainModel[Any, Any],
+        model: MainModelProtocol,
         name: Optional[str] = None,
         cell_cls: Type[PatchCell] = PatchCell,
+        *,
+        # Resolution-based creation parameters
+        shape: Optional[Coordinate] = None,
+        resolution: Number | None | Tuple[Number, Number] = 1,
+        # Layer copy parameters
+        source_layer: Optional[PatchModule] = None,
+        # Xarray-based creation parameters
+        xda: Optional[xr.DataArray] = None,
+        attr_name: Optional[str] = None,
+        apply_raster: bool = False,
+        masked: bool = True,
+        # Vector-based creation parameters
+        vector_file: Optional[Union[str, gpd.GeoDataFrame]] = None,
+        # Raster file-based creation parameters
+        raster_file: Optional[str] = None,
+        band: int = 1,
+        # Common parameters
+        crs: Optional[Union[pyproj.CRS, str]] = None,
+        total_bounds: Optional[List[float]] = None,
+        width: Optional[int] = None,
+        height: Optional[int] = None,
         **kwargs: Any,
     ):
-        """Initializes a new PatchModule instance.
+        """Initializes a new PatchModule instance with a unified API.
+
+        This constructor automatically determines the appropriate creation method based on the
+        provided parameters. It supports creating a PatchModule from:
+        - Resolution and shape
+        - Copying an existing layer
+        - xarray DataArray
+        - Vector file or GeoDataFrame
+        - Raster file
 
         Args:
             model: Parent model instance.
             name: Module identifier. Defaults to lowercase class name.
             cell_cls: Class to use for creating cells. Defaults to PatchCell.
+
+            # Resolution-based creation parameters
+            shape: Array shape (height, width) for creating a new module.
+            resolution: Spatial resolution when creating coordinates.
+
+            # Layer copy parameters
+            source_layer: Existing PatchModule to copy.
+
+            # Xarray-based creation parameters
+            xda: xarray DataArray containing raster data.
+            attr_name: Attribute name for the loaded raster data.
+            apply_raster: Whether to apply raster data to cells.
+            masked: Whether to use mask from the data.
+
+            # Vector-based creation parameters
+            vector_file: Path to vector file or GeoDataFrame.
+
+            # Raster file-based creation parameters
+            raster_file: Path to raster file.
+            band: Band number to use from raster file.
+
+            # Common parameters
+            crs: Coordinate Reference System.
+            total_bounds: Spatial bounds [minx, miny, maxx, maxy].
+            width: Width of the raster in cells.
+            height: Height of the raster in cells.
             **kwargs: Additional arguments passed to RasterLayer initialization.
         """
-        Module.__init__(self, model, name=name)
-        RasterLayer.__init__(self, model=model, cell_cls=cell_cls, **kwargs)
+        # Initialize BaseModule
+        BaseModule.__init__(self, model, name=name)
+
+        # Normalize CRS if provided
+        if crs is not None:
+            crs = crs
+
+        # Determine creation method based on provided parameters
+        if raster_file is not None:
+            # Create from raster file
+            xda = rioxarray.open_rasterio(raster_file, masked=masked, **kwargs)
+            xda = xda.sel(band=band)
+
+            # Update parameters for xarray-based creation
+            width = xda.rio.width
+            height = xda.rio.height
+            crs = xda.rio.crs
+            total_bounds = xda.rio.bounds()
+
+            # Apply raster data if requested
+            if apply_raster and attr_name:
+                kwargs["apply_raster"] = True
+                kwargs["attr_name"] = attr_name
+
+        elif vector_file is not None:
+            # Create from vector file
+            if resolution is None:
+                raise ValueError(
+                    "Resolution must be provided when creating from vector file"
+                )
+
+            # Convert to GeoDataFrame if needed
+            if isinstance(vector_file, str):
+                gdf = gpd.read_file(vector_file)
+            elif isinstance(vector_file, gpd.GeoDataFrame):
+                gdf = vector_file
+            else:
+                raise TypeError(f"Unsupported vector type: {type(vector_file)}")
+
+            # Set attribute name if not provided
+            if attr_name is None:
+                gdf, attr_name = gdf.reset_index(), "index"
+
+            # Convert resolution to tuple if needed
+            if isinstance(resolution, (int, float)):
+                resolution = (resolution, resolution)
+
+            # Create xarray from vector
+            xda = make_geocube(gdf, measurements=[attr_name], resolution=resolution)[
+                attr_name
+            ]
+
+            # Update parameters for xarray-based creation
+            width = xda.rio.width
+            height = xda.rio.height
+            crs = xda.rio.crs
+            total_bounds = xda.rio.bounds()
+
+            # Apply raster data if requested
+            if apply_raster:
+                kwargs["apply_raster"] = True
+                kwargs["attr_name"] = attr_name
+
+        elif xda is not None:
+            # Create from xarray DataArray
+            # Flip data if y-axis is ascending
+            if xda.y[0].item() < xda.y[-1].item():
+                xda.data = np.flipud(xda.data)
+
+            # Update parameters
+            width = xda.rio.width
+            height = xda.rio.height
+            crs = xda.rio.crs
+            total_bounds = xda.rio.bounds()
+
+            # Apply raster data if requested
+            if apply_raster:
+                kwargs["apply_raster"] = True
+                kwargs["attr_name"] = attr_name
+
+        elif source_layer is not None:
+            # Copy from existing layer
+            if not isinstance(source_layer, PatchModule):
+                raise TypeError(f"{source_layer} is not a valid PatchModule.")
+
+            # Copy parameters from source layer
+            width = source_layer.width
+            height = source_layer.height
+            crs = source_layer.crs
+            total_bounds = source_layer.total_bounds
+
+        elif shape is not None:
+            # Create from resolution and shape
+            assert isinstance(resolution, (int, float))
+            assert width is None and height is None
+            height, width = shape
+            if crs is None:
+                crs = DEFAULT_CRS  # Already normalized
+            total_bounds = [0, 0, width * resolution, height * resolution]
+
+        # Ensure required parameters are provided
+        if width is None or height is None or crs is None or total_bounds is None:
+            raise ValueError(
+                "Insufficient parameters provided. Must provide either: "
+                "1) shape and resolution, 2) source_layer, 3) xda, "
+                "4) vector_file and resolution, or 5) raster_file"
+            )
+
+        # Initialize RasterLayer with the determined parameters
+        RasterLayer.__init__(
+            self,
+            model=model,
+            width=width,
+            height=height,
+            crs=crs,  # Now using normalized CRS
+            total_bounds=total_bounds,
+            cell_cls=cell_cls,
+            **kwargs,
+        )
+
         logger.info("Initializing a new Model Layer...")
         self._mask: np.ndarray = np.ones(self.shape2d).astype(bool)
 
+        # Apply mask if provided
+        if masked and xda is not None:
+            self.mask = xda.notnull().to_numpy()
+
+        # Apply raster data if requested
+        if apply_raster and xda is not None and attr_name is not None:
+            self.apply_raster(xda.to_numpy(), attr_name=attr_name, **kwargs)
+
     def _initialize_cells(
         self,
-        model: MainModel[Any, Any],
+        model: MainModelProtocol,
         cell_cls: type[PatchCell],
     ) -> None:
+        """Override the method of RasterLayer."""
         if model is not self.model:
             raise ValueError("Model mismatching.")
         self._cells = []
@@ -384,11 +340,6 @@ class PatchModule(Module, RasterLayer):
         xda = xda.rio.set_spatial_dims("x", "y")
         xda = xda.rio.write_transform(self.transform)
         return xda.rio.write_coordinate_system()
-
-    @functools.cached_property
-    def plot(self) -> _VizNature:
-        """Plotting"""
-        return _VizNature(self)
 
     @property
     def attributes(self) -> set[str]:
@@ -551,17 +502,13 @@ class PatchModule(Module, RasterLayer):
             geometry:
                 Shapely Geometry to search intersected cells.
             **kwargs:
-                Args pass to the function `rasterasterio.mask.mask`. It influence how to build the mask for filtering cells. Please refer [this doc](https://rasterasterio.readthedocs.io/en/latest/api/rasterasterio.mask.html) for details.
-
-        Raises:
-            ABSESpyError:
-                If no available attribute exists, or the assigned refer layer is not available in the attributes.
+                Args pass to the function `rasterasterio.mask.mask`.
 
         Returns:
             A numpy array of clipped cells.
         """
-        # Return the clipped data, ensuring correct shape
-        return self.xda.astype(int).rio.clip(
+        # TODO 研究一下为什么需要转换为整数，转换bool结果不一样了
+        return self.xda.astype(np.int32, casting="safe").rio.clip(
             [geometry], all_touched=False, drop=False, **kwargs
         )
 

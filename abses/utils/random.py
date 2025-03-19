@@ -5,8 +5,7 @@
 # GitHub   : https://github.com/SongshGeo
 # Website: https://cv.songshgeo.com/
 
-"""在列表中随机操作主体
-"""
+"""在列表中随机操作主体"""
 
 from __future__ import annotations
 
@@ -17,7 +16,6 @@ from typing import (
     Dict,
     Iterable,
     List,
-    Literal,
     Optional,
     Tuple,
     Type,
@@ -27,46 +25,33 @@ from typing import (
 
 import numpy as np
 
-from abses._bases.errors import ABSESpyError
-from abses.tools.func import make_list
+from abses.utils.errors import ABSESpyError
+from abses.utils.func import make_list
 
 if TYPE_CHECKING:
-    from abses.actor import Actor
-    from abses.links import LinkingNode
-    from abses.main import MainModel
-    from abses.sequences import ActorsList
-
-try:
-    from typing import TypeAlias
-except ImportError:
-    from typing_extensions import TypeAlias
-
-WHEN_EMPTY: TypeAlias = Literal["raise exception", "return None"]
+    from abses.agents.actor import Actor
+    from abses.agents.sequences import ActorsList
+    from abses.core.protocols import ActorProtocol, MainModelProtocol
+    from abses.core.types import WHEN_EMPTY
 
 
 class ListRandom:
     """Create a random generator from an `ActorsList`"""
 
-    def __init__(
-        self, model: MainModel[Any, Any], actors: Iterable[Any]
-    ) -> None:
+    def __init__(self, model: MainModelProtocol, actors: Iterable[Any]) -> None:
         self.model = model
         self.actors = self._to_actors_list(actors)
-        self.seed = model.random.random() * 100
-        self.generator = np.random.default_rng(seed=int(self.seed))
+        self.rng = model.rng if model.rng else np.random.default_rng()
+        self.seed = model._seed
 
     def _to_actors_list(self, objs: Iterable) -> ActorsList:
-        from abses.sequences import ActorsList
+        from abses.agents.sequences import ActorsList
 
         return ActorsList(self.model, objs=objs)
 
-    def _when_empty(
-        self, when_empty: WHEN_EMPTY, operation: str = "choice"
-    ) -> None:
+    def _when_empty(self, when_empty: WHEN_EMPTY, operation: str = "choice") -> None:
         if when_empty not in ("raise exception", "return None"):
-            raise ValueError(
-                f"Unknown value for `when_empty` parameter: {when_empty}"
-            )
+            raise ValueError(f"Unknown value for `when_empty` parameter: {when_empty}")
         if when_empty == "raise exception":
             raise ABSESpyError(
                 f"Random operating '{operation}' on an empty `ActorsList`."
@@ -115,8 +100,7 @@ class ListRandom:
         replace: bool = False,
         as_list: bool = True,
         when_empty: WHEN_EMPTY = "raise exception",
-    ) -> ActorsList[LinkingNode]:
-        ...
+    ) -> ActorsList[ActorProtocol]: ...
 
     @overload
     def choice(
@@ -126,8 +110,7 @@ class ListRandom:
         replace: bool = False,
         as_list: bool = False,
         when_empty: WHEN_EMPTY = "raise exception",
-    ) -> LinkingNode | ActorsList[LinkingNode]:
-        ...
+    ) -> ActorProtocol | ActorsList[ActorProtocol]: ...
 
     def choice(
         self,
@@ -137,35 +120,8 @@ class ListRandom:
         as_list: bool = False,
         when_empty: WHEN_EMPTY = "raise exception",
         double_check: bool = False,
-    ) -> Optional[LinkingNode | ActorsList[LinkingNode]]:
-        """Randomly choose one or more actors from the current self object.
-
-        Parameters:
-            size:
-                The number of actors to choose. Defaults to 1.
-            prob:
-                A list of probabilities for each actor to be chosen.
-                If None, all actors have equal probability.
-                If is a string, will use the value of this attribute as the prob.
-                Defaults to None.
-            replace:
-                Whether to sample with replacement. Defaults to True.
-            as_list:
-                Whether to return the result as a list of actors. Defaults to False.
-
-        Returns:
-            An Actor or an ActorList of multiple actors.
-
-        Notes:
-            Given the parameter set size=1 and as_list=False, a single Actor object is returned.
-            Given the parameter set size>1 and as_list=False, a Self (ActorsList) object is returned.
-
-        Raises:
-            ValueError:
-                If size is not a positive integer.
-            ABSESpyError:
-                Not enough actors to choose in this `ActorsList`.
-        """
+    ) -> Optional[ActorProtocol | ActorsList[ActorProtocol] | list]:
+        """Randomly choose one or more actors from the current self object."""
         instances_num = len(self.actors)
         if instances_num == 0:
             self._when_empty(when_empty=when_empty)
@@ -173,30 +129,37 @@ class ListRandom:
         if not isinstance(size, int):
             raise ValueError(f"{size} isn't an integer size.")
         if instances_num < size and not replace:
-            raise ABSESpyError(
-                f"Trying to choose {size} actors from {self.actors}."
-            )
+            raise ABSESpyError(f"Trying to choose {size} actors from {self.actors}.")
         # 有概率的时候，先清理概率
         if prob is not None:
             prob = self.clean_p(prob=prob)
             valid_prob = prob.astype(bool)
             # 特别处理有概率的主体数量不足预期的情况
             if valid_prob.sum() < size and not replace:
-                return self._when_p_not_enough(double_check, valid_prob, size)
+                return self._when_p_not_enough(double_check, prob, size, as_list)
+            # 如果只有一个有效概率且需要重复选择，直接返回对应的 actor
+            if valid_prob.sum() == 1 and replace and size > 1:
+                idx = np.where(valid_prob)[0][0]
+                chosen = [self.actors[idx]] * size
+                return chosen if as_list else self._to_actors_list(chosen)
         # 其他情况就正常随机选择
-        chosen = self.generator.choice(
-            self.actors, size=size, replace=replace, p=prob
-        )
+        indices = np.arange(len(self.actors))
+        chosen_indices = self.rng.choice(indices, size=size, replace=replace, p=prob)
+        # 如果不允许重复，按索引排序
+        if not replace:
+            chosen_indices.sort()
+        chosen = [self.actors[i] for i in chosen_indices]
         return (
             chosen[0]
             if size == 1 and not as_list
-            else self._to_actors_list(chosen)
+            else (chosen if as_list else self._to_actors_list(chosen))
         )
 
-    def _when_p_not_enough(self, double_check, valid_prob, size):
+    def _when_p_not_enough(self, double_check, prob, size, as_list):
+        """处理概率不足的情况"""
         if not double_check:
             raise ABSESpyError(
-                f"Only {valid_prob.sum()} entities have possibility, "
+                f"Only {(prob > 0).sum()} entities have possibility, "
                 f"but {size} entities are expected. "
                 "Please check the probability settings.\n"
                 "If you want to choose with replacement, set `replace=True`.\n"
@@ -204,13 +167,23 @@ class ListRandom:
                 "If you want to choose the valid entities firstly, "
                 "and then choose others equally, set `double_check=True'`."
             )
-        first_chosen = self.actors.select(valid_prob)
-        others = self.actors.select(~valid_prob)
+        # 获取有效和无效的概率索引
+        valid_indices = np.where(prob > 0)[0]
+        invalid_indices = np.where(prob <= 0)[0]
+
+        # 选择所有有效概率的实体
+        first_chosen = [self.actors[i] for i in valid_indices]
         remain_size = size - len(first_chosen)
-        second_chosen = self.generator.choice(
-            others, remain_size, replace=False
-        )
-        return self._to_actors_list([*first_chosen, *second_chosen])
+
+        # 从无效概率的实体中随机选择剩余数量
+        if remain_size > 0:
+            others = [self.actors[i] for i in invalid_indices]
+            second_chosen = list(self.rng.choice(others, remain_size, replace=False))
+            first_chosen.extend(second_chosen)
+
+        # 按原始列表中的顺序排序
+        result = sorted(first_chosen, key=lambda x: self.actors.index(x))
+        return result if as_list else self._to_actors_list(result)
 
     def new(
         self,
@@ -223,9 +196,7 @@ class ListRandom:
             actor_attrs = {}
         cells = self.choice(as_list=True, **kwargs)
         objs = cells.apply(
-            lambda c: c.agents.new(
-                breed_cls=actor_cls, singleton=True, **actor_attrs
-            )
+            lambda c: c.agents.new(breed_cls=actor_cls, singleton=True, **actor_attrs)
         )
         return self._to_actors_list(objs)
 
@@ -257,7 +228,7 @@ class ListRandom:
         """
         linked_combs = []
         for source, target in list(combinations(self.actors, 2)):
-            if np.random.random() < p:
+            if self.rng.random() < p:
                 source.link.to(target, link_name=link, mutual=mutual)
                 linked_combs.append((source, target))
         return linked_combs
@@ -277,7 +248,7 @@ class ListRandom:
             values = np.array([value])
         else:
             # 生成 n-1 个随机切割点
-            cuts = np.sort(self.generator.uniform(0, value, num - 1))
+            cuts = np.sort(self.rng.uniform(0, value, num - 1))
             # 将 0 和总面积 X 添加到切割点数组中，方便计算每段区间长度
             full_range = np.append(np.append(0, cuts), value)
             # 计算每个区间的长度，即为每个对象的分配面积

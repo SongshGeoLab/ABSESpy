@@ -21,13 +21,13 @@ except ImportError:
 from mesa.space import Coordinate
 from mesa_geo import RasterLayer
 
-from abses._bases.errors import ABSESpyError
-from abses.actor import alive_required
-from abses.cells import PatchCell
+from abses.agents.actor import alive_required
+from abses.space.cells import PatchCell
+from abses.utils.errors import ABSESpyError
 
 if TYPE_CHECKING:
-    from abses.actor import Actor
-    from abses.nature import PatchModule
+    from abses.agents.actor import Actor
+    from abses.space.patch import PatchModule
 
 MovingDirection: TypeAlias = Literal[
     "left", "right", "up", "down", "up left", "up right", "down left", "down right"

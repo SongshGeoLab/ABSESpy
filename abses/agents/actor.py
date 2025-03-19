@@ -16,39 +16,25 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
-    Iterable,
-    List,
-    Literal,
     Optional,
-    Tuple,
-    Union,
     cast,
 )
-
-try:
-    from typing import TypeAlias
-except ImportError:
-    from typing_extensions import TypeAlias
 
 import mesa_geo as mg
 from shapely import Point
 from shapely.geometry.base import BaseGeometry
 
-from abses._bases.errors import ABSESpyError
-from abses._bases.objects import _BaseObj
-from abses.links import TargetName, _LinkNodeActor
+from abses.core.base import BaseModelElement
+from abses.core.protocols import ActorProtocol
+from abses.human.links import _LinkNodeActor
+from abses.utils.errors import ABSESpyError
 
 if TYPE_CHECKING:
-    from abses.cells import PatchCell, Pos
-    from abses.main import MainModel
-    from abses.move import _Movements
-    from abses.nature import PatchModule
-
-
-Selection: TypeAlias = Union[str, Iterable[bool]]
-Trigger: TypeAlias = Union[Callable, str]
-Breeds: TypeAlias = Union[str, List[str], Tuple[str]]
-GeoType: TypeAlias = Literal["Point", "Shape"]
+    from abses import MainModel
+    from abses.core.types import GeoType, TargetName
+    from abses.space.cells import PatchCell, Pos
+    from abses.space.move import _Movements
+    from abses.space.patch import PatchModule
 
 
 def alive_required(method):
@@ -123,7 +109,7 @@ def perception(
     )
 
 
-class Actor(mg.GeoAgent, _BaseObj, _LinkNodeActor):
+class Actor(mg.GeoAgent, _LinkNodeActor, BaseModelElement, ActorProtocol):
     """
     An actor in a social-ecological system (or "Agent" in an agent-based model.)
 
@@ -136,20 +122,11 @@ class Actor(mg.GeoAgent, _BaseObj, _LinkNodeActor):
         at: The cell where the actor is located.
         link: The link manipulating proxy.
         move: The movement manipulating proxy.
-
-    Methods:
-        get:
-            Gets the value of an attribute from the actor or its cell.
-        set:
-            Sets the value of an attribute on the actor or its cell.
-        die:
-            Kills the actor.
+        dynamic_variables: List of dynamic variables for this actor.
     """
 
-    def __init__(
-        self, model: MainModel[Any, Any], observer: bool = True, **kwargs
-    ) -> None:
-        _BaseObj.__init__(self, model, observer=observer)
+    def __init__(self, model: MainModel, observer: bool = True, **kwargs) -> None:
+        BaseModelElement.__init__(self, model)
         crs = kwargs.pop("crs", model.nature.crs)
         geometry = kwargs.pop("geometry", None)
         mg.GeoAgent.__init__(self, model=model, geometry=geometry, crs=crs)
@@ -246,7 +223,7 @@ class Actor(mg.GeoAgent, _BaseObj, _LinkNodeActor):
         3. `move.by()`: moves the actor by a distance.
         4. `move.random()`: moves the actor to a random cell.
         """
-        from abses.move import _Movements
+        from abses.space.move import _Movements
 
         return _Movements(self)
 
@@ -273,8 +250,8 @@ class Actor(mg.GeoAgent, _BaseObj, _LinkNodeActor):
         Returns:
             The value of the attribute.
         """
-        if attr in self.dynamic_variables:
-            return self.dynamic_var(attr)
+        # if attr in self.dynamic_variables:
+        #     return self.dynamic_var(attr)
         return super().get(attr=attr, target=target, default=default)
 
     @alive_required
@@ -329,3 +306,7 @@ class Actor(mg.GeoAgent, _BaseObj, _LinkNodeActor):
             Optional boolean indicating whether the actor can move to the cell.
             If None, the move is allowed by default.
         """
+
+    def initialize(self) -> None:
+        """实现初始化"""
+        ...

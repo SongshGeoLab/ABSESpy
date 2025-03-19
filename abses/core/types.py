@@ -23,7 +23,9 @@ from __future__ import annotations
 
 from typing import (
     TYPE_CHECKING,
+    Any,
     Callable,
+    Dict,
     Iterable,
     List,
     Literal,
@@ -36,7 +38,9 @@ from typing import (
 )
 
 from abses.core.protocols import (
+    ActorProtocol,
     HumanSystemProtocol,
+    LinkNodeProtocol,
     MainModelProtocol,
     ModuleProtocol,
     NatureSystemProtocol,
@@ -49,6 +53,8 @@ ModelType = TypeVar("ModelType", bound=MainModelProtocol)
 T = TypeVar("T", bound=PatchCellProtocol)
 N = TypeVar("N", bound=NatureSystemProtocol)
 H = TypeVar("H", bound=HumanSystemProtocol)
+A = TypeVar("A", bound=ActorProtocol)
+Link = TypeVar("Link", bound=LinkNodeProtocol)
 
 # 容器相关类型
 if TYPE_CHECKING:
@@ -61,6 +67,7 @@ if TYPE_CHECKING:
 
     from abses.agents.actor import Actor
     from abses.agents.sequences import ActorsList
+    from abses.space.cells import PatchCell
 
     AgentID: TypeAlias = Union[str, int]
     Position: TypeAlias = Tuple[float, float]
@@ -82,7 +89,18 @@ if TYPE_CHECKING:
     DateOrTick: TypeAlias = DateTime | int
     DateTimeOrStr: TypeAlias = Union[datetime, str]
 
-    Selection: TypeAlias = Union[str, Iterable[bool]]
     Trigger: TypeAlias = Union[Callable, str]
     Breeds: TypeAlias = Union[str, List[str], Tuple[str]]
     GeoType: TypeAlias = Literal["Point", "Shape"]
+
+    Selection: TypeAlias = Union[str, Iterable[bool], Dict[str, Any]]
+    HOW_TO_SELECT: TypeAlias = Literal["only", "item"]
+    WHEN_EMPTY: TypeAlias = Literal["raise exception", "return None"]
+
+    LinkingNode: TypeAlias = Actor | PatchCell
+    Direction: TypeAlias = Optional[Literal["in", "out"]]
+    __built_in_targets__: Tuple[str, str] = ("cell", "actor")
+    TargetName: TypeAlias = Union[Literal["cell", "actor", "self"], str]
+    AttrGetter: TypeAlias = Union["Link", ActorsList["Link"]]
+    Pos: TypeAlias = Tuple[int, int]
+    Number: TypeAlias = Union[int, float]

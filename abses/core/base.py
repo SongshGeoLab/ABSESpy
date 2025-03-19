@@ -7,10 +7,13 @@
 
 from __future__ import annotations
 
+import inspect
 from abc import ABC, abstractmethod
 from typing import (
     Any,
+    Callable,
     Dict,
+    List,
     Optional,
     Set,
     Type,
@@ -24,6 +27,9 @@ from abses.utils.regex import is_snake_name
 
 from .primitives import State
 from .protocols import (
+    ActorsListProtocol,
+    AgentsContainerProtocol,
+    DynamicVariableProtocol,
     MainModelProtocol,
     ModelElement,
     ModuleProtocol,
@@ -32,35 +38,128 @@ from .protocols import (
     StateManagerProtocol,
     SubSystemProtocol,
     TimeDriverProtocol,
-    Variable,
+    VariableProtocol,
 )
 
-# class BaseVariable(ABC, Variable):
-#     """基础变量实现"""
 
-#     def __init__(self, name: str, value: Any, history: List[Any] = []) -> None:
-#         self._name = name
-#         self._value = value
-#         self._history = history
-
-#     @property
-#     def value(self) -> Any:
-#         """获取变量的值"""
-#         return self._value
-
-#     @property
-#     def history(self) -> List[Any]:
-#         """获取变量的历史值"""
-#         return self._history
+class BaseVariable(ABC, VariableProtocol):
+    """基础变量实现"""
 
 
-# class BaseDynamicVariable(BaseVariable, DynamicVariable):
-#     """基础动态变量实现"""
+class BaseDynamicVariable(DynamicVariableProtocol):
+    """Time dependent variable
 
-#     def __init__(self, name: str, value: Any, history: List[Any] = []) -> None:
-#         self._name = name
-#         self._value = value
-#         self._history = history
+    A time dependent function will take the model time driver as
+    an input and return its value. The function can also take other
+    variables as inputs. The function can be defined as a static
+    method of a class or a function.
+    """
+
+    def __init__(
+        self,
+        name: str,
+        obj: BaseModelElement,
+        data: Any,
+        function: Callable,
+        **kwargs,
+    ) -> None:
+        self._name: str = name
+        self._obj: BaseModelElement = obj
+        self._data: Any = data
+        self._function: Callable = function
+        self._cached_data: Any = None
+        self.attrs = kwargs
+        self.now()
+
+    def __str__(self) -> str:
+        return f"<{self.name}: {type(self.now())}>"
+
+    def __repr__(self) -> str:
+        return str(self)
+
+    @property
+    def name(self) -> str:
+        """Get the name of the variable
+
+        Returns
+        -------
+        name: str
+        """
+        return self._name
+
+    @property
+    def obj(self) -> BaseModelElement:
+        """Returns a base object instance
+
+        Returns:
+            obj:
+                BaseModelElement
+        """
+        return self._obj
+
+    @obj.setter
+    def obj(self, obj: BaseModelElement):
+        if not isinstance(obj, BaseModelElement):
+            raise TypeError("Only accept observer object")
+        self._obj = obj
+
+    @property
+    def data(self) -> Any:
+        """Returns unused data
+
+        Returns:
+            data:
+                Any
+        """
+        return self._data
+
+    @property
+    def function(self) -> Callable:
+        """Get the function that calculates the variable
+
+        Returns:
+            function:
+                Callable
+        """
+        return self._function
+
+    @property
+    def time(self) -> TimeDriverProtocol:
+        """Get the model time driver
+
+        Returns:
+            time:
+                abses.time.TimeDriver
+        """
+        return self.obj.time
+
+    def get_required_attributes(self, function: Callable) -> List[str]:
+        """Get the function required attributes
+
+        Returns:
+            required_attributes:
+                list[str]
+        """
+        # Get the source code of the function
+        source_code = inspect.getsource(function)
+        return [attr for attr in ["data", "obj", "time", "name"] if attr in source_code]
+
+    def now(self) -> Any:
+        """Return the dynamic variable function's output
+
+        Returns:
+            The dynamic data value now.
+        """
+        required_attrs = self.get_required_attributes(self.function)
+        args = {attr: getattr(self, attr) for attr in required_attrs}
+        result = self.function(**args)
+        self._cached_data = result
+        return result
+
+    @property
+    def cache(self) -> Any:
+        """Return the dynamic variable's cache"""
+        return self._cached_data
 
 
 class BaseObserver(ABC, Observer):
@@ -83,7 +182,7 @@ class BaseObservable(ABC, Observable):
         return self._observers
 
     @property
-    def variables(self) -> Dict[str, Variable]:
+    def variables(self) -> Dict[str, VariableProtocol]:
         """获取可观察对象的变量"""
         return {}
 
@@ -107,6 +206,8 @@ class BaseModelElement(ABC, ModelElement):
     def __init__(self, model: MainModelProtocol, name: Optional[str] = None) -> None:
         self._model = model
         self._name = name
+        self._dynamic_variables: Dict[str, DynamicVariableProtocol] = {}
+        self._updated_ticks: List[int] = []
 
     @property
     def model(self) -> MainModelProtocol:
@@ -114,9 +215,7 @@ class BaseModelElement(ABC, ModelElement):
 
     @model.setter
     def model(self, model: MainModelProtocol) -> None:
-        if not isinstance(model, MainModelProtocol):
-            raise TypeError(f"Model must be a MainModelProtocol, but got {type(model)}")
-        self._model = model
+        pass
 
     @property
     def name(self) -> str:
@@ -147,6 +246,49 @@ class BaseModelElement(ABC, ModelElement):
     def time(self) -> TimeDriverProtocol:
         """Returns the current time."""
         return self.model.time
+
+    @property
+    def dynamic_variables(self) -> Dict[str, DynamicVariableProtocol]:
+        """Returns read-only model's dynamic variables.
+
+        Returns:
+            Dict[str, Any]:
+                Dictionary of model's dynamic variables.
+        """
+        return self._dynamic_variables
+
+    def add_dynamic_variable(
+        self, name: str, data: Any, function: Callable, **kwargs
+    ) -> None:
+        """Adds new dynamic variable.
+
+        Parameters:
+            name:
+                Name of the variable.
+            data:
+                Data source for callable function.
+            function:
+                Function to calculate the dynamic variable.
+        """
+        var = BaseDynamicVariable(
+            obj=self,
+            name=name,
+            data=data,
+            function=function,
+            **kwargs,
+        )
+        self._dynamic_variables[name] = var
+
+    def dynamic_var(self, attr_name: str) -> Any:
+        """Returns output of a dynamic variable.
+
+        Parameters:
+            attr_name:
+                Dynamic variable's name.
+        """
+        if self.time.tick in self._updated_ticks:
+            return self._dynamic_variables[attr_name].cache
+        return self._dynamic_variables[attr_name].now()
 
 
 class BaseStateManager(ABC, StateManagerProtocol):
@@ -268,6 +410,16 @@ class BaseSubSystem(BaseModule, SubSystemProtocol, ABC):
         self._major_layer: Optional[BaseModule] = None
 
     @property
+    def agents(self) -> AgentsContainerProtocol:
+        """获取子系统中的所有代理"""
+        return self.model.agents
+
+    @property
+    def actors(self) -> ActorsListProtocol:
+        """获取子系统中的所有演员"""
+        return self.agents.select("on_earth")
+
+    @property
     def modules(self) -> Set[BaseModule]:
         """获取子系统中的所有模块"""
         return self._modules
@@ -321,14 +473,13 @@ class BaseSubSystem(BaseModule, SubSystemProtocol, ABC):
         Raises:
             AttributeError: If no major layer is set or attribute not found.
         """
-        if name.startswith("_"):
-            return super().__getattribute__(name)
         try:
             return super().__getattribute__(name)
         except AttributeError as e:
             if self._major_layer is None:
                 raise AttributeError(
-                    f"Attribute '{name}' not found in BaseNature and no major layer is set"
+                    f"Attribute '{name}' not found in {self.__class__.__name__},"
+                    "and no major layer is set."
                 ) from e
             try:
                 return getattr(self._major_layer, name)
@@ -366,13 +517,14 @@ class BaseSubSystem(BaseModule, SubSystemProtocol, ABC):
 
     def add_module(self, module: BaseModule):
         """Add a module."""
+        was_empty = bool(self.is_empty)
         # check name
         self.model.add_name(module.name, check="unique")
         # attach to model
         self.attach(module)
         # add to modules
         self.modules.add(module)
-        if self.is_empty:
+        if was_empty:
             self.major_layer = module
         return module
 
@@ -382,192 +534,8 @@ class BaseSubSystem(BaseModule, SubSystemProtocol, ABC):
         module_cls: Type[BaseModule],
         *args: Any,
         **kwargs: Any,
-    ) -> BaseModule:
+    ) -> Any:
         """Create a module."""
         module = module_cls(model=self.model, *args, **kwargs)
         self.add_module(module)
         return module
-
-
-# class _DynamicVariable:
-#     """Time dependent variable
-
-#     A time dependent function will take the model time driver as
-#     an input and return its value. The function can also take other
-#     variables as inputs. The function can be defined as a static
-#     method of a class or a function.
-#     """
-
-#     def __init__(
-#         self, name: str, obj: _BaseObj, data: Any, function: Callable, **kwargs
-#     ) -> None:
-#         self._name: str = name
-#         self._obj: _BaseObj = obj
-#         self._data: Any = data
-#         self._function: Callable = function
-#         self._cached_data: Any = None
-#         self.attrs = kwargs
-#         self.now()
-
-#     def __str__(self) -> str:
-#         return f"<{self.name}: {type(self.now())}>"
-
-#     def __repr__(self) -> str:
-#         return str(self)
-
-#     @property
-#     def name(self) -> str:
-#         """Get the name of the variable
-
-#         Returns
-#         -------
-#         name: str
-#         """
-#         return self._name
-
-#     @property
-#     def obj(self) -> _BaseObj:
-#         """Returns a base object instance
-
-#         Returns:
-#             obj:
-#                 _BaseObj
-#         """
-#         return self._obj
-
-#     @obj.setter
-#     def obj(self, obj: _BaseObj):
-#         if not isinstance(obj, _BaseObj):
-#             raise TypeError("Only accept observer object")
-#         self._obj = obj
-
-#     @property
-#     def data(self) -> Any:
-#         """Returns unused data
-
-#         Returns:
-#             data:
-#                 Any
-#         """
-#         return self._data
-
-#     @property
-#     def function(self) -> Callable:
-#         """Get the function that calculates the variable
-
-#         Returns:
-#             function:
-#                 Callable
-#         """
-#         return self._function
-
-#     @property
-#     def time(self) -> TimeDriver:
-#         """Get the model time driver
-
-#         Returns:
-#             time:
-#                 abses.time.TimeDriver
-#         """
-#         return self.obj.time
-
-#     def get_required_attributes(self, function: Callable) -> List[str]:
-#         """Get the function required attributes
-
-#         Returns:
-#             required_attributes:
-#                 list[str]
-#         """
-#         # Get the source code of the function
-#         source_code = inspect.getsource(function)
-#         return [
-#             attr
-#             for attr in ["data", "obj", "time", "name"]
-#             if attr in source_code
-#         ]
-
-#     def now(self) -> Any:
-#         """Return the dynamic variable function's output
-
-#         Returns:
-#             The dynamic data value now.
-#         """
-#         required_attrs = self.get_required_attributes(self.function)
-#         args = {attr: getattr(self, attr) for attr in required_attrs}
-#         result = self.function(**args)
-#         self._cached_data = result
-#         return result
-
-#     @property
-#     def cache(self) -> Any:
-#         """Return the dynamic variable's cache"""
-#         return self._cached_data
-
-
-# class _BaseObj(_Observer, _Component):
-#     """
-#     Base class for model's objects.
-#     Model object's have access to global model's parameters and time driver.
-#     """
-
-#     def __init__(
-#         self,
-#         model: MainModel[Any, Any],
-#         observer: Optional[bool] = True,
-#         name: Optional[str] = None,
-#     ):
-#         _Component.__init__(self, model=model, name=name)
-#         if observer:
-#             model.attach(self)
-#         self._model = model
-#         self._dynamic_variables: Dict[str, _DynamicVariable] = {}
-#         self._updated_ticks: List[int] = []
-
-#     @property
-#     def time(self) -> TimeDriver:
-#         """Returns read-only model's time driver.
-
-#         Returns:
-#             _TimeDriver:
-#                 Model's time driver.
-#         """
-#         return self.model.time
-
-#     @property
-#     def dynamic_variables(self) -> Dict[str, _DynamicVariable]:
-#         """Returns read-only model's dynamic variables.
-
-#         Returns:
-#             Dict[str, Any]:
-#                 Dictionary of model's dynamic variables.
-#         """
-#         return self._dynamic_variables
-
-#     def add_dynamic_variable(
-#         self, name: str, data: Any, function: Callable, **kwargs
-#     ) -> None:
-#         """Adds new dynamic variable.
-
-#         Parameters:
-#             name:
-#                 Name of the variable.
-#             data:
-#                 Data source for callable function.
-#             function:
-#                 Function to calculate the dynamic variable.
-#         """
-#         var = _DynamicVariable(
-#             obj=self, name=name, data=data, function=function, **kwargs
-#         )
-#         self._dynamic_variables[name] = var
-
-#     def dynamic_var(self, attr_name: str) -> Any:
-#         """Returns output of a dynamic variable.
-
-#         Parameters:
-#             attr_name:
-#                 Dynamic variable's name.
-#         """
-#         if self.time.tick in self._updated_ticks:
-#             return self._dynamic_variables[attr_name].cache
-#         return self._dynamic_variables[attr_name].now()

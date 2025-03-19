@@ -5,11 +5,9 @@
 # GitHub   : https://github.com/SongshGeo
 # Website: https://cv.songshgeo.com/
 
-"""狼羊草模型
-"""
+"""狼羊草模型"""
 
-from abses import Actor, MainModel, PatchCell
-from abses.cells import raster_attribute
+from abses import Actor, MainModel, PatchCell, raster_attribute
 
 
 class Grass(PatchCell):
@@ -25,7 +23,7 @@ class Grass(PatchCell):
         # countdown on brown patches: if you reach 0, grow some grass
         if self.empty is True:
             if self._countdown <= 0:
-                self.empty = False
+                self._empty = False
                 self._countdown = 5
             else:
                 self._countdown -= 1
@@ -34,11 +32,6 @@ class Grass(PatchCell):
     def empty(self) -> bool:
         """Return True if the cell is empty, False otherwise."""
         return self._empty
-
-    @empty.setter
-    def empty(self, value: bool) -> None:
-        """Set the empty status of the cell."""
-        self._empty = value
 
 
 class Animal(Actor):

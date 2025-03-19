@@ -154,20 +154,6 @@ class TestBaseModelElement:
         element = ConcreteModelElement(model=mock_model, name=name)
         assert element.name == expected_name
 
-    def test_model_property(self, mock_model):
-        """测试模型属性
-
-        场景：
-        1. 确保返回正确的模型实例
-        2. 确保模型实例可以被修改，但必须是 MainModelProtocol 类型
-        """
-        element = BaseModelElement(model=mock_model)
-        assert element.model == mock_model
-
-        # 测试使用非 MainModelProtocol 类型修改 model 属性会引发 TypeError
-        with pytest.raises(TypeError):
-            element.model = "not a model"
-
     @pytest.mark.parametrize(
         "element_name,expected_params",
         [

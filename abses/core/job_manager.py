@@ -11,9 +11,9 @@ from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, Type
 
 import pandas as pd
 
-from abses.core.types import MainModelProtocol
-
 if TYPE_CHECKING:
+    from abses.core.protocols import MainModelProtocol
+
     from .experiment import HookFunc
 
 

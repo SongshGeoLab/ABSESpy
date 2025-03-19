@@ -11,28 +11,18 @@ Container for actors.
 
 from __future__ import annotations
 
-import contextlib
 from functools import partial
 from typing import (
     TYPE_CHECKING,
     Any,
     Callable,
     Dict,
-    Iterable,
     Iterator,
-    List,
     Optional,
     Type,
     Union,
     cast,
 )
-
-with contextlib.suppress(ImportError):
-    import networkx as nx
-try:
-    from typing import TypeAlias
-except ImportError:
-    from typing_extensions import TypeAlias
 
 import geopandas as gpd
 import pyproj
@@ -41,30 +31,25 @@ from mesa import Model
 from mesa.agent import AgentSet
 from shapely.geometry.base import BaseGeometry
 
-from abses._bases.errors import ABSESpyError
-from abses.actor import Actor, Breeds
-from abses.links import get_node_unique_id
-from abses.random import ListRandom
-from abses.sequences import ActorsList
-from abses.tools.func import IncludeFlag, clean_attrs
+from abses.agents.actor import Actor
+from abses.agents.sequences import ActorsList
+from abses.core.protocols import ActorProtocol, MainModelProtocol
+from abses.utils.errors import ABSESpyError
+from abses.utils.func import IncludeFlag, clean_attrs
+from abses.utils.random import ListRandom
 
 if TYPE_CHECKING:
-    from abses.cells import PatchCell
-    from abses.main import MainModel
-
-ActorTypes: TypeAlias = Union[Type[Actor], Iterable[Type[Actor]]]
-Actors: TypeAlias = Union[Actor, ActorsList, Iterable[Actor]]
-UniqueID: TypeAlias = Union[str, int]
-UniqueIDs: TypeAlias = List[Optional[UniqueID]]
+    from abses.core.types import Breeds, Number
+    from abses.space.cells import PatchCell
 
 
 class _AgentsContainer:
     """AgentsContainer for the main model."""
 
-    def __init__(self, model: MainModel[Any, Any], max_len: None | int = None):
+    def __init__(self, model: MainModelProtocol, max_len: None | Number = None):
         if not isinstance(model, Model):
             raise TypeError(f"{model} is not a Mesa Model.")
-        self._model: MainModel = model
+        self._model: MainModelProtocol = model
         self._agents = model._all_agents
         self._max_length = max_len
 
@@ -85,10 +70,10 @@ class _AgentsContainer:
     def __contains__(self, actor: object) -> bool:
         return actor in self._agents
 
-    def __iter__(self) -> Iterator[Actor]:
+    def __iter__(self) -> Iterator[ActorProtocol]:
         return iter(self._agents)
 
-    def __getitem__(self, breeds: Optional[Breeds]) -> ActorsList[Actor]:
+    def __getitem__(self, breeds: Optional[Breeds]) -> ActorsList[ActorProtocol]:
         """Get agents by breed(s).
 
         Args:
@@ -105,7 +90,7 @@ class _AgentsContainer:
         """
         if isinstance(breeds, (list, tuple)):
             # 对多个 breeds 进行合并
-            agents = []
+            agents: list[ActorProtocol] = []
             for breed in breeds:
                 breed_type = self._get_breed_type(breed)
                 agents.extend(self._model.agents_by_type.get(breed_type, []))
@@ -128,7 +113,7 @@ class _AgentsContainer:
         return self._model.nature.crs
 
     @property
-    def model(self) -> MainModel[Any, Any]:
+    def model(self) -> MainModelProtocol:
         """The ABSESpy model where the container belongs to."""
         return self._model
 
@@ -147,7 +132,7 @@ class _AgentsContainer:
         """Check whether the container is empty."""
         return len(self) == 0
 
-    def _get_breed_type(self, breed: str | Type[Actor]) -> Type[Actor]:
+    def _get_breed_type(self, breed: str | Type[ActorProtocol]) -> Type[ActorProtocol]:
         """Convert breed name to breed type if necessary."""
         if isinstance(breed, str):
             # 如果是字符串，在已注册的类型中查找对应名称的类
@@ -157,51 +142,67 @@ class _AgentsContainer:
             raise ABSESpyError(f"Breed '{breed}' not found")
         return breed
 
-    def _add_one(self, agent: Actor) -> None:
-        pass
-
     def _check_full(self) -> None:
-        """Add one agent to the container."""
+        """检查容器是否已满。
+
+        Raises:
+            ABSESpyError: 如果容器已满或模型容器已满
+        """
         if self.is_full:
             raise ABSESpyError(f"{self} is full.")
         if self.model.agents.is_full:
             raise ABSESpyError(f"{self.model.agents} is full.")
 
-    def add(self, agent: Actor) -> None:
+    def add(self, agent: ActorProtocol) -> None:
         """Add one agent to the container."""
         self._check_full()
         self._add_one(agent)
+
+    def _add_one(self, agent: ActorProtocol) -> None:
+        """Add one agent to the container."""
         self._agents.add(agent)
 
     def _new_one(
         self,
         geometry: Optional[BaseGeometry] = None,
-        agent_cls: type[Actor] = Actor,
+        agent_cls: Type[ActorProtocol] = ActorProtocol,
         **kwargs,
-    ) -> Actor:
+    ) -> ActorProtocol:
+        """Create a new agent.
+
+        Args:
+            geometry: Optional geometry for the agent
+            agent_cls: The agent class to create, must implement ActorProtocol
+            **kwargs: Additional arguments to pass to the agent constructor
+
+        Returns:
+            A new agent instance
+        """
         if geometry and not isinstance(geometry, BaseGeometry):
             raise TypeError("Geometry must be a Shapely Geometry")
-        if not isinstance(agent_cls, type) or not issubclass(agent_cls, Actor):
-            raise TypeError(f"{agent_cls} is not a subclass of Actor.")
-        self._check_full()
+
+        # 检查是否实现了 ActorProtocol
+        if not isinstance(agent_cls, type):
+            raise ABSESpyError(f"{agent_cls} is not a type")
+
         agent = agent_cls(
             model=self.model, geometry=geometry, crs=self.model.nature.crs, **kwargs
         )
-        self._add_one(agent)
+        self.add(agent)
         return agent
 
     def new(
         self,
-        breed_cls: Type[Actor] = Actor,
+        breed_cls: Type[ActorProtocol] = Actor,
         num: Optional[int] = None,
         singleton: Optional[bool] = None,
         **kwargs: Any,
-    ) -> Union[Actor, ActorsList[Actor]]:
+    ) -> Union[ActorProtocol, ActorsList[ActorProtocol]]:
         """Create one or more actors of the given breed class.
 
         Parameters:
             breed_cls:
-                The breed class of the actor(s) to create. Defaults to `Actor`.
+                The breed class of the actor(s) to create. Defaults to `ActorProtocol`.
             num:
                 The number of actors to create. Only positive integer is allowed.
                 Defaults to None, which will be set to 1 and singleton to True.
@@ -219,11 +220,11 @@ class _AgentsContainer:
 
         Example:
             ```python
-            from abses import Actor, MainModel
+            from abses import ActorProtocol, MainModel
             model = MainModel()
             actor = model.agents.new(singleton=True)
             >>> type(actor)
-            >>> Actor
+            >>> ActorProtocol
 
             actors = model.agents.new(singleton=False)
             >>> type(actors)
@@ -247,11 +248,15 @@ class _AgentsContainer:
             agent = self._new_one(agent_cls=breed_cls, **kwargs)
             objs.append(agent)
         # return the created actor(s).
-        actors_list: ActorsList[Actor] = ActorsList(model=self.model, objs=objs)
+        actors_list: ActorsList[ActorProtocol] = ActorsList(model=self.model, objs=objs)
         logger.debug(f"{self} created {num} {breed_cls.__name__}.")
-        return cast(Actor, actors_list.item()) if singleton is True else actors_list
+        return (
+            cast(ActorProtocol, actors_list.item())
+            if singleton is True
+            else actors_list
+        )
 
-    def remove(self, agent: Actor) -> None:
+    def remove(self, agent: ActorProtocol) -> None:
         """Remove the given agent from the container."""
         if agent.on_earth:
             raise ABSESpyError(
@@ -272,18 +277,18 @@ class _AgentsContainer:
 
         Example:
             ```python
-            from abses import Actor, MainModel
+            from abses import ActorProtocol, MainModel
 
-            class Actor1(Actor):
+            class Actor1(ActorProtocol):
                 # breed 1
                 pass
 
-            class Actor2(Actor):
+            class Actor2(ActorProtocol):
                 # breed 2
                 pass
 
             model = MainModel()
-            model.agents.new(Actor, singleton=True)
+            model.agents.new(ActorProtocol, singleton=True)
             model.agents.new(Actor1, num=2)
             model.agents.new(Actor2, num=3)
 
@@ -304,7 +309,7 @@ class _AgentsContainer:
     def select(
         self,
         selection: Callable | str | Dict[str, Any] | None = None,
-        agent_type: Optional[Type[Actor] | str] = None,
+        agent_type: Optional[Type[ActorProtocol] | str] = None,
         **kwargs: Any,
     ) -> ActorsList:
         """Select actors that match the given selection criteria.
@@ -353,33 +358,13 @@ class _ModelAgentsContainer(_AgentsContainer):
             gdf.set_crs(self.crs, inplace=True)
         return self.crs == gdf.crs
 
-    def new_from_graph(
-        self,
-        graph: "nx.Graph",
-        link_name: str,
-        actor_cls: Type[Actor] = Actor,
-        **kwargs,
-    ):
-        """Create a set of new agents from networkx graph."""
-        actors = []
-        mapping = {}
-        for node, attr in graph.nodes(data=True):
-            unique_id = get_node_unique_id(node=node)
-            actor = self._new_one(unique_id=unique_id, agent_cls=actor_cls, **attr)
-            actors.append(actor)
-            mapping[unique_id] = actor
-        self.model.human.add_links_from_graph(
-            graph, link_name=link_name, mapping_dict=mapping, **kwargs
-        )
-        return ActorsList(model=self.model, objs=actors)
-
     def new_from_gdf(
         self,
         gdf: gpd.GeoDataFrame,
-        agent_cls: type[Actor] = Actor,
+        agent_cls: type[ActorProtocol] = Actor,
         attrs: IncludeFlag = False,
         **kwargs,
-    ) -> ActorsList[Actor]:
+    ) -> ActorsList[ActorProtocol]:
         # TODO: 这个方法需要适配到最新的 Mesa 版本
         """Create actors from a `geopandas.GeoDataFrame` object.
 
@@ -424,14 +409,16 @@ class _CellAgentsContainer(_AgentsContainer):
     """Container for agents located at cells."""
 
     def __init__(
-        self, model: MainModel[Any, Any], cell: PatchCell, max_len: int | None = None
+        self,
+        model: MainModelProtocol,
+        cell: PatchCell,
+        max_len: int | float = float("inf"),
     ):
         super().__init__(model, max_len)
         self._agents = AgentSet([], random=model.random)
         self._cell = cell
 
-    def _add_one(self, agent: Actor) -> None:
-        super()._add_one(agent)
+    def _add_one(self, agent: ActorProtocol) -> None:
         if agent.on_earth and agent not in self:
             e1 = f"{agent} is on {agent.at} thus cannot be added."
             e2 = "You may use 'actor.move.to()' to change its location."
@@ -439,8 +426,9 @@ class _CellAgentsContainer(_AgentsContainer):
             raise ABSESpyError(e1 + e2 + e3)
         self._agents.add(agent)
         agent.at = self._cell
+        self._agents.add(agent)
 
-    def remove(self, agent: Optional[Actor] = None) -> None:
+    def remove(self, agent: Optional[ActorProtocol] = None) -> None:
         """Remove the given agent from the cell.
         Generally, it stores all the agents on this cell.
         Therefore, it is not recommended to use this method directly.
@@ -457,7 +445,7 @@ class _CellAgentsContainer(_AgentsContainer):
         if agent is None:
             self._agents.clear()
             return
-        assert isinstance(agent, Actor), f"{agent} is not an Actor."
+        assert isinstance(agent, ActorProtocol), f"{agent} is not an ActorProtocol."
         if agent.at is not self._cell:
             raise ABSESpyError(f"{agent} is not on this cell.")
         self._agents.remove(agent)

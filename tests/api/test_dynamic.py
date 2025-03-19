@@ -16,9 +16,9 @@ import xarray as xr
 from pandas.testing import assert_series_equal
 
 from abses import MainModel
-from abses._bases.objects import _BaseObj
-from abses.time import TimeDriver
-from abses.tools.data import load_data
+from abses.core.base import ModelElement
+from abses.core.time_driver import TimeDriver
+from abses.utils.data import load_data
 
 
 class TestDynamicData:
@@ -32,9 +32,7 @@ class TestDynamicData:
     @pytest.fixture(name="prec")
     def setup_nc_data(self):
         """et0 数据"""
-        return xr.open_dataarray(
-            load_data("precipitation.nc"), decode_coords="all"
-        )
+        return xr.open_dataarray(load_data("precipitation.nc"), decode_coords="all")
 
     @pytest.fixture(name="crops_id")
     def setup_crops_id(self, water_quota_config):
@@ -44,7 +42,7 @@ class TestDynamicData:
     @staticmethod
     def get_lands_data(
         data: pd.DataFrame,
-        obj: _BaseObj,
+        obj: ModelElement,
         time: TimeDriver,
     ) -> pd.Series:
         """从数据中读取主体的土地情况"""
@@ -78,9 +76,7 @@ class TestDynamicData:
         """测试黄河灌溉用水主体可以自动从数据中读取土地情况"""
 
         def get_test_data(agent, year):
-            data_now = lands_data[lands_data["Year"] == year].set_index(
-                "City_ID"
-            )
+            data_now = lands_data[lands_data["Year"] == year].set_index("City_ID")
             return data_now.loc[f"C{agent.City_ID}"]
 
         # 随机选择一个主体
@@ -100,7 +96,6 @@ class TestDynamicData:
     def test_dynamic_nc_data(self, model: MainModel, prec):
         """Testing load NC data and reproject it dynamically."""
         module = model.nature.create_module(
-            how="from_file",
             raster_file=load_data("farmland.tif"),
             apply_raster=True,
         )

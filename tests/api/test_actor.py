@@ -14,13 +14,19 @@
 5. 设置属性值（自己或所在斑块）
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import pytest
 
 from abses import MainModel, alive_required
-from abses._bases.errors import ABSESpyError
-from abses.actor import Actor
-from abses.cells import PatchCell
-from abses.nature import PatchModule
+from abses.agents.actor import Actor
+from abses.space.cells import PatchCell
+from abses.utils.errors import ABSESpyError
+
+if TYPE_CHECKING:
+    from abses.space.patch import PatchModule
 
 
 class DeadMan(Actor):
@@ -58,7 +64,8 @@ class TestActor:
         # arrange
         actor = model.agents.new(Actor, singleton=True)
         assert actor.age() == 0
-        model.time.go(ticks=ticks)
+        for _ in range(ticks):
+            model.step()
         # act
         age = actor.age()
         # assert
@@ -230,9 +237,7 @@ class TestSettingValues:
             ("_test", "actor", 1, True, AttributeError, "protected"),
         ],
     )
-    def test_set_wrong(
-        self, cell_0_0: PatchCell, attr, target, value, new, error, msg
-    ):
+    def test_set_wrong(self, cell_0_0: PatchCell, attr, target, value, new, error, msg):
         """测试设置值时的错误情况。"""
         # 准备
         actor = cell_0_0.agents.new(Actor, singleton=True)
@@ -269,3 +274,19 @@ class TestSettingValues:
         actor.set(attr="cell_attr", value=200, target="cell", new=True)
         # 断言
         assert cell_0_0.get("cell_attr") == 200
+
+    def test_no_linked_after_die(self, model: MainModel):
+        """测试节点死亡后的链接状态
+
+        场景：
+        1. 节点死亡
+        2. 验证链接被清除
+        """
+        actor: Actor = model.agents.new(Actor, singleton=True)
+        actor2: Actor = model.agents.new(Actor, singleton=True)
+        actor.link.human.add_a_link("test", actor, actor2, mutual=True)
+        # act
+        actor.die()
+        # assert
+        assert actor.link.has("test", actor2) == (False, False)
+        assert actor2.link.has("test", actor) == (False, False)

@@ -20,7 +20,7 @@ def setup():
     """Create a forest model fully populated with trees"""
     forest = Forest(parameters={"model": {"density": 1, "shape": (4, 4)}})
     forest.setup()
-    return forest, forest.nature.forest.array_cells[2, 2]
+    return forest, forest.nature.array_cells[2, 2]
 
 
 class TestTree:
@@ -29,7 +29,7 @@ class TestTree:
     def test_setup(self, tree_fixture):
         """Test initialization."""
         forest, tree = tree_fixture
-        xarr = forest.nature.forest.get_xarray()
+        xarr = forest.nature.get_xarray()
         assert tree.state == 1
         assert tree is not None
         assert forest is not None
@@ -40,7 +40,7 @@ class TestTree:
         _, tree = tree_fixture
         tree.ignite()
         assert tree.state == 2
-        tree.burning()
+        tree.step()
         assert tree.state == 3
 
 
@@ -64,19 +64,19 @@ class TestForest:
     def test_setup(self, forest_fixture):
         """Test setup."""
         forest = forest_fixture
-        x = forest.nature.forest.width
-        y = forest.nature.forest.height
+        x = forest.nature.width
+        y = forest.nature.height
         assert forest is not None
         assert x == 25
         assert y == 25
         assert forest.num_trees == int(x * y * forest.params.density)
         assert all(
-            ActorsList(forest, forest.nature.forest.array_cells[:, 0]).apply(
+            ActorsList(forest, forest.nature.array_cells[:, 0]).apply(
                 lambda t: t.state in [0, 2]
             )
         )
         assert not any(
-            ActorsList(forest, forest.nature.forest.array_cells[:, 1]).apply(
+            ActorsList(forest, forest.nature.array_cells[:, 1]).apply(
                 lambda t: t.state in [2, 3]
             )
         )
@@ -86,7 +86,7 @@ class TestForest:
         forest = forest_fixture
         forest.step()
         assert any(
-            ActorsList(forest, forest.nature.forest.array_cells[:, 1]).apply(
+            ActorsList(forest, forest.nature.array_cells[:, 1]).apply(
                 lambda t: t.state in [2, 3]
             )
         )

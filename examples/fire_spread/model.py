@@ -8,6 +8,7 @@
 """
 测试野火燃烧模型。
 """
+
 from typing import Optional
 
 import hydra
@@ -15,11 +16,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 from omegaconf import DictConfig
 
-from abses.cells import PatchCell, raster_attribute
-from abses.experiment import Experiment
-from abses.main import MainModel
-from abses.nature import PatchModule
-from abses.sequences import ActorsList
+from abses import Experiment, MainModel, PatchCell, raster_attribute
+from abses.agents.sequences import ActorsList
 
 
 class Tree(PatchCell):
@@ -36,7 +34,7 @@ class Tree(PatchCell):
         super().__init__(*args, **kwargs)
         self._state = 0
 
-    def burning(self):
+    def step(self):
         """If the tree is burning, it ignites the neighboring trees."""
         if self._state == 2:
             neighbors = self.neighboring(moore=False, radius=1)
@@ -67,8 +65,7 @@ class Forest(MainModel):
 
     def setup(self) -> None:
         # setup a grid space.
-        grid: PatchModule = self.nature.create_module(
-            how="from_resolution",
+        grid = self.nature.create_module(
             name="forest",
             shape=self.params.shape,
             cell_cls=Tree,
@@ -82,8 +79,9 @@ class Forest(MainModel):
         ActorsList(self, grid.array_cells[:, 0]).trigger("ignite")
 
     def step(self):
-        for tree in self.nature.forest:
-            tree.burning()
+        """A step of the model."""
+        for tree in self.nature.array_cells.flatten():
+            tree.step()
 
     @property
     def burned_rate(self) -> float:
@@ -105,9 +103,7 @@ class Forest(MainModel):
             2: "orange",
             3: "red",
         }
-        cmap = plt.cm.colors.ListedColormap(
-            [categories[i] for i in sorted(categories)]
-        )
+        cmap = plt.cm.colors.ListedColormap([categories[i] for i in sorted(categories)])
         data = self.nature.get_xarray("state")
         data.plot(cmap=cmap)
         plt.show()
@@ -116,10 +112,9 @@ class Forest(MainModel):
 @hydra.main(version_base=None, config_path="", config_name="config")
 def main(cfg: Optional[DictConfig] = None):
     """运行模型"""
-    exp = Experiment(model_cls=Forest)
-    exp.batch_run(cfg=cfg)
+    exp = Experiment(Forest, cfg=cfg)
+    exp.batch_run()
 
 
 if __name__ == "__main__":
     main()
-    Experiment.summary(save=True)

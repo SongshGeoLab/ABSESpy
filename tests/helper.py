@@ -5,7 +5,7 @@
 # GitHub   : https://github.com/SongshGeo
 # Website: https://cv.songshgeo.com/
 
-from abses import MainModel
+from abses import Actor, MainModel
 
 
 class RandomAddingMod(MainModel):
@@ -22,3 +22,11 @@ class RandomAddingMod(MainModel):
     def step(self):
         """测试步骤"""
         self.test_var += self.random_step()
+
+
+def create_actors_with_metric(model: MainModel, n: int):
+    """Create actors with a test metric."""
+    actors = model.agents.new(Actor, n)
+    for i, actor in enumerate(actors):
+        actor.test = float(i)
+    return actors

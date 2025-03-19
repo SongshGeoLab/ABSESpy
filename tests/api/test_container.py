@@ -16,10 +16,10 @@ import geopandas as gpd
 import pytest
 
 from abses import Actor, MainModel
-from abses._bases.errors import ABSESpyError
-from abses.cells import PatchCell
-from abses.container import _AgentsContainer, _ModelAgentsContainer
-from abses.tools.data import load_data
+from abses.agents.container import _AgentsContainer, _ModelAgentsContainer
+from abses.space.cells import PatchCell
+from abses.utils.data import load_data
+from abses.utils.errors import ABSESpyError
 
 
 class TestBasicContainer:
@@ -37,9 +37,7 @@ class TestBasicContainer:
         assert isinstance(container, _ModelAgentsContainer)
         assert str(container) == "<Handling [3]Agents for Test>"
         assert container is ternary_m.agents
-        assert getattr(ternary_m, "_all_agents") is getattr(
-            container, "_agents"
-        )
+        assert getattr(ternary_m, "_all_agents") is getattr(container, "_agents")
 
     def test_add_happy_path(self, model):
         """在主体被创建的时候，应该自动添加到容器中"""
@@ -120,17 +118,13 @@ class TestCellContainer:
             ("Admin", 3),
         ],
     )
-    def test_new_one(
-        self, ternary_m, cell_0_0: PatchCell, testing_breeds, breed, num
-    ):
+    def test_new_one(self, ternary_m, cell_0_0: PatchCell, testing_breeds, breed, num):
         """测试直接在斑块上新建主体"""
         # arrange
         assert cell_0_0.model is ternary_m
         len_before = len(ternary_m.agents)
         # action
-        actors = cell_0_0.agents.new(
-            testing_breeds[breed], num, singleton=False
-        )
+        actors = cell_0_0.agents.new(testing_breeds[breed], num, singleton=False)
         actor = actors.item()
 
         # assert
@@ -207,9 +201,7 @@ class TestMaxLength:
 
             max_agents = 2
 
-        module = model_4_agents.nature.create_module(
-            how="from_resolution", shape=(2, 2), cell_cls=MaxCell
-        )
+        module = model_4_agents.nature.create_module(shape=(2, 2), cell_cls=MaxCell)
         return module.cells_lst.random.choice()
 
     def test_create_bad_path(self, model_4_agents: MainModel):
@@ -233,9 +225,7 @@ class TestMaxLength:
 class TestSelect:
     """测试选择主体"""
 
-    def test_select_by_attribute(
-        self, ternary_m: MainModel, cell_0_0: PatchCell
-    ):
+    def test_select_by_attribute(self, ternary_m: MainModel, cell_0_0: PatchCell):
         """测试根据属性选择主体"""
         # arrange
         assert cell_0_0.model is ternary_m
