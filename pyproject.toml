@@ -66,6 +66,7 @@ black = ">=23.9.1"
 pylint = ">=3.0.1"
 tox = ">=4.11.3"
 lxml = ">=5.2.1"
+griffe = "^1.14.0"
 
 
 [tool.poetry.group.docs.dependencies]

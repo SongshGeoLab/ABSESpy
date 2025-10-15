@@ -1,24 +1,23 @@
 # Gallery
 
-<!-- 这里展示了利用ABSESpy进行多主体建模的案例，我们将模型分为两种：启发式模型和真实世界模型。 -->
+This showcases community examples and research projects using ABSESpy for agent-based modeling.
 
-This showcases the use of `ABSESpy` for ABM. We divide the models into two types: heuristic models and real-world models.
+> **Note**: Research project examples are maintained in their own repositories. Check the [Official Examples](official.md) page for built-in examples included with ABSESpy.
 
-<div class="grid cards" markdown>
+## Community Examples
 
--   :robot:{ .lg .middle } __South China Livelihood__
+Coming soon! If you've built a model using ABSESpy and would like to share it, please submit a pull request or open an issue on our [GitHub repository](https://github.com/SongshGeo/ABSESpy).
 
-    ---
-    Here, we developed the model to explore the evolution of livelihood in the South of China.
+## Research Projects
 
-    [:octicons-arrow-right-24: Checkout](official/south_china_livelihood.md)
-<!--
--   :robot:{ .lg .middle } __Yellow River Water Quota__
+### Published Models
 
-    ---
+Research models using ABSESpy are maintained separately. Contact the authors for access to specific research codebases.
 
-    This agent-based model shows how water uses were change by water quota policy in the Yellow River Basin, China.
+### How to Contribute
 
-    [:octicons-arrow-right-24: Checkout](official/yellow_river_water_quota.md) -->
+If you'd like to showcase your ABSESpy-based research:
 
-</div>
+1. Open an issue on [GitHub](https://github.com/SongshGeo/ABSESpy/issues)
+2. Provide a brief description and link to your repository
+3. We'll add it to this gallery once reviewed

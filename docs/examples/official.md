@@ -1,64 +1,142 @@
 # Official Examples
 
-This showcases the use of `ABSESpy` for ABM. We divide the models into two types: heuristic models[^1] and real-world models. The major difference is that real-world models have datasets as input, so usually simulations of the real SESs.
+Built-in examples showcasing ABSESpy features for agent-based modeling.
 
-## Heuristic models[^1]
+=== "English"
 
-<div class="grid cards" markdown>
+    ## About These Examples
 
--   :material-robot-happy:{ .lg .middle } __[Hotelling]__
+    These examples demonstrate core ABSESpy features through classic ABM models.
+    Each includes complete source code, documentation, and tests.
 
-    ---
-    An adaptation of the Hotelling's Law model.
+    ## Available Examples
 
-    <!-- [:octicons-arrow-right-24: Checkout] -->
+    <div class="grid cards" markdown>
 
--   :material-robot-happy:{ .lg .middle } __[Forest Fire]__
+    - :fire: __Fire Spread__
 
-    ---
-    An implementation of the `Fire` model.
+      ---
 
-    <!-- [:octicons-arrow-right-24: Checkout] -->
+      Demonstrates spatial modeling, raster attributes, and visualization.
 
--   :material-robot-happy:{ .lg .middle } __[Predator-Prey]__
+      **Features**: `@raster_attribute`, `neighboring()`, `trigger()`
 
-    ---
-    An implementation of the Wolf-sheep ecosystem model.
+      [:octicons-arrow-right-24: Tutorial](../tutorial/completing/fire_tutorial.ipynb) |
+      [:octicons-code-24: Source](https://github.com/SongshGeo/ABSESpy/tree/master/examples/fire_spread)
 
-    <!-- [:octicons-arrow-right-24: Checkout] -->
+    - :wolf: __Wolf-Sheep Predation__
 
-</div>
+      ---
 
+      Agent lifecycle, movement, and ecological interactions.
 
-## Real-world models
+      **Features**: `move.random()`, `at.agents`, `die()`, reproduction
 
-<div class="grid cards" markdown>
+      [:octicons-arrow-right-24: Tutorial](../tutorial/beginner/predation_tutorial.ipynb) |
+      [:octicons-code-24: Source](https://github.com/SongshGeo/ABSESpy/tree/master/examples/wolf_sheep)
 
--   :material-robot-happy:{ .lg .middle } __[South China Livelihood]__
+    - :cityscape: __Schelling Segregation__
 
-    ---
-    Here, we developed the model to explore the evolution of livelihood in the South of China.
+      ---
 
-    <!-- [:octicons-arrow-right-24: Checkout] -->
+      Mesa framework integration and social dynamics modeling.
 
--   :material-robot-happy:{ .lg .middle } __[Yellow River Water Quota]__
+      **Features**: `shuffle_do()`, `self.p`, Mesa compatibility
 
-    ---
-    This agent-based model shows how water uses were change by water quota policy in the Yellow River Basin, China.
+      [:octicons-code-24: Source](https://github.com/SongshGeo/ABSESpy/tree/master/examples/schelling) |
+      [:octicons-book-24: README](https://github.com/SongshGeo/ABSESpy/blob/master/examples/schelling/README.md)
 
-    <!-- [:octicons-arrow-right-24: Checkout] -->
+    - :chart_with_upwards_trend: __Hotelling's Law__
 
-</div>
+      ---
+
+      Decision-making framework and spatial competition.
+
+      **Features**: Links between Actors and PatchCells
+
+      [:octicons-arrow-right-24: Tutorial](../tutorial/beginner/hotelling_tutorial.ipynb) |
+      [:octicons-code-24: Source](https://github.com/SongshGeo/ABSESpy/tree/master/examples/hotelling_law)
+
+    </div>
+
+=== "中文"
+
+    ## 关于这些示例
+
+    这些示例通过经典ABM模型展示ABSESpy的核心功能。
+    每个示例都包含完整的源代码、文档和测试。
+
+    ## 可用示例
+
+    <div class="grid cards" markdown>
+
+    - :fire: __火灾传播__
+
+      ---
+
+      演示空间建模、栅格属性和可视化。
+
+      **特性**: `@raster_attribute`, `neighboring()`, `trigger()`
+
+      [:octicons-arrow-right-24: 教程](../tutorial/completing/fire_tutorial.ipynb) |
+      [:octicons-code-24: 源码](https://github.com/SongshGeo/ABSESpy/tree/master/examples/fire_spread)
+
+    - :wolf: __狼羊捕食__
+
+      ---
+
+      智能体生命周期、移动和生态互动。
+
+      **特性**: `move.random()`, `at.agents`, `die()`, 繁殖
+
+      [:octicons-arrow-right-24: 教程](../tutorial/beginner/predation_tutorial.ipynb) |
+      [:octicons-code-24: 源码](https://github.com/SongshGeo/ABSESpy/tree/master/examples/wolf_sheep)
+
+    - :cityscape: __Schelling隔离__
+
+      ---
+
+      Mesa框架集成和社会动态建模。
+
+      **特性**: `shuffle_do()`, `self.p`, Mesa兼容
+
+      [:octicons-code-24: 源码](https://github.com/SongshGeo/ABSESpy/tree/master/examples/schelling) |
+      [:octicons-book-24: 说明](https://github.com/SongshGeo/ABSESpy/blob/master/examples/schelling/README.md)
+
+    - :chart_with_upwards_trend: __Hotelling定律__
+
+      ---
+
+      决策框架和空间竞争。
+
+      **特性**: Actors与PatchCells的连接
+
+      [:octicons-arrow-right-24: 教程](../tutorial/beginner/hotelling_tutorial.ipynb) |
+      [:octicons-code-24: 源码](https://github.com/SongshGeo/ABSESpy/tree/master/examples/hotelling_law)
+
+    </div>
+
+## Framework Advantages / 框架优势
+
+=== "English"
+
+    These examples highlight how ABSESpy reduces development effort:
+
+    - **Spatial modeling made easy**: Built-in grid, raster attributes, neighbor queries
+    - **Agent lifecycle management**: Automatic handling of birth/death, movement
+    - **Mesa compatibility**: Use existing Mesa models with minimal changes
+    - **Type safety**: Full type hints for better IDE support
+    - **Testing support**: Comprehensive test utilities
+
+=== "中文"
+
+    这些示例展示ABSESpy如何减少开发成本：
+
+    - **简化空间建模**: 内置网格、栅格属性、邻居查询
+    - **智能体生命周期管理**: 自动处理出生/死亡、移动
+    - **Mesa兼容性**: 最小修改即可使用现有Mesa模型
+    - **类型安全**: 完整类型提示，更好的IDE支持
+    - **测试支持**: 全面的测试工具
 
 [^1]:
     Heuristic models are streamlined strategies used to tackle complex issues when precise formulas or solutions aren't feasible. These models rely on heuristic methods, practical tactics that may not always yield the best solution but offer a satisfactory one within an acceptable time limit.
-
-
-<!-- Heuristic models -->
-  [Hotelling]: ../tutorial/beginner/hotelling_tutorial.ipynb
-  [Forest Fire]: ../tutorial/completing/fire_tutorial.ipynb
-  [Predator-Prey]: ../tutorial/beginner/predation_tutorial.ipynb
-
-<!-- Real-world models -->
-  [South China Livelihood]: official/south_china_livelihood.md
-  [Yellow River Water Quota]: official/yellow_river_water_quota.md
