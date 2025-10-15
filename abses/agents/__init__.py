@@ -14,7 +14,6 @@ in agent-based models.
 
 from .actor import Actor, alive_required, perception
 from .container import _CellAgentsContainer, _ModelAgentsContainer
-from .move import _Movements
 from .sequences import ActorsList
 
 __all__ = [
@@ -24,5 +23,4 @@ __all__ = [
     "perception",
     "_ModelAgentsContainer",
     "_CellAgentsContainer",
-    "_Movements",
 ]
