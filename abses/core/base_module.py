@@ -19,6 +19,7 @@ from typing import Any, Callable, Dict, List, Optional, final
 
 from omegaconf import DictConfig
 
+from abses.core.base_observable import BaseObservable
 from abses.core.base_variable import BaseDynamicVariable
 from abses.core.primitives import State
 from abses.core.protocols import (
@@ -33,7 +34,7 @@ from abses.core.protocols import (
 from abses.utils.regex import is_snake_name
 
 
-class BaseModelElement(ABC, ModelElement):
+class BaseModelElement(BaseObservable, ABC, ModelElement):
     """Base model element implementation.
 
     Provides common functionality for all model elements including:
@@ -58,6 +59,7 @@ class BaseModelElement(ABC, ModelElement):
             model: Parent ABSESpy model.
             name: Optional name for this element.
         """
+        BaseObservable.__init__(self)
         self._model = model
         self._name = name
         self._dynamic_variables: Dict[str, DynamicVariableProtocol] = {}
@@ -299,13 +301,13 @@ class BaseModule(BaseModelElement, BaseStateManager, Observer, ModuleProtocol, A
 
         Wraps user-defined methods to add lifecycle management.
         """
-        # Wrap the user-defined step method
+        # Wrap the user-defined methods
         self._user_setup = self.setup
-        self.setup = self._setup
+        self.setup = self._setup  # type: ignore[method-assign]
         self._user_step = self.step
-        self.step = self._step
+        self.step = self._step  # type: ignore[method-assign]
         self._user_end = self.end
-        self.end = self._end
+        self.end = self._end  # type: ignore[method-assign]
         self.set_state(State.INIT)
         self.initialize()
 
