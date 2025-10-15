@@ -1,20 +1,60 @@
+"""
+Schelling Segregation Agent demonstrating ABSESpy's Mesa integration.
+
+This module showcases:
+- Mesa Agent compatibility with ABSESpy MainModel
+- Neighbor similarity calculation
+- Conditional movement based on satisfaction
+- Integration with Mesa's spatial grid
+
+Note: This uses Mesa's native Agent class to demonstrate
+that ABSESpy MainModel is fully compatible with Mesa components.
+"""
+
+from typing import TYPE_CHECKING
+
 from mesa import Agent
+
+if TYPE_CHECKING:
+    from .model import Schelling
 
 
 class SchellingAgent(Agent):
-    """Schelling segregation agent."""
+    """
+    Agent in Schelling segregation model.
 
-    def __init__(self, model, agent_type: int) -> None:
-        """Create a new Schelling agent.
+    Each agent has a type (0 or 1) and prefers to live near
+    similar neighbors. If the fraction of similar neighbors
+    falls below the homophily threshold, the agent moves.
+
+    Attributes:
+        type: Agent type identifier (0=majority, 1=minority).
+
+    Note: Uses Mesa's native Agent class to demonstrate
+    ABSESpy MainModel's compatibility with Mesa components.
+    """
+
+    def __init__(self, model: "Schelling", agent_type: int) -> None:
+        """
+        Create a new Schelling agent.
+
         Args:
-            model: The model instance the agent belongs to
-            agent_type: Indicator for the agent's type (minority=1, majority=0)
+            model: The Schelling model instance.
+            agent_type: Type indicator (0=majority, 1=minority).
         """
         super().__init__(model)
         self.type = agent_type
 
     def step(self) -> None:
-        """Determine if agent is happy and move if necessary."""
+        """
+        Execute one time step: check happiness and move if necessary.
+
+        Calculates the fraction of similar neighbors within the
+        specified radius. If below the homophily threshold, moves
+        to a random empty cell.
+
+        Uses Mesa's grid.get_neighbors() and grid.move_to_empty().
+        """
         neighbors = self.model.grid.get_neighbors(
             self.pos, moore=True, radius=self.model.p.radius
         )
