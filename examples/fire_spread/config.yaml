@@ -4,6 +4,7 @@ defaults:
 
 exp:
   name: fire_spread
+  outdir: out
   repeats: 11
 
 reports:
