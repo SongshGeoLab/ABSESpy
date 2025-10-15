@@ -6,9 +6,33 @@ hydra:
   sweep:
     dir: ${exp.outdir}/${exp.name}/${now:%Y-%m-%d}/${now:%H-%M-%S}
     subdir: ${hydra.job.id}_${hydra:job.override_dirname}
+  
+  # Hydra logging configuration
+  job_logging:
+    version: 1
+    formatters:
+      simple:
+        format: '[%(asctime)s][%(name)s][%(levelname)s] - %(message)s'
+        datefmt: '%H:%M:%S'
+    handlers:
+      console:
+        class: logging.StreamHandler
+        level: WARNING
+        formatter: simple
+        stream: ext://sys.stderr
+    root:
+      level: INFO
+      handlers: [console]
+    disable_existing_loggers: false
+
+  # Verbosity settings
+  verbose: false
 
 exp:
   outdir: out
   name: ABSESpy
   repeats: 1
   logging: once
+
+# Note: outpath is dynamically set by Experiment at runtime
+outpath: null

@@ -43,10 +43,10 @@ from abses.space.nature import BaseNature
 from abses.utils.args import merge_parameters
 from abses.utils.datacollector import ABSESpyDataCollector
 from abses.utils.logging import (
-    formatter,
     log_session,
     logger,
     setup_logger_info,
+    setup_model_logger,
 )
 
 if TYPE_CHECKING:
@@ -123,6 +123,11 @@ class MainModel(Model, BaseStateManager):
             parameters.get("reports", {})
         )
         self.do_each("_initialize", order=DEFAULT_INIT_ORDER)
+        
+        # Setup logging if configured
+        log_cfg = self.settings.get("log", {})
+        if log_cfg:
+            self._setup_logger(log_cfg)
 
     @functools.cached_property
     def name(self) -> str:
@@ -226,22 +231,34 @@ class MainModel(Model, BaseStateManager):
         return result
 
     def _setup_logger(self, log_cfg: Dict[str, Any]) -> None:
+        """Setup logging for the model.
+        
+        Args:
+            log_cfg: Logging configuration dictionary.
+        """
         if not log_cfg:
             return
-        name = log_cfg.get("name", "logging")
-        rotation = log_cfg.get("rotation", "1 day")
-        retention = log_cfg.get("retention", "10 days")
+        
+        # Parse logging configuration
+        name = str(log_cfg.get("name", "model")).replace(".log", "")
         level = log_cfg.get("level", "INFO")
-        name = str(name).replace(".log", "")
-        logger.add(
-            self.outpath / f"{name}.log",
-            retention=retention,
-            rotation=rotation,
+        rotation = log_cfg.get("rotation", None)  # e.g., "1 day"
+        retention = log_cfg.get("retention", None)  # e.g., "10 days"
+        console = log_cfg.get("console", True)
+        
+        # Setup integrated logging for ABSESpy and Mesa
+        setup_model_logger(
+            name=name,
             level=level,
-            format=formatter,
+            outpath=self.outpath,
+            console=console,
+            rotation=rotation,
+            retention=retention,
         )
+        
+        # Display startup info
         setup_logger_info(self.exp)
-        self._logging_begin()  # logging
+        self._logging_begin()
 
     def add_name(self, name: str, check: Optional[HowCheckName] = None) -> None:
         """检查名称是否有效"""
