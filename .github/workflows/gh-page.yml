@@ -41,7 +41,22 @@ jobs:
           set -e
           poetry run pip install git+https://${{ secrets.GH_TOKEN }}@github.com/squidfunk/mkdocs-material-insiders.git
           poetry install
-      - name: Deploy documentation
-        run: poetry run mkdocs gh-deploy --force
+      - name: Deploy documentation (dev branch)
+        if: github.ref == 'refs/heads/dev'
+        run: poetry run mike deploy --push dev
+      
+      - name: Deploy documentation (master branch)
+        if: github.ref == 'refs/heads/master'
+        run: |
+          poetry run mike deploy --push --update-aliases 0.8 latest
+          poetry run mike set-default --push latest
+      
+      - name: Deploy documentation (version tags)
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          MAJOR_MINOR=$(echo $VERSION | cut -d. -f1-2)
+          poetry run mike deploy --push --update-aliases $MAJOR_MINOR latest
+          poetry run mike set-default --push latest
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
