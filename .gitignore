@@ -171,3 +171,7 @@ drafts
 # log files
 *.log
 out
+
+examples/livelihood/
+examples/shifting_baseline/
+examples/water_quota/
