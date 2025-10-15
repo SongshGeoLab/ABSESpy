@@ -91,11 +91,37 @@ requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.mypy]
+# Core settings
+python_version = "3.11"
 ignore_missing_imports = true
 disable_error_code = ["misc", "override"]
+
+# Improved type checking (progressive enhancement)
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = false  # Keep false for flexibility
+warn_unreachable = true
+check_untyped_defs = true
+
+# Disallow problematic patterns
+disallow_untyped_calls = false  # Keep false for gradual typing
+disallow_incomplete_defs = false  # Keep false for backward compatibility
+
+# Enable useful warnings
+warn_no_return = true
+no_implicit_optional = true
 
 [[tool.mypy.overrides]]
 module = [
     "tests.*",
 ]
 ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = [
+    "abses.core.protocols",
+    "abses.core.type_aliases",
+]
+# Stricter checking for protocol definitions
+disallow_any_generics = false  # Keep flexible for now
+warn_return_any = false

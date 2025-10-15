@@ -11,6 +11,7 @@ from typing import (
     TYPE_CHECKING,
     Any,
     Dict,
+    Generic,
     Iterator,
     List,
     Optional,
@@ -32,6 +33,9 @@ from abses.core.type_aliases import (
     UniqueID,
 )
 
+# Type variable for generic variable values
+T = TypeVar("T")
+
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -50,9 +54,11 @@ class ExperimentProtocol(Protocol):
     name: str
 
 
-@runtime_checkable
 class TimeDriverProtocol(Protocol):
-    """时间驱动协议"""
+    """Time driver protocol.
+
+    Defines the interface for time management in models.
+    """
 
     dt: DateTime
     duration: Duration
@@ -97,28 +103,61 @@ class VariableProtocol(Protocol):
         ...
 
 
-@runtime_checkable
-class DynamicVariableProtocol(VariableProtocol, Protocol):
-    """动态变量协议"""
+class DynamicVariableProtocol(VariableProtocol, Protocol, Generic[T]):
+    """Dynamic variable protocol with generic type support.
+
+    Extends VariableProtocol with caching and computation capabilities.
+    The generic type T represents the type of value this variable holds.
+
+    Example:
+        ```python
+        # A dynamic variable that returns int values
+        var: DynamicVariableProtocol[int] = ...
+        value: int = var.now()
+        ```
+    """
 
     attrs: Dict[str, Any]
 
     @property
-    def cache(self) -> Any: ...
+    def cache(self) -> T:
+        """Get cached value.
+
+        Returns:
+            The cached value of type T.
+        """
+        ...
+
     @property
-    def now(self) -> Any: ...
+    def now(self) -> T:
+        """Compute and return current value.
+
+        Returns:
+            The current computed value of type T.
+        """
+        ...
 
 
-@runtime_checkable
 class Observer(Protocol):
-    """观察者协议"""
+    """Observer protocol.
 
-    def update(self, subject: Observable) -> None: ...
+    Defines the interface for objects that observe changes in observables.
+    """
+
+    def update(self, subject: Observable) -> None:
+        """Called when the observed subject changes.
+
+        Args:
+            subject: The observable that changed.
+        """
+        ...
 
 
-@runtime_checkable
 class Observable(Protocol):
-    """可被观察的组件协议"""
+    """Observable protocol.
+
+    Defines the interface for objects that can be observed for changes.
+    """
 
     @property
     def observers(self) -> Set[Observer]: ...
@@ -130,9 +169,11 @@ class Observable(Protocol):
     def notify(self) -> None: ...
 
 
-@runtime_checkable
 class StateManagerProtocol(Protocol):
-    """状态管理器协议"""
+    """State manager protocol.
+
+    Defines the interface for managing component lifecycle states.
+    """
 
     def set_state(self, state: State) -> None: ...
     def reset(self, opening: bool = True) -> None: ...
@@ -163,9 +204,11 @@ class ModelElement(Observable, Protocol):
     def tick(self) -> int: ...
 
 
-@runtime_checkable
 class MainModelProtocol(ModelElement, Protocol):
-    """主模型协议"""
+    """Main model protocol.
+
+    Defines the complete interface for ABSESpy main models.
+    """
 
     parameters: DictConfig | None | Dict = None
     run_id: int | None = None
@@ -174,7 +217,7 @@ class MainModelProtocol(ModelElement, Protocol):
     experiment: ExperimentProtocol | None = None
     steps: int = 0
     running: bool = True
-    datacollector: Any
+    datacollector: Any  # ABSESpyDataCollector, kept as Any for flexibility
     random: np.random.Generator
 
     def __new__(cls, *args: Any, **kwargs: Any) -> MainModelProtocol: ...
@@ -221,10 +264,10 @@ class MainModelProtocol(ModelElement, Protocol):
         ...
 
 
-@runtime_checkable
 class ModuleProtocol(ModelElement, Protocol):
-    """
-    Model component protocol.
+    """Model module protocol.
+
+    Defines the interface for model modules with lifecycle management.
     """
 
     @property
@@ -235,9 +278,11 @@ class ModuleProtocol(ModelElement, Protocol):
     def outpath(self) -> Optional[Path]: ...
 
 
-@runtime_checkable
 class SubSystemProtocol(ModuleProtocol, Protocol):
-    """子系统（Nature/Human）协议"""
+    """Subsystem protocol (Nature/Human).
+
+    Defines the interface for subsystems that manage collections of modules.
+    """
 
     def __init__(
         self, model: MainModelProtocol, name: Optional[str] = None
@@ -246,14 +291,17 @@ class SubSystemProtocol(ModuleProtocol, Protocol):
     @property
     def modules(self) -> Dict[str, ModuleProtocol]: ...
 
-    def create_module(self, name: str, *args: Any, **kwargs: Any) -> Any: ...
+    def create_module(self, name: str, *args: Any, **kwargs: Any) -> ModuleProtocol: ...
     def register(self, component: ModuleProtocol) -> None: ...
     def unregister(self, component: ModuleProtocol) -> None: ...
-    def get_raster(self, *args: Any, **kwargs: Any) -> Any: ...
-    def get_graph(self, *args: Any, **kwargs: Any) -> Any: ...
+    def get_raster(
+        self, *args: Any, **kwargs: Any
+    ) -> Any: ...  # Returns raster data, kept flexible
+    def get_graph(
+        self, *args: Any, **kwargs: Any
+    ) -> Any: ...  # Returns graph, kept flexible
 
 
-@runtime_checkable
 class MovementProtocol(Protocol):
     """Movement protocol.
 
@@ -291,11 +339,40 @@ _MovementsProtocol = MovementProtocol
 
 @runtime_checkable
 class ActorProtocol(Observer, ModelElement, Protocol):
-    """代理协议，既是观察者也是被观察者
+    """Actor protocol.
 
-    注意继承顺序：
-    1. Observer 和 ModelElement 先继承，因为它们是具体的协议
-    2. Protocol 放在最后，因为它是基础协议类
+    Defines the complete interface for actors (agents) in ABSESpy models.
+    Actors are both observers and model elements with spatial awareness and lifecycle management.
+
+    Attributes:
+        unique_id: Unique identifier for this actor.
+        pos: Current position (longitude, latitude).
+        alive: Whether the actor is alive.
+        model: Reference to the parent model.
+        indices: Grid indices if on a patch.
+        move: Movement operations interface.
+        layer: The module/layer this actor belongs to.
+        on_earth: Whether positioned on the spatial grid.
+        at: The patch cell at current position.
+        crs: Coordinate reference system.
+
+    Lifecycle Methods:
+        initialize(): Called once at creation.
+        setup(): Called before simulation starts.
+        step(): Called each simulation step.
+        end(): Called when simulation ends.
+
+    Example:
+        ```python
+        class Farmer(Actor):
+            def setup(self):
+                self.wealth = 100
+
+            def step(self):
+                if self.on_earth:
+                    # Harvest from current cell
+                    self.wealth += self.at.yield_value
+        ```
     """
 
     unique_id: AgentID
@@ -329,7 +406,27 @@ AgentType = TypeVar("AgentType", bound="ActorProtocol")
 
 
 class ActorsListProtocol(Protocol):
-    """代理列表协议"""
+    """Actors list protocol.
+
+    Defines the interface for collections of actors with selection and manipulation capabilities.
+
+    Attributes:
+        model: The ABSESpy model instance.
+        random: Random operations on the actors list.
+        plot: Visualization interface for actors.
+
+    Example:
+        ```python
+        # Select actors with specific attribute
+        active_actors = model.actors.select("active")
+
+        # Get array of actor attributes
+        ages = actors.array("age")
+
+        # Random operations
+        sample = actors.random.choice(n=10)
+        ```
+    """
 
     model: MainModelProtocol
 
@@ -349,7 +446,28 @@ class ActorsListProtocol(Protocol):
 
 
 class AgentsContainerProtocol(Protocol):
-    """代理容器协议"""
+    """Agents container protocol.
+
+    Defines the interface for managing all agents in the model with type-based organization.
+
+    Attributes:
+        model: The ABSESpy model instance.
+        is_full: Whether the container has reached capacity.
+        agents_by_type: Dictionary mapping agent types to their lists.
+
+    Example:
+        ```python
+        # Add new agent
+        agent = Actor(model)
+        model.agents.add(agent)
+
+        # Get by type
+        farmers = model.agents.get_by_type(Farmer)
+
+        # Select with criteria
+        active = model.agents.select("active", at_most=10)
+        ```
+    """
 
     model: MainModelProtocol
 
@@ -370,7 +488,6 @@ class AgentsContainerProtocol(Protocol):
     def agents_by_type(self) -> dict[type, ActorsListProtocol]: ...
 
 
-@runtime_checkable
 class PatchCellProtocol(Protocol):
     """PatchCell protocol.
 
@@ -455,7 +572,6 @@ class PatchCellProtocol(Protocol):
         ...
 
 
-@runtime_checkable
 class LinkNodeProtocol(Protocol):
     """LinkNode protocol.
 
@@ -496,9 +612,11 @@ class LinkNodeProtocol(Protocol):
         ...
 
 
-@runtime_checkable
 class LinkContainerProtocol(Protocol):
-    """LinkContainer协议"""
+    """Link container protocol.
+
+    Defines the interface for managing links between nodes.
+    """
 
     links: Tuple[str, ...]
 
@@ -547,16 +665,20 @@ class LinkContainerProtocol(Protocol):
     ...
 
 
-@runtime_checkable
 class HumanSystemProtocol(SubSystemProtocol, LinkContainerProtocol, Protocol):
-    """添加 @runtime_checkable 使得可以在运行时检查"""
+    """Human subsystem protocol.
+
+    Combines subsystem functionality with link management for social networks.
+    """
 
     ...
 
 
-@runtime_checkable
 class NatureSystemProtocol(SubSystemProtocol, Protocol):
-    """添加 @runtime_checkable 使得可以在运行时检查"""
+    """Nature subsystem protocol.
+
+    Defines the interface for the nature/spatial subsystem with CRS support.
+    """
 
     @property
     def crs(self) -> pyproj.CRS: ...

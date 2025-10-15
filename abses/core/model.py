@@ -52,7 +52,7 @@ from abses.utils.logging import (
 if TYPE_CHECKING:
     from mesa.model import RNGLike, SeedLike
 
-    from abses.core.types import (
+    from abses.core.type_aliases import (
         HowCheckName,
         SubSystemName,
     )
@@ -111,8 +111,10 @@ class MainModel(Model, BaseStateManager):
         BaseStateManager.__init__(self)
         self._exp = experiment
         self._run_id: Optional[int] = run_id
-        self._settings = merge_parameters(parameters, **kwargs)
-        self._time = TimeDriver(model=self)  # type: ignore[abstract]
+        # Filter out None values from kwargs for type safety
+        clean_kwargs = {k: v for k, v in kwargs.items() if v is not None}
+        self._settings = merge_parameters(parameters, **clean_kwargs)
+        self._time = TimeDriver(model=self)
         self._setup_subsystems(human_class, nature_class)
         self._agents_handler = _ModelAgentsContainer(
             model=self, max_len=kwargs.get("max_agents", None)

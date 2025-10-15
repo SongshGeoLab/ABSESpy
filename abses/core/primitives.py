@@ -62,7 +62,11 @@ def normalize_crs(crs) -> pyproj.CRS:
         Normalized CRS object
     """
     if isinstance(crs, pyproj.CRS):
-        return pyproj.CRS.from_epsg(crs.to_epsg())
+        epsg = crs.to_epsg()
+        if epsg is not None:
+            return pyproj.CRS.from_epsg(epsg)
+        # If to_epsg() returns None, return the CRS as is
+        return crs
     if isinstance(crs, (str, int)):
         if isinstance(crs, str) and crs.isdigit():
             crs = int(crs)
