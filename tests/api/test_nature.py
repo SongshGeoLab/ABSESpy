@@ -243,7 +243,7 @@ class TestBaseNature:
         # assert
         assert model.nature.major_layer is module
         assert model.nature.total_bounds is module.total_bounds
-        assert module in model.nature.modules
+        assert module.name in model.nature.modules
         with pytest.raises(ValueError):
             model.nature.major_layer = "Wrong type"
 

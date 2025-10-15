@@ -95,7 +95,7 @@ class BaseNature(BaseSubSystem, GeoSpace, NatureSystemProtocol):
         Returns:
             The module with the converted CRS.
         """
-        if module not in self.modules:
+        if module.name not in self.modules:
             raise ValueError(f"{module} is not in {self}.")
         if module.crs is None:
             if write_crs:
