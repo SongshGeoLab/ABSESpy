@@ -87,6 +87,61 @@ theme:
         - content.tooltips
 plugins:
     - search
+    - i18n:
+        docs_structure: suffix
+        fallback_to_default: true
+        reconfigure_material: true
+        reconfigure_search: true
+        languages:
+          - locale: en
+            default: true
+            name: English
+            build: true
+          - locale: zh
+            name: 中文
+            build: true
+            nav_translations:
+              Home: 首页
+              Installation: 安装
+              Getting started: 快速开始
+              Guide Checklist: 指南检查清单
+              Dependencies: 依赖项
+              License: 许可证
+              Contributions: 贡献
+              Acknowledge: 致谢
+              Wiki: 维基
+              Refers: 参考
+              Materials: 材料
+              Concepts: 概念
+              Paper: 论文
+              Tutorials: 教程
+              Tutorial: 教程
+              Start from ABM: 从ABM开始
+              Start from SES: 从SES开始
+              Beginner Level: 初级教程
+              Advanced Level: 高级教程
+              Competing Level: 完善教程
+              Examples: 示例
+              Official Examples: 官方示例
+              Gallery: 画廊
+              Community Examples: 社区示例
+              API references: API参考
+              Model structure: 模型结构
+              Main Model: 主模型
+              Natural Modules: 自然模块
+              PatchModule (layer): 网格模块
+              Human Modules: 人类模块
+              Cells: 单元格
+              Actors' Operation: 智能体操作
+              Actor (Agent): 智能体
+              Actors Container: 智能体容器
+              Actors List: 智能体列表
+              Movements: 移动
+              Interlinks: 连接
+              Workflow Control: 工作流控制
+              Time Control: 时间控制
+              Random: 随机
+              Experiment: 实验
     # - markdown-exec
     - mkdocstrings:
         handlers:
