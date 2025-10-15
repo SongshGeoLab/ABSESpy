@@ -113,7 +113,13 @@ def iter_apply_func_to(elements: str) -> Callable:
             result = func(self, *args, **kwargs)
             if not hasattr(self, elements):
                 return result
-            for element in getattr(self, elements):
+            elements_attr = getattr(self, elements)
+            # Handle dict: iterate over values instead of keys
+            if isinstance(elements_attr, dict):
+                elements_iter = elements_attr.values()
+            else:
+                elements_iter = elements_attr
+            for element in elements_iter:
                 getattr(element, func.__name__)(*args, **kwargs)
             return result
 

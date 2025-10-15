@@ -24,6 +24,13 @@ from typing import (
 import numpy as np
 
 from abses.core.primitives import DEFAULT_RUN_ORDER, State
+from abses.core.type_aliases import (
+    AgentID,
+    HowCheckName,
+    Position,
+    SubSystemName,
+    UniqueID,
+)
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -35,14 +42,6 @@ if TYPE_CHECKING:
     from omegaconf import DictConfig
     from pendulum import DateTime
     from pendulum.duration import Duration
-
-    from abses.core.types import (
-        AgentID,
-        HowCheckName,
-        Position,
-        SubSystemName,
-        UniqueID,
-    )
 
 
 class ExperimentProtocol(Protocol):
@@ -67,14 +66,35 @@ class TimeDriverProtocol(Protocol):
 
 @runtime_checkable
 class VariableProtocol(Protocol):
-    """变量协议"""
+    """Variable protocol.
+
+    Defines the interface for model variables that can be tracked and observed.
+
+    Attributes:
+        _max_length: Maximum length of variable history to store.
+        obj: The model element that owns this variable.
+        name: Name of the variable.
+    """
 
     _max_length: int = 1
 
     @property
-    def obj(self) -> ModelElement: ...
+    def obj(self) -> ModelElement:
+        """Get the model element that owns this variable.
+
+        Returns:
+            The owning model element.
+        """
+        ...
+
     @property
-    def name(self) -> str: ...
+    def name(self) -> str:
+        """Get the name of the variable.
+
+        Returns:
+            Variable name.
+        """
+        ...
 
 
 @runtime_checkable
@@ -234,13 +254,39 @@ class SubSystemProtocol(ModuleProtocol, Protocol):
 
 
 @runtime_checkable
-class _MovementsProtocol(Protocol):
-    """移动协议"""
+class MovementProtocol(Protocol):
+    """Movement protocol.
 
-    def to(self, cell: PatchCellProtocol) -> None: ...
-    def off(self) -> None: ...
-    def by(self, cell: PatchCellProtocol) -> None: ...
-    def random(self) -> None: ...
+    Defines the interface for actor movement operations.
+    """
+
+    def to(self, cell: PatchCellProtocol) -> None:
+        """Move to a specific cell.
+
+        Args:
+            cell: Target cell to move to.
+        """
+        ...
+
+    def off(self) -> None:
+        """Remove from current cell (go off-grid)."""
+        ...
+
+    def by(self, cell: PatchCellProtocol) -> None:
+        """Move by a cell offset.
+
+        Args:
+            cell: Cell offset for relative movement.
+        """
+        ...
+
+    def random(self) -> None:
+        """Move to a random neighboring cell."""
+        ...
+
+
+# Deprecated alias for backward compatibility
+_MovementsProtocol = MovementProtocol
 
 
 @runtime_checkable
@@ -261,7 +307,7 @@ class ActorProtocol(Observer, ModelElement, Protocol):
     def __init__(self, model: MainModelProtocol, **kwargs: Any) -> None: ...
 
     @property
-    def move(self) -> _MovementsProtocol: ...
+    def move(self) -> MovementProtocol: ...
     @property
     def layer(self) -> Optional[ModuleProtocol]: ...
     @property
@@ -326,16 +372,128 @@ class AgentsContainerProtocol(Protocol):
 
 @runtime_checkable
 class PatchCellProtocol(Protocol):
-    """PatchCell协议"""
+    """PatchCell protocol.
 
-    ...
+    Defines the interface for patch cells in the spatial grid.
+
+    Attributes:
+        indices: Grid indices (row, col) of the cell.
+        pos: Optional position tuple.
+        layer: The raster layer this cell belongs to.
+        agents: Container for agents at this cell.
+        coordinate: Geographic coordinates of the cell.
+        crs: Coordinate reference system.
+    """
+
+    indices: Optional[Position]
+    pos: Optional[Position]
+    max_agents: Optional[int]
+
+    @property
+    def layer(self) -> Optional[ModuleProtocol]:
+        """Get the raster layer this cell belongs to.
+
+        Returns:
+            The layer module.
+        """
+        ...
+
+    @property
+    def agents(self) -> AgentsContainerProtocol:
+        """Get the agents container at this cell.
+
+        Returns:
+            Container of agents at this location.
+        """
+        ...
+
+    @property
+    def coordinate(self) -> Tuple[float, float]:
+        """Get the geographic coordinates of this cell.
+
+        Returns:
+            (longitude, latitude) or (x, y) coordinates.
+        """
+        ...
+
+    @property
+    def geo_type(self) -> str:
+        """Get the geometry type.
+
+        Returns:
+            Geometry type name.
+        """
+        ...
+
+    @property
+    def crs(self) -> Any:
+        """Get the coordinate reference system.
+
+        Returns:
+            CRS object.
+        """
+        ...
+
+    def neighboring(
+        self,
+        moore: bool = False,
+        radius: int = 1,
+        include_center: bool = False,
+        annular: bool = False,
+    ) -> ActorsListProtocol:
+        """Get neighboring cells.
+
+        Args:
+            moore: Whether to include Moore neighborhood.
+            radius: Radius of the neighborhood.
+            include_center: Whether to include center cell.
+            annular: Whether to use annular neighborhood.
+
+        Returns:
+            List of neighboring cells.
+        """
+        ...
 
 
 @runtime_checkable
 class LinkNodeProtocol(Protocol):
-    """LinkNode协议"""
+    """LinkNode protocol.
 
-    ...
+    Defines the interface for linkable nodes (Actors and PatchCells).
+
+    Attributes:
+        unique_id: Unique identifier for the node.
+        breed: Type/breed of the node.
+    """
+
+    unique_id: UniqueID
+
+    @property
+    def breed(self) -> str:
+        """Get the breed/type of this node.
+
+        Returns:
+            Breed name.
+        """
+        ...
+
+    def get(
+        self,
+        attr: str,
+        target: Optional[str] = None,
+        default: Any = None,
+    ) -> Any:
+        """Get attribute value from this node or a target.
+
+        Args:
+            attr: Attribute name to get.
+            target: Optional target name to redirect to.
+            default: Default value if attribute not found.
+
+        Returns:
+            Attribute value.
+        """
+        ...
 
 
 @runtime_checkable

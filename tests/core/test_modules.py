@@ -5,7 +5,7 @@
 # GitHub   : https://github.com/SongshGeo
 # Website: https://cv.songshgeo.com/
 
-from typing import Set, Type
+from typing import Type
 
 import pytest
 
@@ -24,7 +24,7 @@ class ConcreteSubSystem(BaseSubSystem):
     def create_module(self, module_cls: Type[BaseModule], **kwargs) -> BaseModule:
         module = module_cls(self.model, **kwargs)
         self.add_module(module)
-        assert module in self.modules
+        assert module.name in self.modules
         return module
 
 
@@ -44,7 +44,7 @@ class TestSubSystemInitialization:
         2. 验证初始状态为 NEW
         3. 验证名称设置
         """
-        assert isinstance(subsystem.modules, Set)
+        assert isinstance(subsystem.modules, dict)
         assert len(subsystem.modules) == 0
         assert subsystem.state == State.NEW
         assert subsystem.name == "test_system"
@@ -80,7 +80,7 @@ class TestModuleManagement:
             for i in range(module_count)
         ]
         assert len(subsystem.modules) == module_count
-        assert all(m in subsystem.modules for m in modules)
+        assert all(m.name in subsystem.modules for m in modules)
 
     def test_duplicate_module_names(self, subsystem):
         """测试重复模块名称
@@ -132,7 +132,7 @@ class TestStateManagement:
         """
         for state in state_sequence:
             populated_subsystem.set_state(state)
-            assert all(m.state == state for m in populated_subsystem.modules)
+            assert all(m.state == state for m in populated_subsystem.modules.values())
 
 
 class TestLifecycleMethods:
@@ -156,7 +156,7 @@ class TestLifecycleMethods:
         """
         lifecycle_system._setup()
         assert lifecycle_system.state == State.READY
-        assert all(m.state == State.READY for m in lifecycle_system.modules)
+        assert all(m.state == State.READY for m in lifecycle_system.modules.values())
 
     def test_step_method(self, lifecycle_system):
         """测试步进方法
@@ -168,7 +168,7 @@ class TestLifecycleMethods:
         lifecycle_system._setup()
         lifecycle_system._step()
         assert lifecycle_system.state == State.READY
-        assert all(m.state == State.READY for m in lifecycle_system.modules)
+        assert all(m.state == State.READY for m in lifecycle_system.modules.values())
 
     def test_end_method(self, lifecycle_system):
         """测试结束方法
@@ -181,7 +181,7 @@ class TestLifecycleMethods:
         lifecycle_system._step()
         lifecycle_system._end()
         assert lifecycle_system.state == State.COMPLETE
-        assert all(m.state == State.COMPLETE for m in lifecycle_system.modules)
+        assert all(m.state == State.COMPLETE for m in lifecycle_system.modules.values())
 
 
 class TestOpeningBehavior:
@@ -211,7 +211,7 @@ class TestOpeningBehavior:
         3. 部分模块开启
         """
         states, expected = module_states
-        for module, state in zip(system_with_modules.modules, states):
+        for module, state in zip(system_with_modules.modules.values(), states):
             module._open = state
         assert system_with_modules.opening is expected
 
