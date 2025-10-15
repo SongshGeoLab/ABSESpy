@@ -1,3 +1,19 @@
+"""
+Schelling Segregation Model demonstrating ABSESpy's ABM capabilities.
+
+Classic model showing how mild individual preferences can lead to
+significant macro-level segregation patterns.
+
+This example showcases:
+- MainModel as simulation framework
+- Mesa grid integration for spatial structure
+- Data collection and reporting
+- Agent scheduling with shuffle_do()
+- Termination conditions based on agent states
+"""
+
+from typing import Optional
+
 from mesa.datacollection import DataCollector
 from mesa.space import SingleGrid
 
@@ -7,29 +23,47 @@ from .agents import SchellingAgent
 
 
 class Schelling(MainModel):
-    """Model class for the Schelling segregation model."""
+    """
+    Schelling segregation model implementation.
 
-    def __init__(self, seed=None, **kwargs):
-        """Create a new Schelling model.
+    Demonstrates how individual preferences for similar neighbors
+    can lead to large-scale segregation, even when individuals
+    would be happy with diverse neighborhoods.
+
+    ABSESpy Features Demonstrated:
+        - MainModel: Simulation framework with built-in agent management
+        - agents.shuffle_do(): Random activation of agents
+        - random: Integrated random number generator
+        - p (params): Convenient parameter access
+        - Mesa integration: Compatible with Mesa's grid and datacollection
+    """
+
+    def __init__(self, seed: Optional[int] = None, **kwargs) -> None:
+        """
+        Create a new Schelling segregation model.
 
         Args:
-            width: Width of the grid
-            height: Height of the grid
-            density: Initial chance for a cell to be populated (0-1)
-            minority_pc: Chance for an agent to be in minority class (0-1)
-            homophily: Minimum number of similar neighbors needed for happiness
-            radius: Search radius for checking neighbor similarity
-            seed: Seed for reproducibility
+            seed: Random seed for reproducibility.
+            **kwargs: Additional parameters including:
+                - width: Grid width
+                - height: Grid height  
+                - density: Initial cell occupation probability (0-1)
+                - minority_pc: Probability of being minority type (0-1)
+                - homophily: Minimum fraction of similar neighbors for happiness (0-1)
+                - radius: Neighborhood search radius
+
+        ABSESpy Feature: Parameters accessible via self.p
         """
         super().__init__(seed=seed, **kwargs)
         height, width = int(self.p.height), int(self.p.width)
-        # Initialize grid
+        
+        # Initialize grid (Mesa component, compatible with ABSESpy)
         self.grid = SingleGrid(width, height, torus=True)
 
-        # Track happiness
+        # Track happiness metric
         self.happy = 0
 
-        # Set up data collection
+        # Set up data collection (Mesa DataCollector)
         self.datacollector = DataCollector(
             model_reporters={
                 "happy": "happy",
@@ -49,6 +83,7 @@ class Schelling(MainModel):
         )
 
         # Create agents and place them on the grid
+        # ABSESpy Feature: self.random for consistent random number generation
         for _, pos in self.grid.coord_iter():
             if self.random.random() < self.p.density:
                 agent_type = 1 if self.random.random() < self.p.minority_pc else 0
@@ -58,9 +93,20 @@ class Schelling(MainModel):
         # Collect initial state
         self.datacollector.collect(self)
 
-    def step(self):
-        """Run one step of the model."""
+    def step(self) -> None:
+        """
+        Execute one time step of the model.
+
+        Activates all agents in random order, allowing them to
+        evaluate their happiness and potentially move. Continues
+        until all agents are happy.
+
+        ABSESpy Feature: agents.shuffle_do() provides randomized
+        activation order without manual shuffling.
+        """
         self.happy = 0  # Reset counter of happy agents
-        self.agents.shuffle_do("step")  # Activate all agents in random order
+        # ABSESpy Feature: shuffle_do activates agents in random order
+        self.agents.shuffle_do("step")
         self.datacollector.collect(self)  # Collect data
-        self.running = self.happy < len(self.agents)  # Continue until everyone is happy
+        # Termination condition: stop when everyone is happy
+        self.running = self.happy < len(self.agents)
