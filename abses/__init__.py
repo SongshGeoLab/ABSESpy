@@ -1,4 +1,4 @@
-#!/usr/bin/env python 3.11.0
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 # @Author  : Shuang Song
 # @Contact   : SongshGeo@gmail.com
@@ -28,19 +28,25 @@ __all__ = [
     "time_condition",
     "Experiment",
     "load_data",
+    "ABSESpyError",
+    "raster_attribute",
 ]
 
-from importlib.metadata import version
+from importlib.metadata import PackageNotFoundError, version
 
-__version__ = f"v{version('abses')}"
+try:
+    __version__ = f"v{version('abses')}"
+except PackageNotFoundError:
+    # Fallback for development mode when package metadata is not available
+    __version__ = "v0.7.5-dev"
 
-
-from .actor import Actor, alive_required, perception
-from .experiment import Experiment
-from .human import BaseHuman
-from .main import MainModel
-from .nature import BaseNature, PatchModule
-from .patch import PatchCell
-from .sequences import ActorsList
-from .time import time_condition
-from .tools.data import load_data
+from .agents.actor import Actor, alive_required, perception
+from .agents.sequences import ActorsList
+from .core.experiment import Experiment
+from .core.model import MainModel
+from .core.time_driver import time_condition
+from .human.human import BaseHuman
+from .space.cells import PatchCell, raster_attribute
+from .space.nature import BaseNature, PatchModule
+from .utils.data import load_data
+from .utils.errors import ABSESpyError

@@ -1,4 +1,4 @@
-#!/usr/bin/env python 3.11.0
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 # @Author  : Shuang (Twist) Song
 # @Contact   : SongshGeo@gmail.com
@@ -6,29 +6,24 @@
 # Website: https://cv.songshgeo.com/
 
 import numpy as np
-
-from abses import MainModel
-
-selection = {
-    "breed": "Farmer",
-    "id": 3,
-}
+import pytest
 
 
-def test_human_attributes(farmer_cls, admin_cls):
-    """测试人类模块的属性"""
-    model = MainModel()
-    human = model.human
-    assert human.agents is model.agents
-    assert len(human.actors()) == 0
-    human.agents.new(farmer_cls, 5)
-    model.agents.new(admin_cls, 5)
-    assert len(human.agents) == 10
+class TestHumanAttributes:
+    @pytest.fixture(name="human")
+    def human(self, model):
+        return model.human
+
+    def test_human_attributes(self, human, farmer_cls, admin_cls):
+        """测试人类模块的属性"""
+        assert len(human.actors) == 0
+        human.agents.new(farmer_cls, 5)
+        human.agents.new(admin_cls, 5)
+        assert len(human.agents) == 10
 
 
-def test_human_define(farmer_cls, admin_cls):
+def test_human_define(model, farmer_cls, admin_cls):
     """测试人口的定义"""
-    model = MainModel()
     human = model.human
     farmers = human.agents.new(farmer_cls, 5)
     admins = model.agents.new(admin_cls, 5)
@@ -36,8 +31,7 @@ def test_human_define(farmer_cls, admin_cls):
     farmers.update("test", np.arange(5))
     admins.update("test", np.arange(5))
 
-    human.define("test", agent_type="Farmer")
-    assert human.actors("test") == farmers
-    # 删除一个Agent，actors还会自动更新
-    human.agents.remove(farmers[0])
-    assert human.actors("test") == farmers[1:]
+    test = human.create_module("test", agent_type=farmer_cls)
+    assert "test" in human.collections
+    assert "test" == test.name
+    assert test.agents == farmers

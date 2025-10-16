@@ -1,4 +1,4 @@
-#!/usr/bin/env python 3.11.0
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 # @Author  : Shuang (Twist) Song
 # @Contact   : SongshGeo@gmail.com
@@ -39,7 +39,7 @@ class TestCustomer:
         actor0.move.to((0, 0))
         actor1.move.to((9, 9))
         actor0.price = price
-        c: Customer = model.nature.market.array_cells[pos[0], pos[1]]
+        c: Customer = model.nature.array_cells[pos[0], pos[1]]
         # act
         c.find_preference()
         # assert

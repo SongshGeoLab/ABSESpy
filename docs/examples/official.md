@@ -1,64 +1,68 @@
 # Official Examples
 
-This showcases the use of `ABSESpy` for ABM. We divide the models into two types: heuristic models[^1] and real-world models. The major difference is that real-world models have datasets as input, so usually simulations of the real SESs.
+Built-in examples showcasing ABSESpy features for agent-based modeling.
 
-## Heuristic models[^1]
+## About These Examples
 
-<div class="grid cards" markdown>
+These examples demonstrate core ABSESpy features through classic ABM models.
+Each includes complete source code, documentation, and tests.
 
--   :material-robot-happy:{ .lg .middle } __[Hotelling]__
+## Available Examples
 
-    ---
-    An adaptation of the Hotelling's Law model.
+    <div class="grid cards" markdown>
 
-    <!-- [:octicons-arrow-right-24: Checkout] -->
+    - :fire: __Fire Spread__
 
--   :material-robot-happy:{ .lg .middle } __[Forest Fire]__
+      ---
 
-    ---
-    An implementation of the `Fire` model.
+      Demonstrates spatial modeling, raster attributes, and visualization.
 
-    <!-- [:octicons-arrow-right-24: Checkout] -->
+      **Features**: `@raster_attribute`, `neighboring()`, `trigger()`
 
--   :material-robot-happy:{ .lg .middle } __[Predator-Prey]__
+      [:octicons-arrow-right-24: Tutorial](../tutorial/completing/fire_tutorial.ipynb) |
+      [:octicons-code-24: Source](https://github.com/SongshGeo/ABSESpy/tree/master/examples/fire_spread)
 
-    ---
-    An implementation of the Wolf-sheep ecosystem model.
+    - :wolf: __Wolf-Sheep Predation__
 
-    <!-- [:octicons-arrow-right-24: Checkout] -->
+      ---
 
-</div>
+      Agent lifecycle, movement, and ecological interactions.
 
+      **Features**: `move.random()`, `at.agents`, `die()`, reproduction
 
-## Real-world models
+      [:octicons-arrow-right-24: Tutorial](../tutorial/beginner/predation_tutorial.ipynb) |
+      [:octicons-code-24: Source](https://github.com/SongshGeo/ABSESpy/tree/master/examples/wolf_sheep)
 
-<div class="grid cards" markdown>
+    - :cityscape: __Schelling Segregation__
 
--   :material-robot-happy:{ .lg .middle } __[South China Livelihood]__
+      ---
 
-    ---
-    Here, we developed the model to explore the evolution of livelihood in the South of China.
+      Mesa framework integration and social dynamics modeling.
 
-    <!-- [:octicons-arrow-right-24: Checkout] -->
+      **Features**: `shuffle_do()`, `self.p`, Mesa compatibility
 
--   :material-robot-happy:{ .lg .middle } __[Yellow River Water Quota]__
+      [:octicons-code-24: Source](https://github.com/SongshGeo/ABSESpy/tree/master/examples/schelling) |
+      [:octicons-book-24: README](https://github.com/SongshGeo/ABSESpy/blob/master/examples/schelling/README.md)
 
-    ---
-    This agent-based model shows how water uses were change by water quota policy in the Yellow River Basin, China.
+    - :chart_with_upwards_trend: __Hotelling's Law__
 
-    <!-- [:octicons-arrow-right-24: Checkout] -->
+      ---
 
-</div>
+      Decision-making framework and spatial competition.
 
-[^1]:
-    Heuristic models are streamlined strategies used to tackle complex issues when precise formulas or solutions aren't feasible. These models rely on heuristic methods, practical tactics that may not always yield the best solution but offer a satisfactory one within an acceptable time limit.
+      **Features**: Links between Actors and PatchCells
 
+      [:octicons-arrow-right-24: Tutorial](../tutorial/beginner/hotelling_tutorial.ipynb) |
+      [:octicons-code-24: Source](https://github.com/SongshGeo/ABSESpy/tree/master/examples/hotelling_law)
 
-<!-- Heuristic models -->
-  [Hotelling]: ../tutorial/beginner/hotelling_tutorial.ipynb
-  [Forest Fire]: ../tutorial/completing/fire_tutorial.ipynb
-  [Predator-Prey]: ../tutorial/beginner/predation_tutorial.ipynb
+    </div>
 
-<!-- Real-world models -->
-  [South China Livelihood]: official/south_china_livelihood.md
-  [Yellow River Water Quota]: official/yellow_river_water_quota.md
+## Framework Advantages
+
+These examples highlight how ABSESpy reduces development effort:
+
+- **Spatial modeling made easy**: Built-in grid, raster attributes, neighbor queries
+- **Agent lifecycle management**: Automatic handling of birth/death, movement
+- **Mesa compatibility**: Use existing Mesa models with minimal changes
+- **Type safety**: Full type hints for better IDE support
+- **Testing support**: Comprehensive test utilities

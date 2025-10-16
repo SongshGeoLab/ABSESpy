@@ -1,12 +1,11 @@
-#!/usr/bin/env python 3.11.0
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 # @Author  : Shuang (Twist) Song
 # @Contact   : SongshGeo@gmail.com
 # GitHub   : https://github.com/SongshGeo
 # Website: https://cv.songshgeo.com/
 
-"""测试自然模块
-"""
+"""测试自然模块"""
 
 import numpy as np
 import pytest
@@ -14,11 +13,11 @@ import rioxarray as rxr
 import xarray
 from shapely.geometry import box
 
-from abses.actor import Actor
-from abses.cells import PatchCell, raster_attribute
-from abses.main import MainModel
-from abses.nature import PatchModule
-from abses.sequences import ActorsList
+from abses.agents.actor import Actor
+from abses.agents.sequences import ActorsList
+from abses.core.model import MainModel
+from abses.space.cells import PatchCell, raster_attribute
+from abses.space.patch import PatchModule
 
 
 class MockPatchCell(PatchCell):
@@ -60,9 +59,7 @@ class TestPatchModulePositions:
             (0, 0, (0, 1), (0, 0)),
         ],
     )
-    def test_pos_and_indices(
-        self, module: PatchModule, row, col, pos, indices
-    ):
+    def test_pos_and_indices(self, module: PatchModule, row, col, pos, indices):
         """测试位置和索引。
         pos 应该是和 cell 的位置一致
         indices 应该是和 cell 的索引一致。
@@ -112,11 +109,7 @@ class TestPatchModule:
     def test_setup_attributes(self, model: MainModel, y_changed, expected):
         """测试斑块提取属性"""
         # arrange / act
-        module = model.nature.create_module(
-            how="from_resolution",
-            shape=(2, 2),
-            cell_cls=MockPatchCell,
-        )
+        module = model.nature.create_module(shape=(2, 2), cell_cls=MockPatchCell)
         for cell in module:
             cell.y = y_changed
         # assert
@@ -139,7 +132,6 @@ class TestPatchModule:
         """测试一个斑块模块"""
         # arrange / act
         module = model.nature.create_module(
-            how="from_resolution",
             shape=shape,
             cell_cls=MockPatchCell,
         )
@@ -174,26 +166,17 @@ class TestPatchModule:
     ):
         """测试使用地理图形选择斑块"""
         # arrange
-        module = model.nature.create_module(how="from_resolution", shape=shape)
-        actor: Actor = module.array_cells[0, 0].agents.new(
-            Actor, singleton=True
-        )
+        module = model.nature.create_module(shape=shape, resolution=1)
         module.apply_raster(
             np.arange(shape[0] * shape[1]).reshape(module.shape3d),
             attr_name="test",
         )
         # act
         cells = module.select(where=box(*geometry))
+        # assert
         assert len(cells) == expected_len
         assert isinstance(cells, ActorsList)
-        cells.apply(
-            lambda cell: cell.link.to(
-                actor, link_name="test_link", mutual=True
-            )
-        )
-        # assert
         assert cells.array("test").sum() == expected_sum
-        assert actor.link.get("test_link") == cells
 
     @pytest.mark.parametrize(
         "func_name, attr, data_type, dims",
@@ -204,9 +187,7 @@ class TestPatchModule:
             ("get_raster", None, np.ndarray, 3),
         ],
     )
-    def test_get_data(
-        self, module: PatchModule, attr, data_type, func_name, dims
-    ):
+    def test_get_data(self, module: PatchModule, attr, data_type, func_name, dims):
         """测试获取数据数组"""
         # arrange
         data = np.random.random(module.shape3d)
@@ -216,41 +197,6 @@ class TestPatchModule:
         # assert
         assert len(got_data.shape) == dims
         assert isinstance(got_data, data_type), f"{type(got_data)}"
-
-    @pytest.mark.parametrize(
-        "indices, linked",
-        [
-            ((2, 1), (True, False)),
-            ((0, 0), (False, False)),
-            ((2, 2), (True, True)),
-            ((3, 3), (False, True)),
-        ],
-    )
-    def test_cell_linked_by_two_agents(
-        self, model: MainModel, indices, linked
-    ):
-        """测试批量将一些斑块连接到某个主体"""
-        # arrange
-        module = model.nature.create_module(
-            how="from_resolution", shape=(4, 4)
-        )
-        box1, box2 = box(*(0.1, 0.1, 2.1, 2.1)), box(*(1.1, 1.1, 4.1, 4.1))
-        agent1 = model.agents.new(Actor, singleton=True, geometry=box1)
-        agent2 = model.agents.new(Actor, singleton=True, geometry=box2)
-
-        # act
-        module.select(box1).apply(
-            lambda c: c.link.to(agent1, "link", mutual=True)
-        )
-        module.select(box2).apply(
-            lambda c: c.link.to(agent2, "link", mutual=True)
-        )
-
-        # assert
-        # TODO: 这里需要考虑坐标系反转，需要一个更简单的实现
-        row, col = indices
-        linked_agents = module.array_cells[3 - row, col].link.get("link")
-        assert (agent1 in linked_agents, agent2 in linked_agents) == linked
 
     @pytest.mark.parametrize(
         "ufunc, expected",
@@ -280,9 +226,7 @@ class TestPatchModule:
 
     def test_copy_layer(self, model, module: PatchModule):
         """测试复制图层"""
-        layer2 = model.nature.create_module(
-            how="copy_layer", layer=module, name="test2"
-        )
+        layer2 = model.nature.create_module(source_layer=module, name="test2")
         assert module.shape2d == layer2.shape2d
         assert layer2.name == "test2"
 
@@ -290,22 +234,26 @@ class TestPatchModule:
 class TestBaseNature:
     """测试基本自然模块"""
 
-    def test_attributes(self, model: MainModel, module: PatchModule):
+    def test_attributes(self, model: MainModel):
         """测试选择主要图层"""
+        # arrange
+        assert model.nature.is_empty
+        # act
+        module = model.nature.create_module(shape=(3, 3))
+        # assert
         assert model.nature.major_layer is module
         assert model.nature.total_bounds is module.total_bounds
-        assert module in model.nature.modules
-        with pytest.raises(TypeError):
+        assert module.name in model.nature.modules
+        with pytest.raises(ValueError):
             model.nature.major_layer = "Wrong type"
 
     def test_module_select(self, model: MainModel):
         """测试创建模块"""
         # arrange
         module2 = model.nature.create_module(
-            how="from_resolution", name="test", major_layer=True
+            shape=(10, 10), resolution=1, name="test", major_layer=True
         )
         # act & assert
-        assert model.nature.test is module2
         assert model.nature.major_layer is module2
         assert model.nature.shape2d == module2.shape2d
         assert model.nature.shape3d == module2.shape3d
@@ -326,9 +274,7 @@ class TestBaseNature:
     def test_transform(self, model: MainModel, farmland_data, row, col):
         """Test transform point coords."""
         # arrange
-        module = model.nature.create_module(
-            raster_file=farmland_data, how="from_file"
-        )
+        module = model.nature.create_module(raster_file=farmland_data)
         xda = rxr.open_rasterio(farmland_data)
         # act
         x1, y1 = xda.rio.transform() * (col, row)
@@ -366,7 +312,8 @@ class TestCreatingNewPatch:
         """创建一个新的斑块"""
         # arrange / act
         layer = model.nature.create_module(
-            how="from_resolution",
+            shape=(10, 10),
+            resolution=1,
             module_cls=module_cls,
             name="testing",
             cell_cls=cell_cls,

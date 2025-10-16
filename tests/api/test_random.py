@@ -1,4 +1,4 @@
-#!/usr/bin/env python 3.11.0
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 # @Author  : Shuang (Twist) Song
 # @Contact   : SongshGeo@gmail.com
@@ -10,8 +10,8 @@ import pytest
 from numpy import isclose
 
 from abses import Actor, MainModel
-from abses._bases.errors import ABSESpyError
-from abses.sequences import ActorsList
+from abses.agents.sequences import ActorsList
+from abses.utils.errors import ABSESpyError
 
 
 class TestRandomActorsList:

@@ -1,4 +1,4 @@
-#!/usr/bin/env python 3.11.0
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 # @Author  : Shuang (Twist) Song
 # @Contact   : SongshGeo@gmail.com
@@ -129,7 +129,6 @@ class Hotelling(MainModel):
         layer = self.nature.create_module(
             cell_cls=Customer,
             name="market",
-            how="from_resolution",
             shape=(10, 10),
         )
 

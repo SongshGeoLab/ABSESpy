@@ -6,8 +6,8 @@ date: 2023-01-10
 
 ## Major human module
 
-:::abses.human.BaseHuman
+:::abses.human.human.BaseHuman
 
 ## Human submodule
 
-:::abses.human.HumanModule
+:::abses.human.human.HumanModule

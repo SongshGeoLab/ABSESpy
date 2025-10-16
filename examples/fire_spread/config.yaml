@@ -4,6 +4,7 @@ defaults:
 
 exp:
   name: fire_spread
+  outdir: out
   repeats: 11
 
 reports:
@@ -21,4 +22,6 @@ time:
   end: 25
 
 log:
+  name: fire_spread
   level: INFO
+  console: true

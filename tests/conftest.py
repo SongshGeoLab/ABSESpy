@@ -1,4 +1,4 @@
-#!/usr/bin/env python 3.11.0
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 # @Author  : Shuang (Twist) Song
 # @Contact   : SongshGeo@gmail.com
@@ -9,16 +9,47 @@
 PyTest fixtures.
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import geopandas as gpd
 import numpy as np
 import pytest
 from hydra import compose, initialize
 from shapely.geometry import Point
 
-from abses import Actor, MainModel
-from abses.cells import PatchCell
-from abses.nature import PatchModule
-from abses.tools.data import load_data
+from abses import MainModel
+from abses.agents.actor import Actor
+from abses.utils.data import load_data
+
+if TYPE_CHECKING:
+    from abses.space.cells import PatchCell
+    from abses.space.patch import PatchModule
+
+
+@pytest.fixture(name="model")
+def mock_model_fixture():
+    """创建模拟的主模型"""
+
+    class TestModel(MainModel):
+        """测试用模型"""
+
+        name = "Test"
+
+    return TestModel(parameters={"test_module": {"param1": "value1"}})
+
+
+@pytest.fixture(name="mock_model")
+def mock_model_fixture_alias():
+    """创建模拟的主模型"""
+
+    class TestModel(MainModel):
+        """测试用模型"""
+
+        name = "Test"
+
+    return TestModel(parameters={"test_module": {"param1": "value1"}})
 
 
 @pytest.fixture(name="test_config")
@@ -85,27 +116,11 @@ def admin_cls(testing_breeds):
     return testing_breeds.get("Admin")
 
 
-@pytest.fixture(name="model", scope="function")
-def mock_model() -> MainModel:
-    """创建一个模型"""
-
-    class TestModel(MainModel):
-        """测试用模型"""
-
-        name = "Test"
-
-    return TestModel()
-
-
 @pytest.fixture(name="module", scope="function")
-def mock_module(model: MainModel) -> PatchModule:
+def mock_module(mock_model: MainModel) -> PatchModule:
     """创建一个（2*2）的斑块模块"""
-    module: PatchModule = model.nature.create_module(
-        how="from_resolution", shape=(2, 2)
-    )
-    module.apply_raster(
-        np.arange(4).reshape(module.shape3d), attr_name="init_value"
-    )
+    module: PatchModule = mock_model.nature.create_module(shape=(2, 2), resolution=1)
+    module.apply_raster(np.arange(4).reshape(module.shape3d), attr_name="init_value")
     return module
 
 

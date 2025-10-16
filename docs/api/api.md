@@ -17,7 +17,6 @@ Have a basic idea on how to implement your own model based on `ABSESpy`.
 - 🌍 Generally, the default [`BaseNature`](../api/nature.md) is enough in most cases, but you may want to create a layer ([`PatchModule`](../api/layer.md)) as a world where actors live.
 - 🗺️ Wait, if you want more flexibility to operate the grid cells, it's a good idea to customize [`PatchCell`](../api/cells.md).
 - 🤖 Now, introducing your custom agents (actors in social-ecological system context) by custom a subclass of [`Actor`](../api/agents.md).
-- (🥷 *Advanced skill*) Considering what decisions your agents need to make, apply our advanced decision-making framework. You may need to check the docs of [`Decision`](../api/decisions.md).
 - 🧪 Finally, using [`Experiment`](../api/experiment.md) for batch runs and testing different parameters.
 
 ## Operation
