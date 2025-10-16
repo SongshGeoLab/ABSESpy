@@ -2,9 +2,9 @@
 
 ## Agent-based model
 
-- [Introduction of Agent-based Modeling](https://gistbok.ucgis.org/bok-topics/agent-based-modeling)
+- [Introduction to Agent-based Modeling (Wikipedia)](https://en.wikipedia.org/wiki/Agent-based_model)
 
 
 ## Developers
 
-- [`Pytest` awesome plugins](https://towardsdatascience.com/pytest-plugins-to-love-%EF%B8%8F-9c71635fbe22)
+- [Pytest Plugin List (Official Documentation)](https://docs.pytest.org/en/stable/reference/plugin_list.html)
