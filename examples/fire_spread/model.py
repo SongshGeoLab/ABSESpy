@@ -112,9 +112,12 @@ class Forest(MainModel):
             major_layer=True,
         )
         # Randomly select cells for tree placement
-        chosen_patches = grid.random.choice(self.num_trees, replace=False)
+        all_cells = ActorsList(self, grid.array_cells.flatten())
+        chosen_patches = all_cells.random.choice(
+            size=self.num_trees, replace=False, as_list=True
+        )
         # Grow trees on selected patches using trigger for batch operation
-        chosen_patches.trigger("grow")
+        ActorsList(self, chosen_patches).trigger("grow")
         # Ignite leftmost column trees using ActorsList
         ActorsList(self, grid.array_cells[:, 0]).trigger("ignite")
 
@@ -136,7 +139,8 @@ class Forest(MainModel):
             Ratio of scorched trees (state=3) to total trees.
         """
         state = self.nature.get_raster("state")
-        return np.squeeze(state == 3).sum() / self.num_trees
+        burned_count = np.squeeze(state == 3).sum()
+        return float(burned_count) / self.num_trees if self.num_trees > 0 else 0.0
 
     @property
     def num_trees(self) -> int:

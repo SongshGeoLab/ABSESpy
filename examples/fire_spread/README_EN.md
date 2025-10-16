@@ -85,8 +85,9 @@ def step(self):
 
 ```python
 # ✨ ABSESpy: ActorsList batch operations
-chosen_patches = grid.random.choice(self.num_trees, replace=False)
-chosen_patches.trigger("grow")  # Batch call grow method
+all_cells = ActorsList(self, grid.array_cells.flatten())
+chosen_patches = all_cells.random.choice(size=self.num_trees, replace=False, as_list=True)
+ActorsList(self, chosen_patches).trigger("grow")  # Batch call grow method
 
 # Batch ignite leftmost column
 ActorsList(self, grid.array_cells[:, 0]).trigger("ignite")
@@ -185,7 +186,8 @@ After running, generates in `out/fire_spread/YYYY-MM-DD/HH-MM-SS/`:
 def burned_rate(self) -> float:
     """Calculate burn rate"""
     state = self.nature.get_raster("state")
-    return np.squeeze(state == 3).sum() / self.num_trees
+    burned_count = np.squeeze(state == 3).sum()
+    return float(burned_count) / self.num_trees if self.num_trees > 0 else 0.0
 ```
 
 ## 🎓 Learning Points
