@@ -1,4 +1,4 @@
-#!/usr/bin/env python 3.11.0
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 # @Author  : Shuang Song
 # @Contact   : SongshGeo@gmail.com
@@ -123,7 +123,7 @@ class MainModel(Model, BaseStateManager):
             parameters.get("reports", {})
         )
         self.do_each("_initialize", order=DEFAULT_INIT_ORDER)
-        
+
         # Setup logging if configured
         log_cfg = self.settings.get("log", {})
         if log_cfg:
@@ -232,20 +232,20 @@ class MainModel(Model, BaseStateManager):
 
     def _setup_logger(self, log_cfg: Dict[str, Any]) -> None:
         """Setup logging for the model.
-        
+
         Args:
             log_cfg: Logging configuration dictionary.
         """
         if not log_cfg:
             return
-        
+
         # Parse logging configuration
         name = str(log_cfg.get("name", "model")).replace(".log", "")
         level = log_cfg.get("level", "INFO")
         rotation = log_cfg.get("rotation", None)  # e.g., "1 day"
         retention = log_cfg.get("retention", None)  # e.g., "10 days"
         console = log_cfg.get("console", True)
-        
+
         # Setup integrated logging for ABSESpy and Mesa
         setup_model_logger(
             name=name,
@@ -255,7 +255,7 @@ class MainModel(Model, BaseStateManager):
             rotation=rotation,
             retention=retention,
         )
-        
+
         # Display startup info
         setup_logger_info(self.exp)
         self._logging_begin()

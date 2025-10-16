@@ -1,4 +1,4 @@
-#!/usr/bin/env python 3.11.0
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 # @Author  : Shuang (Twist) Song
 # @Contact   : SongshGeo@gmail.com
@@ -8,15 +8,15 @@
 """
 Test Schelling segregation model.
 """
+
 from typing import TYPE_CHECKING
 
 import pytest
 
-from examples.schelling.agents import SchellingAgent
 from examples.schelling.model import Schelling
 
 if TYPE_CHECKING:
-    from _pytest.fixtures import FixtureRequest
+    pass
 
 
 @pytest.fixture(name="model_fixture")
@@ -44,7 +44,7 @@ class TestSchellingAgent:
         assert len(model_fixture.agents) > 0
         # Check agents have type attribute
         for agent in model_fixture.agents:
-            assert hasattr(agent, 'type')
+            assert hasattr(agent, "type")
             assert agent.type in [0, 1]
 
     def test_agent_on_grid(self, model_fixture: Schelling) -> None:
@@ -54,7 +54,7 @@ class TestSchellingAgent:
         for _, pos in model_fixture.grid.coord_iter():
             if not model_fixture.grid.is_cell_empty(pos):
                 agent_count += 1
-        
+
         assert agent_count == len(model_fixture.agents)
 
 
@@ -75,7 +75,7 @@ class TestSchellingModel:
 
     def test_model_step(self, model_fixture: Schelling) -> None:
         """Test model can execute a step."""
-        initial_happy = model_fixture.happy
+        _initial_happy = model_fixture.happy  # noqa: F841
         model_fixture.step()
         # Happy count should be updated (could be same, higher, or lower)
         assert model_fixture.happy >= 0
@@ -86,14 +86,14 @@ class TestSchellingModel:
         for _ in range(3):
             if model_fixture.running:
                 model_fixture.step()
-        
+
         # Get collected data
         model_df = model_fixture.datacollector.get_model_vars_dataframe()
         assert len(model_df) > 0
-        assert 'happy' in model_df.columns
-        assert 'pct_happy' in model_df.columns
-        assert 'population' in model_df.columns
-        assert 'minority_pct' in model_df.columns
+        assert "happy" in model_df.columns
+        assert "pct_happy" in model_df.columns
+        assert "population" in model_df.columns
+        assert "minority_pct" in model_df.columns
 
     def test_model_termination(self) -> None:
         """Test model stops when everyone is happy."""
@@ -109,14 +109,14 @@ class TestSchellingModel:
             }
         }
         model = Schelling(parameters=params)
-        
+
         # Run model
         max_steps = 100
         for step in range(max_steps):
             if not model.running:
                 break
             model.step()
-        
+
         # Model should eventually stop
         assert not model.running or step == max_steps - 1
 
@@ -125,4 +125,3 @@ class TestSchellingModel:
         model_fixture.step()
         # Happy count should be between 0 and total population
         assert 0 <= model_fixture.happy <= len(model_fixture.agents)
-

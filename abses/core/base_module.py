@@ -1,4 +1,4 @@
-#!/usr/bin/env python 3.11.0
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 # @Author  : Shuang (Twist) Song
 # @Contact   : SongshGeo@gmail.com
@@ -303,11 +303,11 @@ class BaseModule(BaseModelElement, BaseStateManager, Observer, ModuleProtocol, A
         """
         # Wrap the user-defined methods
         self._user_setup = self.setup
-        self.setup = self._setup  # type: ignore[method-assign]
+        self.setup = self._setup
         self._user_step = self.step
-        self.step = self._step  # type: ignore[method-assign]
+        self.step = self._step
         self._user_end = self.end
-        self.end = self._end  # type: ignore[method-assign]
+        self.end = self._end
         self.set_state(State.INIT)
         self.initialize()
 

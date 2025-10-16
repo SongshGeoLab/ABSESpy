@@ -20,18 +20,19 @@ from examples.schelling.model import Schelling
 def get_happy_agents(model):
     """
     Display a text count of how many happy agents there are.
-    
+
     Args:
         model: The Schelling model instance.
-        
+
     Returns:
         Solara Markdown component showing happy agent count.
     """
     return solara.Markdown(
-        "# Schelling Segregation Model\n" 
+        "# Schelling Segregation Model\n"
         f"**Happy agents: {model.happy} / {len(model.agents)}**\n"
-        f"**Satisfaction: {model.happy / len(model.agents) * 100:.1f}%**" 
-        if len(model.agents) > 0 else "**No agents**",
+        f"**Satisfaction: {model.happy / len(model.agents) * 100:.1f}%**"
+        if len(model.agents) > 0
+        else "**No agents**",
         style={"width": "100%", "height": "200px"},
     )
 
@@ -39,12 +40,12 @@ def get_happy_agents(model):
 def agent_portrayal(agent):
     """
     Define how agents are displayed on the grid.
-    
+
     Uses Mesa's AgentPortrayalStyle for consistent visualization.
-    
+
     Args:
         agent: The agent to portray.
-        
+
     Returns:
         AgentPortrayalStyle defining visual representation.
     """
@@ -100,10 +101,8 @@ model1 = Schelling(parameters=default_params)
 # Create space renderer using latest Mesa API
 renderer = SpaceRenderer(
     model=model1,
-    backend="matplotlib"  # Can also use "altair"
-).render(
-    agent_portrayal=agent_portrayal
-)
+    backend="matplotlib",  # Can also use "altair"
+).render(agent_portrayal=agent_portrayal)
 
 # Create plot components
 HappyPlot = make_plot_component("happy", page=1)

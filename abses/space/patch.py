@@ -1,4 +1,4 @@
-#!/usr/bin/env python 3.11.0
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 # @Author  : Shuang (Twist) Song
 # @Contact   : SongshGeo@gmail.com
@@ -563,7 +563,7 @@ class PatchModule(BaseModule, RasterLayer):
             The result of the function applied to the array cells.
         """
         func = functools.partial(ufunc, *args, **kwargs)
-        return np.vectorize(func)(self.array_cells, *args, **kwargs)
+        return np.vectorize(func)(self.array_cells)
 
     def coord_iter(self) -> Iterator[tuple[Coordinate, PatchCell]]:
         """

@@ -77,8 +77,8 @@ from examples.schelling.model import Schelling
 # Create model (ABSESpy parameter format)
 params = {
     "model": {
-        "width": 20, 
-        "height": 20, 
+        "width": 20,
+        "height": 20,
         "density": 0.8,
         "minority_pc": 0.5,
         "homophily": 0.4,  # 40% similar neighbors needed
@@ -127,7 +127,7 @@ class Schelling(MainModel):  # ✨ ABSESpy: Simulation framework
 ```python
 def __init__(self, seed=None, **kwargs):
     super().__init__(seed=seed, **kwargs)
-    
+
     # ✨ ABSESpy: Unified random number generator
     for _, pos in self.grid.coord_iter():
         if self.random.random() < self.p.density:
@@ -197,7 +197,7 @@ from mesa import Agent  # Directly use Mesa's Agent
 
 class SchellingAgent(Agent):
     """Uses Mesa's native Agent class"""
-    
+
     def __init__(self, model, agent_type: int):
         super().__init__(model)  # Mesa Agent initialization
         self.type = agent_type
@@ -286,10 +286,10 @@ Try experimenting with:
 
 Based on:
 
-**Original Paper**:  
+**Original Paper**:
 [Schelling, Thomas C. "Dynamic Models of Segregation." Journal of Mathematical Sociology, 1971.](https://www.stat.berkeley.edu/~aldous/157/Papers/Schelling_Seg_Models.pdf)
 
-**Interactive Demo**:  
+**Interactive Demo**:
 [Parable of the Polygons](http://ncase.me/polygons/) by Vi Hart and Nicky Case
 
 ---

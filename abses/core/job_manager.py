@@ -1,4 +1,4 @@
-#!/usr/bin/env python 3.11.0
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 # @Author  : Shuang (Twist) Song
 # @Contact   : SongshGeo@gmail.com
@@ -35,7 +35,8 @@ class ExperimentManager:
                 f"{self.__class__.__name__} is set, trying to initialize {model_cls.__name__} experiment."
             )
         if not hasattr(self, "_datasets"):
-            self._datasets: Dict[Tuple[int, int], pd.DataFrame] = {}
+            # Each item should be a row-like mapping/Series to build a DataFrame
+            self._datasets: Dict[Tuple[int, int], Dict[str, Any]] = {}
             self._seeds: Dict[Tuple[int, int], Optional[int]] = {}
             self._overrides: Dict[Tuple[int, int], Dict[str, Any]] = {}
             self._hooks: Dict[str, HookFunc] = {}
@@ -62,10 +63,17 @@ class ExperimentManager:
         self,
         key: Tuple[int, int],
         overrides: Dict[str, Any],
-        datasets: MainModelProtocol,
+        datasets: Dict[str, Any],
         seed: Optional[int] = None,
     ) -> None:
-        """更新实验结果"""
+        """更新实验结果
+
+        Args:
+            key: (job_id, repeat_id) tuple
+            overrides: Configuration overrides for this run
+            datasets: Row-like mapping of metrics/values to store
+            seed: Random seed used for this run
+        """
         self._datasets[key] = datasets
         self._seeds[key] = seed
         self._overrides[key] = overrides
@@ -102,6 +110,8 @@ class ExperimentManager:
         """Add a hook to the experiment."""
         if hook_name is None:
             hook_name = hook_func.__name__
-        assert hook_name not in self._hooks, f"Hook {hook_name} already exists."
-        assert callable(hook_func), "hook_func must be a callable."
+        if hook_name in self._hooks:
+            raise ValueError(f"Hook {hook_name} already exists.")
+        if not callable(hook_func):
+            raise TypeError("hook_func must be a callable.")
         self._hooks[hook_name] = hook_func
