@@ -1,4 +1,4 @@
-#!/usr/bin/env python 3.11.0
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 # @Author  : Shuang (Twist) Song
 # @Contact   : SongshGeo@gmail.com
@@ -14,10 +14,10 @@ from typing import (
     Any,
     Callable,
     Dict,
-    Iterable,
     List,
     Literal,
     Optional,
+    Sequence,
     cast,
 )
 
@@ -52,12 +52,21 @@ def _getattr_to_reporter(
     return attr_reporter
 
 
-def _func_reporter(reporter: List) -> Callable[..., Any]:
-    """函数报告器"""
-    func, params = reporter[0], reporter[1]
+def _func_reporter(reporter: Sequence) -> Callable[..., Any]:
+    """函数报告器
+
+    Args:
+        reporter: Sequence of [func], [func, args], or [func, args, kwargs]
+
+    Returns:
+        A callable that applies func with the bound args/kwargs
+    """
+    func = reporter[0]
+    params = reporter[1] if len(reporter) > 1 else ()
+    kwargs_dict = reporter[2] if len(reporter) > 2 else {}
 
     def func_reporter(agent: Actor):
-        return func(agent, *params)
+        return func(agent, *params, **kwargs_dict)
 
     return func_reporter
 
@@ -67,13 +76,32 @@ def clean_to_reporter(
     *args,
     **kwargs,
 ) -> Callable[..., Any]:
-    """将字符串转换为函数"""
+    """将字符串转换为函数
+
+    Args:
+        reporter: Can be:
+            - str: attribute name to get from object
+            - list/tuple: [func, args] or [func, args, kwargs]
+            - callable: function to call (args/kwargs bound if provided)
+
+    Returns:
+        A callable reporter function
+    """
     if isinstance(reporter, str):
         reporter = _getattr_to_reporter(attribute_name=reporter)
-    elif isinstance(reporter, Iterable):
+    elif isinstance(reporter, (list, tuple)):
+        # Expect [func], [func, args], or [func, args, kwargs]
+        if not (1 <= len(reporter) <= 3):
+            raise ValueError(
+                "List/tuple reporter must be [func], [func, args], or [func, args, kwargs]."
+            )
         reporter = _func_reporter(reporter)
     elif callable(reporter):
-        reporter = _func_reporter([reporter, args, kwargs])
+        # Only bind args/kwargs if they were provided
+        if args or kwargs:
+            reporter = _func_reporter([reporter, args, kwargs])
+        else:
+            reporter = _func_reporter([reporter])
     return reporter
 
 
@@ -188,12 +216,17 @@ class ABSESpyDataCollector:
             return pd.concat([pd.DataFrame(res) for res in results])
         return pd.DataFrame()
 
-    def get_final_vars_report(self, model: MainModel) -> pd.DataFrame:
-        """Report at the end of this model."""
+    def get_final_vars_report(self, model: MainModel) -> Dict[str, Any]:
+        """Report at the end of this model.
+
+        Returns:
+            A dictionary mapping variable names to their computed values.
+        """
         if not self.final_reporters:
             logger.warning(
-                "No final reporters have been definedreturning empty DataFrame."
+                "No final reporters have been defined, returning empty dict."
             )
+            return {}
         return {var: func(model) for var, func in self.final_reporters.items()}
 
     def collect(self, model: MainModel):

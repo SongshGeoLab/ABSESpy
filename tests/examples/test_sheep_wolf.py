@@ -1,4 +1,4 @@
-#!/usr/bin/env python 3.11.0
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 # @Author  : Shuang (Twist) Song
 # @Contact   : SongshGeo@gmail.com
@@ -154,7 +154,7 @@ class TestWolfSheepModel:
 
     def test_model_step(self, model_fixture: WolfSheepModel) -> None:
         """Test model can execute a step."""
-        initial_tick = model_fixture.time.tick
+        _initial_tick = model_fixture.time.tick  # noqa: F841
         model_fixture.step()
         # Time should not advance here (step doesn't call time.go)
         # But the step should execute without error

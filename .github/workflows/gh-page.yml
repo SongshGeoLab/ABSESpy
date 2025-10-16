@@ -55,14 +55,14 @@ jobs:
         run: |
           git fetch origin gh-pages --depth=1 || true
           poetry run mike deploy --push dev
-      
+
       - name: Deploy documentation (master branch)
         if: github.ref == 'refs/heads/master'
         run: |
           git fetch origin gh-pages --depth=1 || true
           poetry run mike deploy --push --update-aliases 0.8 latest
           poetry run mike set-default --push latest
-      
+
       - name: Deploy documentation (version tags)
         if: startsWith(github.ref, 'refs/tags/v')
         run: |

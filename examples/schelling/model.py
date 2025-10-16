@@ -46,7 +46,7 @@ class Schelling(MainModel):
             seed: Random seed for reproducibility.
             **kwargs: Additional parameters including:
                 - width: Grid width
-                - height: Grid height  
+                - height: Grid height
                 - density: Initial cell occupation probability (0-1)
                 - minority_pc: Probability of being minority type (0-1)
                 - homophily: Minimum fraction of similar neighbors for happiness (0-1)
@@ -56,7 +56,7 @@ class Schelling(MainModel):
         """
         super().__init__(seed=seed, **kwargs)
         height, width = int(self.p.height), int(self.p.width)
-        
+
         # Initialize grid (Mesa component, compatible with ABSESpy)
         self.grid = SingleGrid(width, height, torus=True)
 

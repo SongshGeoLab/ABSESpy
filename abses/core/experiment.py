@@ -1,4 +1,4 @@
-#!/usr/bin/env python 3.11.0
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 # @Author  : Shuang (Twist) Song
 # @Contact   : SongshGeo@gmail.com
@@ -86,30 +86,18 @@ def convert_to_python_type(value: Any) -> Any:
 
 
 def relative_path_from_to(from_path: Path, to_path: Path) -> Path:
-    """Calculate the relative path from one path to another."""
-    # 将两个路径都解析为绝对路径
-    from_path = from_path.resolve()
-    to_path = to_path.resolve()
+    """Calculate the relative path from one path to another.
 
-    # 获取两个路径的公共父目录
-    common_ancestor = Path(from_path.anchor)
-    # 从根目录向下寻找公共路径
-    for part in from_path.parts:
-        if (
-            to_path.parts[: from_path.parts.index(part) + 1]
-            == from_path.parts[: from_path.parts.index(part) + 1]
-        ):
-            common_ancestor = Path(common_ancestor) / part
-        else:
-            break
+    Args:
+        from_path: Starting path
+        to_path: Target path
 
-    # 计算从起始路径到公共父目录的距离
-    relative_from = Path(*[".."] * (len(from_path.relative_to(common_ancestor).parts)))
-    # 计算从公共父目录到目标路径的距离
-    relative_to = to_path.relative_to(common_ancestor)
-
-    # 组合两个部分得到最终的相对路径
-    return relative_from / relative_to
+    Returns:
+        Relative path from from_path to to_path
+    """
+    return Path(
+        os.path.relpath(Path(to_path).resolve(), start=Path(from_path).resolve())
+    )
 
 
 def run_single(

@@ -1,4 +1,4 @@
-#!/usr/bin/env python 3.11.0
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 # @Author  : Shuang (Twist) Song
 # @Contact   : SongshGeo@gmail.com
@@ -21,13 +21,11 @@ from typing import (
     Sequence,
     Tuple,
     TypeVar,
-    cast,
     overload,
 )
 
 import numpy as np
 from matplotlib import pyplot as plt
-from matplotlib.axes import Axes
 from scipy import ndimage
 
 from abses.utils.regex import CAMEL_NAME
@@ -39,7 +37,10 @@ except ImportError:
 
 F = TypeVar("F", bound=Callable[..., Any])
 
-IncludeFlag: TypeAlias = str | bool | Iterable[str] | Dict[str, str]
+# Separate type aliases for better overload typing
+AttrFilter: TypeAlias = str | bool | Iterable[str]
+IncludeMap: TypeAlias = Dict[str, str]
+IncludeFlag: TypeAlias = AttrFilter | IncludeMap
 
 
 def get_buffer(
@@ -163,7 +164,7 @@ def with_axes(
             ax = kwargs.get("ax", None)
             if ax is None:
                 _, ax = plt.subplots(figsize=figsize)
-                kwargs["ax"] = cast(Axes, ax)
+                kwargs["ax"] = ax
                 result = func(*args, **kwargs)
                 return result
             else:
@@ -187,11 +188,15 @@ def set_null_values(arr: np.ndarray, mask: np.ndarray):
 
     Returns:
         The modified array with null values set.
+        Note: Integer arrays will be upcast to float to support NaN values.
     """
     if arr.shape != mask.shape:
         raise ValueError(f"Mismatching shape {mask.shape} and {arr.shape}.")
     # Check if the dtype is float or integer
     if arr.dtype.kind in {"f", "i"}:
+        # Integer arrays must be upcast to float to support NaN
+        if arr.dtype.kind == "i":
+            arr = arr.astype(float, copy=True)
         null_value = np.nan
     # Unicode string
     elif arr.dtype.kind == "U":
@@ -208,22 +213,22 @@ def set_null_values(arr: np.ndarray, mask: np.ndarray):
 @overload
 def clean_attrs(
     all_attrs: Iterable[str],
-    include: Optional[IncludeFlag],
+    include: Optional[AttrFilter],
     exclude: Optional[Iterable[str]] = None,
-) -> Dict[str, str]: ...
+) -> List[str]: ...
 
 
 @overload
 def clean_attrs(
     all_attrs: Iterable[str],
-    include: Dict[str, str],
+    include: IncludeMap,
     exclude: Optional[Iterable[str]] = None,
 ) -> Dict[str, str]: ...
 
 
 def clean_attrs(
     all_attrs: Iterable[str],
-    include: Optional[IncludeFlag | Dict[str, str]] = True,
+    include: Optional[IncludeFlag] = True,
     exclude: Optional[Iterable[str]] = None,
 ) -> List[str] | Dict[str, str]:
     """

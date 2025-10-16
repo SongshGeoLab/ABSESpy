@@ -1,12 +1,11 @@
-#!/usr/bin/env python 3.11.0
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 # @Author  : Shuang (Twist) Song
 # @Contact   : SongshGeo@gmail.com
 # GitHub   : https://github.com/SongshGeo
 # Website: https://cv.songshgeo.com/
 
-"""This is for SearchPathPlugin of hydra
-"""
+"""This is for SearchPathPlugin of hydra"""
 
 from hydra.core.config_search_path import ConfigSearchPath
 from hydra.plugins.search_path_plugin import SearchPathPlugin

@@ -6,7 +6,7 @@ hydra:
   sweep:
     dir: ${exp.outdir:out}/${exp.name:ABSESpy}/${now:%Y-%m-%d}/${now:%H-%M-%S}
     subdir: ${hydra.job.id}_${hydra:job.override_dirname}
-  
+
   # Hydra logging configuration
   job_logging:
     version: 1

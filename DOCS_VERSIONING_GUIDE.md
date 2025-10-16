@@ -10,7 +10,7 @@
 # dev分支推送
 → mike deploy dev (预览版)
 
-# master分支推送  
+# master分支推送
 → mike deploy 0.8 latest (当前版本)
 
 # 版本tag推送 (v0.8.0)
@@ -135,7 +135,7 @@ git tag v0.8.0
 git push origin v0.8.0
 
 # 2. GitHub Actions自动部署
-# 结果: 
+# 结果:
 #   - https://absespy.github.io/ABSESpy/0.8/
 #   - https://absespy.github.io/ABSESpy/ (latest更新)
 ```
@@ -154,7 +154,7 @@ git push origin v0.8.0
 
 **版本选择器** (📚):
 - latest (0.8)
-- dev  
+- dev
 - 0.7 (如果存在)
 
 **语言选择器** (🌐):
@@ -268,7 +268,7 @@ git push origin dev
 
 ---
 
-**状态**: ✅ 所有配置完成  
-**下一步**: `git push origin dev`  
+**状态**: ✅ 所有配置完成
+**下一步**: `git push origin dev`
 **效果**: 专业级双语多版本文档系统！
 

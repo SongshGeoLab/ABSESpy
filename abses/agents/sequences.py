@@ -1,4 +1,4 @@
-#!/usr/bin/env python 3.11.0
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 # @Author  : Shuang (Twist) Song
 # @Contact   : SongshGeo@gmail.com
@@ -159,7 +159,7 @@ class ActorsList(Generic[A], AgentSet):
 
     def split(self, where: NDArray[Any]) -> List[ActorsList[A]]:
         """将 actors 分成 N+1 组。"""
-        split = np.hsplit(np.array(self), where)
+        split: List[NDArray[Any]] = np.hsplit(np.array(self), where)
         return [ActorsList(self._model, group) for group in split]
 
     def array(self, attr: str) -> np.ndarray:

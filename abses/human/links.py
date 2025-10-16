@@ -1,4 +1,4 @@
-#!/usr/bin/env python 3.11.0
+#!/usr/bin/env python3
 # -*-coding:utf-8 -*-
 # @Author  : Shuang (Twist) Song
 # @Contact   : SongshGeo@gmail.com
@@ -378,7 +378,7 @@ class _LinkContainer:
             node = mapping_dict[unique_id]
         if not isinstance(node, _LinkNode):
             raise TypeError(f"Invalid node type {type(node)}, mapping: {mapping_dict}.")
-        return node
+        return node  # type: ignore[return-value]
 
     def add_links_from_graph(
         self,

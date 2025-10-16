@@ -12,46 +12,46 @@
 <div class="grid cards" markdown>
 
 - :fire: __火灾传播__
-  
+
   ---
-  
+
   演示空间建模、栅格属性和可视化。
-  
+
   **特性**: `@raster_attribute`, `neighboring()`, `trigger()`
-  
+
   [:octicons-arrow-right-24: 教程](../tutorial/completing/fire_tutorial.ipynb) |
   [:octicons-code-24: 源码](https://github.com/SongshGeo/ABSESpy/tree/master/examples/fire_spread)
 
 - :wolf: __狼羊捕食__
-  
+
   ---
-  
+
   智能体生命周期、移动和生态互动。
-  
+
   **特性**: `move.random()`, `at.agents`, `die()`, 繁殖
-  
+
   [:octicons-arrow-right-24: 教程](../tutorial/beginner/predation_tutorial.ipynb) |
   [:octicons-code-24: 源码](https://github.com/SongshGeo/ABSESpy/tree/master/examples/wolf_sheep)
 
 - :cityscape: __Schelling隔离__
-  
+
   ---
-  
+
   Mesa 框架集成和社会动态建模。
-  
+
   **特性**: `shuffle_do()`, `self.p`, Mesa兼容
-  
+
   [:octicons-code-24: 源码](https://github.com/SongshGeo/ABSESpy/tree/master/examples/schelling) |
   [:octicons-book-24: 说明](https://github.com/SongshGeo/ABSESpy/blob/master/examples/schelling/README.md)
 
 - :chart_with_upwards_trend: __Hotelling定律__
-  
+
   ---
-  
+
   决策框架和空间竞争。
-  
+
   **特性**: Actors与PatchCells的连接
-  
+
   [:octicons-arrow-right-24: 教程](../tutorial/beginner/hotelling_tutorial.ipynb) |
   [:octicons-code-24: 源码](https://github.com/SongshGeo/ABSESpy/tree/master/examples/hotelling_law)
 

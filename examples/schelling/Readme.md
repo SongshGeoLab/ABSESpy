@@ -77,8 +77,8 @@ from examples.schelling.model import Schelling
 # 创建模型（ABSESpy参数格式）
 params = {
     "model": {
-        "width": 20, 
-        "height": 20, 
+        "width": 20,
+        "height": 20,
         "density": 0.8,
         "minority_pc": 0.5,
         "homophily": 0.4,  # 40% similar neighbors needed
@@ -127,7 +127,7 @@ class Schelling(MainModel):  # ✨ ABSESpy特性: 模拟框架
 ```python
 def __init__(self, seed=None, **kwargs):
     super().__init__(seed=seed, **kwargs)
-    
+
     # ✨ ABSESpy特性: 统一的随机数生成器
     for _, pos in self.grid.coord_iter():
         if self.random.random() < self.p.density:
@@ -197,7 +197,7 @@ from mesa import Agent  # 直接使用Mesa的Agent
 
 class SchellingAgent(Agent):
     """使用Mesa原生Agent类"""
-    
+
     def __init__(self, model, agent_type: int):
         super().__init__(model)  # Mesa Agent初始化
         self.type = agent_type
@@ -286,10 +286,10 @@ pytest tests/examples/test_schelling.py -v
 
 该模型基于：
 
-**原始论文**:  
+**原始论文**:
 [Schelling, Thomas C. "Dynamic Models of Segregation." Journal of Mathematical Sociology, 1971.](https://www.stat.berkeley.edu/~aldous/157/Papers/Schelling_Seg_Models.pdf)
 
-**互动演示**:  
+**互动演示**:
 [Parable of the Polygons](http://ncase.me/polygons/) by Vi Hart and Nicky Case
 
 ---
