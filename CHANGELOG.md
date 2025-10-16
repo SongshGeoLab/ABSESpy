@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.8.0](https://github.com/SongshGeoLab/ABSESpy/compare/v0.7.5...v0.8.0) (2025-10-16)
+
+
+### Features
+
+* **core:** Protocol-based architecture refactoring ([e424cae](https://github.com/SongshGeoLab/ABSESpy/commit/e424cae00207149e34757bc33ee986a36740662d))
+* **logging:** :sparkles: Implement unified logging configuration for ABSESpy ([0453646](https://github.com/SongshGeoLab/ABSESpy/commit/045364635829b98772d8e12f6160c62f706cb75c))
+
+
+### Documentation
+
+* 📚 Add versioning guide for ABSESpy documentation ([b1391bf](https://github.com/SongshGeoLab/ABSESpy/commit/b1391bf009835a50a162e7f9132d3fe7939dede9))
+* 📚 Update materials documentation for clarity and accuracy ([0cbe0c8](https://github.com/SongshGeoLab/ABSESpy/commit/0cbe0c8c1e1cbb3ed4d87cd38cf30b7d11a1d988))
+* 📚 Update tutorials and documentation for improved clarity and functionality ([55f80b4](https://github.com/SongshGeoLab/ABSESpy/commit/55f80b4870325ce8b34cd6e0485d44ddfcbc651a))
+* **docs:** :memo: Update documentation and examples for ABSESpy ([c0089fe](https://github.com/SongshGeoLab/ABSESpy/commit/c0089fe6ad6c8224895b8c5140dbf3941375cf10))
+* **examples:** :memo: Enhance Schelling model with detailed documentation and tests ([33e7e00](https://github.com/SongshGeoLab/ABSESpy/commit/33e7e008dad9d2adfd99575b90e1b4e3a12242ca))
+* **examples:** :memo: Enhance wolf-sheep model documentation and tests ([fdf8f11](https://github.com/SongshGeoLab/ABSESpy/commit/fdf8f11408608bd1c96c68c4618376e701455255))
+* **examples:** :memo: Update model documentation and configuration. ([7a11b25](https://github.com/SongshGeoLab/ABSESpy/commit/7a11b258fdc53ec33ba8056f5bc352cf11593c49))
+* **i18n:** :memo: Add multilingual support and enhance documentation for ABSESpy ([83640ee](https://github.com/SongshGeoLab/ABSESpy/commit/83640ee251eb9b984669adb5cb5e6edcc529cf6c))
+
 ## [0.7.5](https://github.com/SongshGeoLab/ABSESpy/compare/v0.7.4...v0.7.5) (2025-02-16)
 
 
