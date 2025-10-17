@@ -117,6 +117,21 @@ class BaseModelElement(BaseObservable, ABC, ModelElement):
     p = params
 
     @property
+    def datasets(self) -> DictConfig:
+        """Get datasets from the parent model.
+
+        Provides convenient access to model datasets for all model elements.
+        Equivalent to `self.model.datasets`.
+
+        Returns:
+            DictConfig containing dataset configurations.
+        """
+        return self.model.datasets
+
+    # Alias for datasets
+    ds = datasets
+
+    @property
     def tick(self) -> int:
         """Get the current tick.
 
