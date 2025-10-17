@@ -42,10 +42,27 @@ if TYPE_CHECKING:
 
 
 class ActorsList(Generic[A], AgentSet):
-    """ActorsList 是 AgentSet 的扩展，专门用于处理 Actor 对象。
+    """Extended agent set specifically designed for managing Actor collections.
 
-    主要特点是在返回值时使用 numpy 数组，并保持与 ABSESpy 其他组件的兼容性。
-    尽可能使用 AgentSet 的原生方法，减少自定义实现。
+    ActorsList extends Mesa's AgentSet with ABSESpy-specific functionality, providing
+    enhanced batch operations on actor collections. It focuses on returning numpy
+    arrays for efficient numerical operations and maintaining compatibility with
+    other ABSESpy components.
+
+    The class provides methods for filtering, grouping, updating attributes in batch,
+    and performing vectorized operations on all actors in the collection. It serves
+    as the primary return type for queries that retrieve multiple actors, such as
+    container selections and breed-based lookups.
+
+    Key features:
+    - Numpy array returns for numerical operations
+    - Batch attribute updates with validation
+    - Grouping by breed or custom attributes
+    - Integration with ABSESpy's random number generation
+    - Type-safe operations through generic typing
+
+    Attributes:
+        _model: The ABSESpy model this list belongs to.
     """
 
     def __init__(
@@ -53,12 +70,23 @@ class ActorsList(Generic[A], AgentSet):
         model: MainModelProtocol,
         objs: Iterable[A] = (),
     ) -> None:
-        """初始化 ActorsList。"""
+        """Initialize an ActorsList instance.
+
+        Parameters:
+            model: The ABSESpy model this list belongs to.
+            objs: Iterable of actors to include in the list. Defaults to empty.
+        """
         super().__init__(objs, random=model.random)
         self._model = model
 
-    def __repr__(self):
-        """返回 ActorsList 的字符串表示。"""
+    def __repr__(self) -> str:
+        """Return a string representation of the ActorsList.
+
+        The representation shows the count of actors grouped by breed.
+
+        Returns:
+            String in format "<ActorsList: (count1)breed1; (count2)breed2; ...>"
+        """
         results = [f"({len(v)}){k}" for k, v in self.to_dict().items()]
         return f"<ActorsList: {'; '.join(results)}>"
 
@@ -68,13 +96,32 @@ class ActorsList(Generic[A], AgentSet):
     @overload
     def __getitem__(self, index: slice) -> ActorsList[A]: ...
 
-    def __getitem__(self, index):
-        """获取 ActorsList 中的一个 actor 或一个切片。"""
+    def __getitem__(self, index: Union[int, slice]) -> Union[A, ActorsList[A]]:
+        """Get an actor or a slice of actors from the list.
+
+        Parameters:
+            index: Either an integer index or a slice object.
+
+        Returns:
+            A single actor if index is an integer, or an ActorsList if index is a slice.
+        """
         results = super().__getitem__(index)
         return ActorsList(self._model, results) if isinstance(index, slice) else results
 
     def _is_same_length(self, length: Sized, rep_error: bool = False) -> bool:
-        """Check if the length of input is as same as the number of actors."""
+        """Check if the length of input matches the number of actors.
+
+        Parameters:
+            length: An object with a __len__ method to compare.
+            rep_error: If True, raises ValueError on mismatch. Defaults to False.
+
+        Returns:
+            True if lengths match.
+
+        Raises:
+            ValueError: If length doesn't have __len__ method or if lengths mismatch
+                and rep_error is True.
+        """
         if not hasattr(length, "__len__"):
             raise ValueError(f"{type(length)} object is not iterable.")
         if len(length) != len(self):
@@ -85,12 +132,23 @@ class ActorsList(Generic[A], AgentSet):
         return True
 
     def to_dict(self) -> Dict[str, ActorsList[A]]:
-        """将所有 actor 转换为字典，格式为 {breed: ActorsList}。
+        """Convert all actors to a dictionary grouped by breed.
 
-        使用 AgentSet 的 groupby 方法按照 breed 属性进行分组，提高效率。
+        This method groups actors by their breed attribute and returns a dictionary
+        where keys are breed names and values are ActorsList instances containing
+        actors of that breed. This is useful for operations that need to process
+        different actor types separately.
 
         Returns:
-            以 breed 为键，对应的 actors 为值的字典。
+            Dictionary mapping breed names (str) to ActorsList containing actors
+            of that breed.
+
+        Example:
+            ```python
+            actors = model.agents.all()
+            by_breed = actors.to_dict()
+            farmers = by_breed['Farmer']  # All farmer actors
+            ```
         """
         # 使用 groupby 按照 breed 属性分组
         grouped = self.groupby(by="breed")
@@ -107,15 +165,40 @@ class ActorsList(Generic[A], AgentSet):
         at_most: int | float = float("inf"),
         inplace: bool = False,
         agent_type: Agent | None = None,
-    ) -> AgentSet:
-        """
-        Selects elements from the sequence based on a filter function.
+    ) -> ActorsList[A]:
+        """Select actors from the list based on filter criteria.
 
-        Args:
-            filter_func:
-                A callable that takes an agent and returns a boolean value.
-                If a dictionary, it will be used as a filter function.
-                If a string, it will be used as a filter function.
+        This method provides flexible filtering with support for callable functions,
+        dictionaries of attribute-value pairs, or attribute names. It extends Mesa's
+        select method to return ActorsList instances and support additional filter
+        formats.
+
+        Parameters:
+            filter_func: Filter criteria. Can be:
+                - A callable taking an agent and returning bool
+                - A dictionary of {attribute: value} pairs for matching
+                - A string attribute name (selects where attribute is truthy)
+                - None to select all agents
+            at_most: Maximum number of agents to select. Can be an integer or
+                a fraction (0-1) of the current list size.
+            inplace: If True, modifies current list; otherwise returns new list.
+                Defaults to False.
+            agent_type: Optional agent type to filter by.
+
+        Returns:
+            ActorsList containing the selected actors.
+
+        Example:
+            ```python
+            # Select by callable
+            rich_farmers = farmers.select(lambda f: f.wealth > 100)
+
+            # Select by dict
+            male_farmers = farmers.select({'gender': 'male'})
+
+            # Select by attribute
+            active = farmers.select('is_active')
+            ```
         """
         if isinstance(filter_func, dict):
             key_value_paris = filter_func
@@ -135,9 +218,30 @@ class ActorsList(Generic[A], AgentSet):
     def better(
         self, metric: str, than: Optional[Union[Number, A]] = None
     ) -> ActorsList[A]:
-        """选择比给定值或 actor 更好的 actors。"""
+        """Select actors with a metric value better than a threshold.
+
+        This method filters actors based on a numerical metric, selecting those
+        with values greater than the specified threshold.
+
+        Parameters:
+            metric: Name of the attribute to compare.
+            than: Threshold value. Can be a number or an actor (in which case
+                the actor's metric value is used).
+
+        Returns:
+            ActorsList containing actors with metric values greater than the threshold.
+
+        Example:
+            ```python
+            # Select farmers wealthier than 100
+            rich = farmers.better('wealth', than=100)
+
+            # Select farmers wealthier than a specific farmer
+            richer = farmers.better('wealth', than=specific_farmer)
+            ```
+        """
         if isinstance(than, Agent):
-            than = than.metric
+            than = getattr(than, metric)
         return self.select(lambda x: getattr(x, metric) > than)
 
     def update(self, attr: str, values: Iterable[Any]) -> None:
@@ -158,7 +262,21 @@ class ActorsList(Generic[A], AgentSet):
             setattr(agent, attr, val)
 
     def split(self, where: NDArray[Any]) -> List[ActorsList[A]]:
-        """将 actors 分成 N+1 组。"""
+        """Split actors into N+1 groups at specified positions.
+
+        Parameters:
+            where: Array of indices where splits should occur.
+
+        Returns:
+            List of ActorsList instances, one for each split group.
+
+        Example:
+            ```python
+            actors = model.agents.all()  # 10 actors
+            groups = actors.split([3, 7])  # Split at indices 3 and 7
+            # Returns 3 groups: [0:3], [3:7], [7:10]
+            ```
+        """
         split: List[NDArray[Any]] = np.hsplit(np.array(self), where)
         return [ActorsList(self._model, group) for group in split]
 
@@ -200,7 +318,36 @@ class ActorsList(Generic[A], AgentSet):
         return np.array(self.map(func_name, *args, **kwargs))
 
     def item(self, how: HOW_TO_SELECT = "item", index: int = 0) -> Optional[A]:
-        """获取一个 agent（如果可能）。"""
+        """Get a single actor from the list.
+
+        This method provides convenient access to a single actor from the list
+        using different selection strategies.
+
+        Parameters:
+            how: Selection method. Options:
+                - 'item': Get actor at specified index (default)
+                - 'only': Get the only actor, raise error if list doesn't contain exactly one
+            index: Index of actor to retrieve when how='item'. Defaults to 0.
+
+        Returns:
+            The selected actor, or None if index is out of range (for 'item' method).
+
+        Raises:
+            ValueError: If how is not a valid selection method or if 'only' method
+                is used but list doesn't contain exactly one actor.
+
+        Example:
+            ```python
+            # Get first actor
+            first = actors.item()
+
+            # Get second actor
+            second = actors.item(index=1)
+
+            # Ensure exactly one actor
+            solo = single_actor_list.item(how='only')
+            ```
+        """
         if how == "only":
             return get_only_item(self)
         if how == "item":

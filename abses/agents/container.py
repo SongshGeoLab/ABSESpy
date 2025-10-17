@@ -44,7 +44,26 @@ if TYPE_CHECKING:
 
 
 class _AgentsContainer:
-    """AgentsContainer for the main model."""
+    """Base container for managing agents in ABSESpy models.
+
+    This class provides a unified interface for managing actors (agents) within
+    a model. It offers functionality for creating, accessing, filtering, and
+    removing agents, as well as querying agent collections by breed types.
+    The container integrates with Mesa's agent management system while providing
+    additional ABSESpy-specific features like breed-based selection and spatial
+    awareness through CRS support.
+
+    The container supports various access patterns including iteration, indexing
+    by breed, and filtering by attributes. It can optionally enforce capacity
+    limits on the number of agents it can hold.
+
+    Attributes:
+        model: The ABSESpy model this container belongs to.
+        crs: Coordinate reference system for spatial operations.
+        random: Random number generator for stochastic operations.
+        is_full: Whether the container has reached its capacity limit.
+        is_empty: Whether the container contains no agents.
+    """
 
     def __init__(self, model: MainModelProtocol, max_len: None | Number = None):
         if not isinstance(model, Model):
@@ -62,15 +81,19 @@ class _AgentsContainer:
         )
 
     def __len__(self) -> int:
+        """Return the number of agents in the container."""
         return len(self._agents)
 
     def __str__(self) -> str:
+        """Return a string representation of the container."""
         return f"<Handling [{len(self)}]Agents for {self.model.name}>"
 
     def __contains__(self, actor: object) -> bool:
+        """Check if an actor is in the container."""
         return actor in self._agents
 
     def __iter__(self) -> Iterator[ActorProtocol]:
+        """Iterate over all actors in the container."""
         return iter(self._agents)
 
     def __getitem__(self, breeds: Optional[Breeds]) -> ActorsList[ActorProtocol]:
@@ -154,12 +177,23 @@ class _AgentsContainer:
             raise ABSESpyError(f"{self.model.agents} is full.")
 
     def add(self, agent: ActorProtocol) -> None:
-        """Add one agent to the container."""
+        """Add one agent to the container.
+
+        Parameters:
+            agent: The agent to add to the container.
+
+        Raises:
+            ABSESpyError: If the container or model container is full.
+        """
         self._check_full()
         self._add_one(agent)
 
     def _add_one(self, agent: ActorProtocol) -> None:
-        """Add one agent to the container."""
+        """Internal method to add one agent to the underlying storage.
+
+        Parameters:
+            agent: The agent to add.
+        """
         self._agents.add(agent)
 
     def _new_one(
@@ -257,7 +291,15 @@ class _AgentsContainer:
         )
 
     def remove(self, agent: ActorProtocol) -> None:
-        """Remove the given agent from the container."""
+        """Remove the given agent from the container.
+
+        Parameters:
+            agent: The agent to remove from the container.
+
+        Raises:
+            ABSESpyError: If the agent is still located on earth (has a spatial position).
+                Use `agent.remove()` to properly remove agents with spatial positions.
+        """
         if agent.on_earth:
             raise ABSESpyError(
                 f"{agent} is still on the earth. Use `agent.remove()` instead."
@@ -314,18 +356,34 @@ class _AgentsContainer:
     ) -> ActorsList:
         """Select actors that match the given selection criteria.
 
+        This method provides flexible filtering of agents based on various criteria.
+        Selection can be done by attribute names (string), custom filter functions
+        (callable), or attribute-value pairs (dictionary). Results can be further
+        constrained by agent type (breed) and quantity limits.
+
         Parameters:
             selection:
-                The selection criteria.
-                It can be a string, a callable, or a dictionary.
+                The selection criteria. Can be:
+                - A string: selects agents where the attribute equals True
+                - A callable: custom filter function taking an agent and returning bool
+                - A dictionary: selects agents where attributes match the key-value pairs
+                - None: selects all agents (subject to agent_type filtering)
+            agent_type:
+                Filter by agent breed type. Can be either a class type or string name.
             **kwargs:
-                Additional arguments to pass to the `AgentSet.select()` method, in addition to `filter_func`.
-                - at_most (int | float, optional): The maximum amount of agents to select. Defaults to infinity.
+                Additional arguments to pass to the `AgentSet.select()` method:
+                - at_most (int | float, optional): The maximum amount of agents to select.
                   - If an integer, at most the first number of matching agents are selected.
-                  - If a float between 0 and 1, at most that fraction of original the agents are selected.
-                - inplace (bool, optional): If True, modifies the current AgentSet; otherwise, returns a new AgentSet. Defaults to False.
-                - agent_type (type[Agent], optional): The class type of the agents to select. Defaults to None, meaning no type filtering is applied.
+                  - If a float between 0 and 1, at most that fraction of agents are selected.
+                - inplace (bool, optional): If True, modifies the current AgentSet;
+                  otherwise, returns a new AgentSet. Defaults to False.
                 - n (int): deprecated, use at_most instead
+
+        Returns:
+            An ActorsList containing the selected agents.
+
+        Raises:
+            TypeError: If selection criteria is not a valid type.
         """
         if isinstance(agent_type, (str, type)):
             kwargs["agent_type"] = self._get_breed_type(agent_type)
@@ -349,9 +407,34 @@ class _AgentsContainer:
 
 
 class _ModelAgentsContainer(_AgentsContainer):
-    """AgentsContainer for the MainModel."""
+    """Specialized container for agents in the main model with GeoDataFrame support.
+
+    This container extends the base agent container with additional functionality
+    for creating agents from geospatial data sources. It provides methods to
+    instantiate agents from GeoDataFrames while handling coordinate reference
+    system (CRS) transformations and attribute mapping.
+
+    The container ensures that all geospatial data is properly aligned with the
+    model's coordinate system before creating agents, maintaining spatial consistency
+    across the entire model.
+    """
 
     def _check_crs(self, gdf: gpd.GeoDataFrame) -> bool:
+        """Check and align the GeoDataFrame's CRS with the model's CRS.
+
+        This method ensures that the input GeoDataFrame uses the same coordinate
+        reference system as the model. If the GeoDataFrame has a different CRS,
+        it will be transformed. If it has no CRS, the model's CRS will be assigned.
+
+        Parameters:
+            gdf: The GeoDataFrame to check and potentially transform.
+
+        Returns:
+            True if the CRS alignment was successful, False otherwise.
+
+        Note:
+            This method modifies the GeoDataFrame in-place.
+        """
         if gdf.crs:
             gdf.to_crs(self.crs, inplace=True)
         else:
@@ -368,21 +451,30 @@ class _ModelAgentsContainer(_AgentsContainer):
         # TODO: 这个方法需要适配到最新的 Mesa 版本
         """Create actors from a `geopandas.GeoDataFrame` object.
 
+        This method creates actors from a GeoDataFrame, automatically assigning
+        unique IDs to each actor. The geometries from the GeoDataFrame are used
+        to initialize the actors' spatial properties, and selected attributes
+        can be transferred to the created actors.
+
         Parameters:
             gdf:
                 The `geopandas.GeoDataFrame` object to convert.
-            unique_id:
-                A column name, to be converted to unique index
-                of created geo-agents (Social-ecological system Actors).
             agent_cls:
-                Agent class to create.
-
-        Raises:
-            ValueError:
-                If the column specified by `unique_id` is not unique.
+                Agent class to create. Defaults to `Actor`.
+            attrs:
+                Specifies which attributes from the GeoDataFrame to include in
+                the created actors. Can be a boolean, list of column names, or
+                exclusion pattern. Defaults to False (no attributes transferred).
+            **kwargs:
+                Additional keyword arguments to pass to the actor constructor.
 
         Returns:
             An `ActorsList` with all new created actors stored.
+
+        Note:
+            Each created actor will have a unique ID automatically assigned by
+            the Mesa framework. The geometry from the GeoDataFrame will be
+            converted to match the model's coordinate reference system (CRS).
         """
         # 检查坐标参考系是否一致
         self._check_crs(gdf)
@@ -406,19 +498,57 @@ class _ModelAgentsContainer(_AgentsContainer):
 
 
 class _CellAgentsContainer(_AgentsContainer):
-    """Container for agents located at cells."""
+    """Container for agents located at specific spatial cells.
+
+    This specialized container manages agents that are positioned at a particular
+    cell in the model's spatial grid. It extends the base container functionality
+    with spatial awareness, ensuring that agents are properly linked to their
+    location when added or removed.
+
+    The container maintains the spatial relationship between agents and cells,
+    automatically updating agent positions when they are added to or removed from
+    the cell. It supports capacity limits to control the maximum number of agents
+    that can occupy a single cell.
+
+    Attributes:
+        model: The ABSESpy model this container belongs to.
+        _cell: The specific cell this container represents.
+        _agents: The agent set containing all agents at this cell.
+    """
 
     def __init__(
         self,
         model: MainModelProtocol,
         cell: PatchCell,
         max_len: int | float = float("inf"),
-    ):
+    ) -> None:
+        """Initialize a cell agents container.
+
+        Parameters:
+            model: The ABSESpy model this container belongs to.
+            cell: The specific cell this container manages agents for.
+            max_len: Maximum number of agents allowed in this cell.
+                Defaults to infinity (no limit).
+        """
         super().__init__(model, max_len)
         self._agents = AgentSet([], random=model.random)
         self._cell = cell
 
     def _add_one(self, agent: ActorProtocol) -> None:
+        """Internal method to add one agent to this cell's container.
+
+        This method ensures that agents are properly located before being added.
+        If an agent is already on earth at a different location, it must be moved
+        or taken off earth first.
+
+        Parameters:
+            agent: The agent to add to this cell.
+
+        Raises:
+            ABSESpyError: If the agent is already located at a different cell.
+                Use `actor.move.to()` to relocate or `actor.move.off()` to remove
+                the agent from its current location first.
+        """
         if agent.on_earth and agent not in self:
             e1 = f"{agent} is on {agent.at} thus cannot be added."
             e2 = "You may use 'actor.move.to()' to change its location."
@@ -430,17 +560,23 @@ class _CellAgentsContainer(_AgentsContainer):
 
     def remove(self, agent: Optional[ActorProtocol] = None) -> None:
         """Remove the given agent from the cell.
-        Generally, it stores all the agents on this cell.
-        Therefore, it is not recommended to use this method directly.
-        Consider to use `actor.move.off()` to let the actor leave this cell instead.
+
+        This method removes agents from the cell's container, breaking the spatial
+        relationship between the agent and the cell. It can remove a specific agent
+        or clear all agents from the cell if no agent is specified.
+
+        It is generally recommended to use `actor.move.off()` instead, which provides
+        a higher-level interface for agent movement and properly manages all related
+        state updates.
 
         Parameters:
             agent:
-                The agent (actor) to remove.
+                The agent (actor) to remove. If None, all agents are removed from
+                the cell.
 
         Raises:
             ABSESpyError:
-                If the agent is not on this cell.
+                If the specified agent is not currently located on this cell.
         """
         if agent is None:
             self._agents.clear()

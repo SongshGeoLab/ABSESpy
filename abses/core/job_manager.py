@@ -18,18 +18,43 @@ if TYPE_CHECKING:
 
 
 class ExperimentManager:
-    """管理所有实验结果的单例类"""
+    """Singleton class for managing all experiment results.
+
+    This manager coordinates multiple experimental runs, collecting and organizing
+    their results, configurations, and random seeds. It provides a centralized
+    interface for batch experiments and result analysis.
+
+    Attributes:
+        model_cls: The model class being experimented on.
+    """
 
     _instance = None
     model_cls: Type[MainModelProtocol]
 
-    def __new__(cls, model_cls: Type[MainModelProtocol]):
+    def __new__(cls, model_cls: Type[MainModelProtocol]) -> "ExperimentManager":
+        """Create or return the singleton instance.
+
+        Parameters:
+            model_cls: The model class to manage experiments for.
+
+        Returns:
+            The singleton ExperimentManager instance.
+        """
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance.model_cls = model_cls
         return cls._instance
 
-    def __init__(self, model_cls: Type[MainModelProtocol]):
+    def __init__(self, model_cls: Type[MainModelProtocol]) -> None:
+        """Initialize the experiment manager.
+
+        Parameters:
+            model_cls: The model class to manage experiments for.
+
+        Raises:
+            TypeError: If attempting to initialize with a different model class
+                than the singleton was created with.
+        """
         if self.model_cls is not model_cls:
             raise TypeError(
                 f"{self.__class__.__name__} is set, trying to initialize {model_cls.__name__} experiment."
@@ -43,7 +68,11 @@ class ExperimentManager:
 
     @property
     def hooks(self) -> Dict[str, HookFunc]:
-        """获取所有钩子"""
+        """Get all registered hook functions.
+
+        Returns:
+            Dictionary mapping hook names to hook functions.
+        """
         return self._hooks
 
     @property
@@ -54,7 +83,11 @@ class ExperimentManager:
         )
 
     def clean(self) -> None:
-        """清理所有实验"""
+        """Clean all experimental data.
+
+        Clears all stored datasets, seeds, and configuration overrides.
+        Useful for starting fresh experiments or freeing memory.
+        """
         self._datasets.clear()
         self._seeds.clear()
         self._overrides.clear()
