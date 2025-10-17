@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.8.2](https://github.com/SongshGeoLab/ABSESpy/compare/v0.8.1...v0.8.2) (2025-10-17)
+
+
+### Bug Fixes
+
+* **sequences:** Fix attribute access in better() method ([9b3de51](https://github.com/SongshGeoLab/ABSESpy/commit/9b3de51c82594d444ce2eab33fb466cd2b85ddfb))
+
+
+### Documentation
+
+* **api:** :memo: Enhance type checking and documentation in actor module ([aafa7d3](https://github.com/SongshGeoLab/ABSESpy/commit/aafa7d36f3075d28271f399e6242178342781d07))
+
 ## [0.8.1](https://github.com/SongshGeoLab/ABSESpy/compare/v0.8.0...v0.8.1) (2025-10-17)
 
 
