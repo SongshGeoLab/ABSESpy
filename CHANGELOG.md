@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.1](https://github.com/SongshGeoLab/ABSESpy/compare/v0.8.0...v0.8.1) (2025-10-17)
+
+
+### Bug Fixes
+
+* **core:** :bug: Add datasets property to BaseModelElement for improved data access ([3cd5797](https://github.com/SongshGeoLab/ABSESpy/commit/3cd57976946c5cd43f833f3374277b38d296aeec))
+
 ## [0.8.0](https://github.com/SongshGeoLab/ABSESpy/compare/v0.7.5...v0.8.0) (2025-10-16)
 
 
