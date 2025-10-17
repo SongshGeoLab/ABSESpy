@@ -131,13 +131,21 @@ class MainModel(Model, BaseStateManager):
 
     @functools.cached_property
     def name(self) -> str:
-        """获取主模型的名称"""
+        """Get the model's name.
+
+        Returns:
+            Model name from settings, or class name if not specified.
+        """
         default_name = self.__class__.__name__
         return self.settings.get("name", default_name)
 
     @functools.cached_property
     def outpath(self) -> Path:
-        """获取主模型的输出路径"""
+        """Get the model's output directory path.
+
+        Returns:
+            Output path from settings, or current directory/model_name if not specified.
+        """
         path = self.settings.get("outpath", None)
         if path is None:
             return Path.cwd() / self.name
@@ -145,25 +153,47 @@ class MainModel(Model, BaseStateManager):
 
     @functools.cached_property
     def version(self) -> str:
-        """获取主模型的版本"""
+        """Get the model's version string.
+
+        Returns:
+            Version from settings, or 'v0' if not specified.
+        """
         return str(self.settings.get("version", "v0"))
 
     @property
     def steps(self) -> int:
-        """获取主模型的步数"""
+        """Get the number of steps to run.
+
+        Returns:
+            The configured number of simulation steps.
+        """
         return self._steps
 
     @steps.setter
     def steps(self, steps: int) -> None:
-        """设置主模型的步数"""
+        """Set the number of steps to run.
+
+        Parameters:
+            steps: Number of steps. If > 0, automatically advances time.
+        """
         self._steps = steps
         if steps > 0:
             self.time.go(steps)
 
-    def __deepcopy__(self, memo):
+    def __deepcopy__(self, memo: dict) -> "MainModel":
+        """Prevent deep copying of model.
+
+        Returns:
+            Self reference (models should not be deep copied).
+        """
         return self
 
     def __repr__(self) -> str:
+        """Return string representation of the model.
+
+        Returns:
+            String with version, name, and current state.
+        """
         return f"<[{self.version}] {self.name}({self.state.name})>"
 
     def _logging_begin(self) -> None:
@@ -261,7 +291,21 @@ class MainModel(Model, BaseStateManager):
         self._logging_begin()
 
     def add_name(self, name: str, check: Optional[HowCheckName] = None) -> None:
-        """检查名称是否有效"""
+        """Add a name to the model's name registry with optional validation.
+
+        This method registers names for model components and can enforce uniqueness
+        or existence checks.
+
+        Parameters:
+            name: The name to add to the registry.
+            check: Optional validation mode:
+                - 'unique': Raise error if name already exists
+                - 'exists': Raise error if name doesn't exist
+                - None: No validation (default)
+
+        Raises:
+            ValueError: If check method is invalid, or if validation fails.
+        """
         if check not in ["unique", "exists"] and check is not None:
             raise ValueError(f"Invalid check name method: {check}")
         in_names = name in self._names

@@ -37,15 +37,30 @@ if TYPE_CHECKING:
     from abses.space.patch import PatchModule
 
 
-def alive_required(method):
-    """
-    A decorator that only executes the method when the object's alive attribute is True.
+def alive_required(method: Callable[..., Any]) -> Callable[..., Any]:
+    """Decorator that only executes the method when the actor is alive.
 
-    Args:
-        method: The method to decorate.
+    This decorator wraps actor methods to check their alive status before execution.
+    If the actor is not alive, the method returns None instead of executing. This
+    provides a clean way to prevent operations on dead actors without explicit
+    checks in every method.
+
+    Parameters:
+        method: The method to decorate. Should be a method of an Actor instance
+            or an object with an 'actor' attribute.
 
     Returns:
-        The decorated method that only executes when alive is True.
+        The decorated method that only executes when alive is True, otherwise
+        returns None.
+
+    Example:
+        ```python
+        class MyActor(Actor):
+            @alive_required
+            def do_something(self):
+                # This method only executes if the actor is alive
+                pass
+        ```
     """
 
     @wraps(method)
@@ -57,20 +72,25 @@ def alive_required(method):
     return wrapper
 
 
-def perception_result(name, result, nodata: Any = 0.0) -> Any:
-    """
-    Clean the result of a perception.
+def perception_result(name: str, result: Any, nodata: Any = 0.0) -> Any:
+    """Clean and validate the result of a perception operation.
 
-    Args:
-        name: The name of the perception.
-        result: The result of the perception.
-        nodata: The value to return if the result is None.
+    This function ensures that perception results are scalar values, not iterables.
+    It handles None values by replacing them with a specified nodata value, making
+    perception results consistent and predictable.
+
+    Parameters:
+        name: The name of the perception being processed.
+        result: The raw result from the perception operation.
+        nodata: The value to return if the result is None. Defaults to 0.0.
 
     Returns:
-        The cleaned perception result.
+        The cleaned perception result - either the original result if not None,
+        or the nodata value if the result is None.
 
     Raises:
-        ValueError: If the result is iterable.
+        ValueError: If the result is iterable. Perceptions should return scalar
+            values only.
     """
     if hasattr(result, "__iter__"):
         raise ValueError(
@@ -82,15 +102,39 @@ def perception_result(name, result, nodata: Any = 0.0) -> Any:
 def perception(
     decorated_func: Optional[Callable[..., Any]] = None, *, nodata: Optional[Any] = None
 ) -> Callable[..., Any]:
-    """
-    Change the decorated function into a perception attribute.
+    """Decorator that transforms a method into a perception attribute.
 
-    Args:
-        decorated_func: The decorated function.
-        nodata: The value to return if the result is None.
+    This decorator converts actor methods into perception methods that automatically
+    handle None values and validate that results are scalar. It's designed for
+    creating actor perception mechanisms in agent-based models where agents need
+    to sense their environment.
+
+    The decorator can be used with or without parameters. When used without parameters,
+    it uses a default nodata value. When used with parameters, it allows customization
+    of the nodata value.
+
+    Parameters:
+        decorated_func: The function to decorate. If None, returns a decorator function.
+        nodata: The value to return if the perception result is None. Defaults to None,
+            which will use 0.0 as the default in perception_result.
 
     Returns:
-        The decorated perception attribute or a decorator.
+        Either the decorated function (if decorated_func is provided) or a decorator
+        function (if decorated_func is None).
+
+    Example:
+        ```python
+        class MyActor(Actor):
+            @perception
+            def see_food(self):
+                # Returns scalar value or None
+                return food_amount
+
+            @perception(nodata=-1)
+            def sense_danger(self):
+                # Returns scalar value, or -1 if None
+                return danger_level
+        ```
     """
 
     def decorator(func) -> Callable[..., Any]:
@@ -110,22 +154,59 @@ def perception(
 
 
 class Actor(mg.GeoAgent, _LinkNodeActor, BaseModelElement, ActorProtocol):
-    """
-    An actor in a social-ecological system (or "Agent" in an agent-based model.)
+    """Base actor class for agent-based models in ABSESpy.
+
+    An Actor represents an autonomous agent in a social-ecological system. It combines
+    geospatial capabilities (from mesa-geo), network functionality (links), and
+    ABSESpy-specific features like perception and movement. Actors can be located
+    on spatial cells, form networks with other actors, and interact with their
+    environment through perceptions and actions.
+
+    Actors maintain their own state including position, alive status, age, and custom
+    attributes. They can move between cells, perceive their environment, form links
+    with other actors, and execute custom behaviors through overridable methods.
+
+    The Actor class serves as a base class for creating custom agent types. Users
+    should inherit from Actor and override methods like `setup()` and `initialize()`
+    to define agent-specific behaviors.
 
     Attributes:
-        breed: The breed of this actor (by default, class name).
-        layer: The layer where the actor is located.
-        indices: The indices of the cell where the actor is located.
+        breed: The breed (type) of this actor, defaults to class name.
+        layer: The spatial layer where the actor is located.
+        indices: The grid indices of the cell where the actor is located.
         pos: The position of the cell where the actor is located.
-        on_earth: Whether the actor is standing on a cell.
-        at: The cell where the actor is located.
-        link: The link manipulating proxy.
-        move: The movement manipulating proxy.
-        dynamic_variables: List of dynamic variables for this actor.
+        on_earth: Whether the actor is positioned on a spatial cell.
+        at: The specific cell where the actor is located.
+        link: Proxy for managing network links with other actors.
+        move: Proxy for manipulating actor's spatial location.
+        geometry: The shapely geometry representing the actor's spatial form.
+        alive: Whether the actor is alive (not removed from the model).
+        unique_id: Unique identifier automatically assigned by Mesa.
+        crs: Coordinate reference system for the actor's geometry.
+
+    Example:
+        ```python
+        class Farmer(Actor):
+            def setup(self):
+                self.wealth = 100
+
+            def initialize(self):
+                # Called at the start of simulation
+                self.plant_crops()
+        ```
     """
 
     def __init__(self, model: MainModel, observer: bool = True, **kwargs) -> None:
+        """Initialize an actor instance.
+
+        Parameters:
+            model: The ABSESpy model this actor belongs to.
+            observer: Whether this actor should be observed in data collection.
+                Defaults to True.
+            **kwargs: Additional keyword arguments:
+                - crs: Coordinate reference system. Defaults to model's CRS.
+                - geometry: Shapely geometry for the actor. Defaults to None.
+        """
         BaseModelElement.__init__(self, model)
         crs = kwargs.pop("crs", model.nature.crs)
         geometry = kwargs.pop("geometry", None)
@@ -137,6 +218,7 @@ class Actor(mg.GeoAgent, _LinkNodeActor, BaseModelElement, ActorProtocol):
         self._setup()
 
     def __repr__(self) -> str:
+        """Return a string representation of the actor."""
         return f"<{self.breed} [{self.unique_id}]>"
 
     @property
@@ -150,13 +232,25 @@ class Actor(mg.GeoAgent, _LinkNodeActor, BaseModelElement, ActorProtocol):
 
     @property
     def geometry(self) -> Optional[BaseGeometry]:
-        """The geometry of the actor."""
+        """The shapely geometry of the actor.
+
+        If the actor is located on a cell, returns a Point at the cell's coordinate.
+        Otherwise, returns the actor's custom geometry if one was assigned.
+        """
         if self._cell is not None:
             return Point(self._cell.coordinate)
         return self._geometry
 
     @geometry.setter
     def geometry(self, value: Optional[BaseGeometry]) -> None:
+        """Set the actor's geometry.
+
+        Parameters:
+            value: A shapely geometry object or None.
+
+        Raises:
+            TypeError: If value is not a valid shapely geometry or None.
+        """
         if not isinstance(value, BaseGeometry) and value is not None:
             raise TypeError(f"{value} is not a valid geometry.")
         self._geometry = value
@@ -229,7 +323,11 @@ class Actor(mg.GeoAgent, _LinkNodeActor, BaseModelElement, ActorProtocol):
 
     @alive_required
     def age(self) -> int:
-        """Get the age of the actor."""
+        """Get the age of the actor in simulation ticks.
+
+        Returns:
+            The number of ticks since the actor was born (created).
+        """
         return self.time.tick - self._birth_tick
 
     @alive_required
@@ -273,12 +371,25 @@ class Actor(mg.GeoAgent, _LinkNodeActor, BaseModelElement, ActorProtocol):
         super().set(*args, **kwargs)
 
     def remove(self) -> None:
-        """Remove the actor from the model."""
+        """Remove the actor from the model.
+
+        This is an alias for the `die()` method, providing a more generic interface
+        for removing actors from the simulation.
+        """
         self.die()
 
     @alive_required
     def die(self) -> None:
-        """Kills the agent (self)"""
+        """Kill the actor and remove it from the simulation.
+
+        This method performs a complete cleanup of the actor by:
+        1. Removing all network links with other actors
+        2. Removing the actor from its spatial cell (if positioned)
+        3. Removing the actor from the model's agent registry
+        4. Setting the actor's alive status to False
+
+        After calling this method, the actor should no longer be used.
+        """
         self.link.clean()  # 从链接中移除
         if self.on_earth:  # 如果在地上，那么从地块上移除
             self.move.off()
@@ -287,26 +398,67 @@ class Actor(mg.GeoAgent, _LinkNodeActor, BaseModelElement, ActorProtocol):
         del self
 
     def _setup(self) -> None:
-        """Setup the actor."""
+        """Internal method to trigger actor setup.
+
+        This method is called automatically during actor initialization and
+        invokes the user-overridable setup() method.
+        """
         self.setup()
 
     def setup(self) -> None:
-        """Overwrite this method.
-        It should be called when the actor is initialized.
+        """Setup method called when the actor is initialized.
+
+        Override this method to define actor-specific initialization behavior.
+        This method is called automatically when the actor is created, before
+        the simulation starts. Use it to set initial attributes and state.
+
+        Example:
+            ```python
+            class Farmer(Actor):
+                def setup(self):
+                    self.wealth = 100
+                    self.crops = []
+            ```
         """
 
     def moving(self, cell: PatchCell) -> Optional[bool]:
-        """
-        Called when the actor is about to move.
+        """Callback called before the actor moves to a new cell.
 
-        Args:
-            cell: The target cell to move to.
+        Override this method to implement movement validation logic. Return False
+        to prevent the move, True to allow it, or None to use default behavior
+        (allow the move).
+
+        Parameters:
+            cell: The target cell the actor is attempting to move to.
 
         Returns:
-            Optional boolean indicating whether the actor can move to the cell.
-            If None, the move is allowed by default.
+            - True: explicitly allow the move
+            - False: prevent the move
+            - None: use default behavior (allow the move)
+
+        Example:
+            ```python
+            class Farmer(Actor):
+                def moving(self, cell):
+                    # Only allow moving to farmland cells
+                    return cell.is_farmland
+            ```
         """
 
     def initialize(self) -> None:
-        """实现初始化"""
+        """Initialize the actor at the start of simulation.
+
+        Override this method to define behavior that should occur when the
+        simulation begins (at tick 0), as opposed to when the actor is created.
+        This is useful for setting up initial conditions that depend on the
+        complete model state.
+
+        Example:
+            ```python
+            class Farmer(Actor):
+                def initialize(self):
+                    # Find and establish initial links
+                    self.find_neighbors()
+            ```
+        """
         ...

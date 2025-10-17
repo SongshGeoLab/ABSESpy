@@ -30,3 +30,9 @@ repos:
     hooks:
     -   id: mypy
         args: [--ignore-missing-imports, --follow-imports=skip]
+-   repo: https://github.com/econchick/interrogate
+    rev: '1.7.0'  # Check for the latest version
+    hooks:
+    -   id: interrogate
+        args: [--verbose, --fail-under=70, --ignore-init-module, --ignore-init-method, --ignore-magic, --ignore-private, --ignore-nested-functions]
+        pass_filenames: false
