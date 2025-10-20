@@ -13,6 +13,7 @@ This module contains the base implementation for subsystems (Nature/Human).
 
 from __future__ import annotations
 
+import warnings
 from abc import ABC, abstractmethod
 from typing import Any, Optional, Type
 
@@ -230,6 +231,21 @@ class BaseSubSystem(BaseModule, SubSystemProtocol, ABC):
         Returns:
             Created module instance.
         """
+        # Backward compatibility: support deprecated 'how' argument from 0.7.x
+        # The 'how' parameter used to determine the creation method. It is no longer
+        # needed in >=0.8.0 and will be ignored with a deprecation warning.
+        if "how" in kwargs:
+            _ = kwargs.pop("how")
+            warnings.warn(
+                (
+                    "Argument 'how' is deprecated and will be removed in a future "
+                    "version. It is no longer used when creating modules. "
+                    "Please remove 'how' from your call to create_module()."
+                ),
+                DeprecationWarning,
+                stacklevel=2,
+            )
+
         module = module_cls(model=self.model, *args, **kwargs)
         self.add_module(module)
         return module
