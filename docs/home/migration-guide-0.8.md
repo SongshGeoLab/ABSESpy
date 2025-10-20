@@ -240,7 +240,7 @@ reports:
 
 - The `exp.summary()` method only returns final state data
 - For time series plots, you need to save and load the data using hooks
-- See [Logging Guide](../wiki/logging-guide.md) for details on using logger in hooks
+- Use `logging.getLogger("abses")` in your hooks to access ABSESpy's logger
 
 ## Getting Help
 

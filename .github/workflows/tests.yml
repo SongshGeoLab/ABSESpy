@@ -32,7 +32,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cache/uv
-          key: ${{ runner.os }}-py${{ matrix.python-version }}-uv-${{ hashFiles('**/pyproject.toml') }}
+          key: ${{ runner.os }}-py${{ matrix.python-version }}-uv-${{ hashFiles('**/pyproject.toml', '**/uv.lock') }}
           restore-keys: |
             ${{ runner.os }}-py${{ matrix.python-version }}-uv-
 
@@ -73,12 +73,10 @@ jobs:
       - name: Run ruff
         run: |
           uv run ruff check abses/ --output-format=github
-        continue-on-error: true
 
       - name: Run mypy
         run: |
           uv run mypy abses/
-        continue-on-error: true
 
   test-matrix-summary:
     name: Test Matrix Summary
