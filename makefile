@@ -13,7 +13,7 @@ setup:
 # pre-commit-hooks: https://github.com/pre-commit/pre-commit-hooks
 
 setup-dependencies:
-	poetry install
+	uv sync
 
 setup-pre-commit:
 	poetry add --group dev flake8 isort nbstripout pydocstyle pre-commit-hooks interrogate sourcery mypy bandit black pylint
@@ -46,13 +46,13 @@ install-docs:
 	poetry add --group docs pymdown-extensions
 
 test:
-	poetry run pytest -vs --clean-alluredir --alluredir tmp/allure_results --cov=abses  --no-cov-on-fail
+	uv run pytest -vs --clean-alluredir --alluredir tmp/allure_results --cov=abses  --no-cov-on-fail
 
 report:
-	poetry run allure serve tmp/allure_results
+	uv run allure serve tmp/allure_results
 
 jupyter:
-	poetry run jupyter lab
+	uv run jupyter lab
 
 diagram:
 	pyreverse -o png -p ABSESpy abses
