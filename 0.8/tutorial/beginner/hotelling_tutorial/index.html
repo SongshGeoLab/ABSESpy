@@ -3368,20 +3368,17 @@ model.actors.array("area_count")</div>
 <span class="ansi-green-fg">    250</span> <span style="color: rgb(0,135,0)">self</span>.add_module(module)
 <span class="ansi-green-fg">    251</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> module
 
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/space/patch.py:254</span>, in <span class="ansi-cyan-fg">PatchModule.__init__</span><span class="ansi-blue-fg">(self, model, name, cell_cls, shape, resolution, source_layer, xda, attr_name, apply_raster, masked, vector_file, raster_file, band, crs, total_bounds, width, height, **kwargs)</span>
-<span class="ansi-green-fg">    252</span> <span style="color: rgb(95,135,135)"># Ensure required parameters are provided</span>
-<span class="ansi-green-fg">    253</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> width <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span> <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> height <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span> <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> crs <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span> <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> total_bounds <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">254</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>(
-<span class="ansi-green-fg">    255</span>         <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Insufficient parameters provided. Must provide either: </span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">    256</span>         <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">1) shape and resolution, 2) source_layer, 3) xda, </span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">    257</span>         <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">4) vector_file and resolution, or 5) raster_file</span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">    258</span>     )
-<span class="ansi-green-fg">    260</span> <span style="color: rgb(95,135,135)"># Initialize RasterLayer with the determined parameters</span>
-<span class="ansi-green-fg">    261</span> RasterLayer.<span class="ansi-blue-fg">__init__</span>(
-<span class="ansi-green-fg">    262</span>     <span style="color: rgb(0,135,0)">self</span>,
-<span class="ansi-green-fg">    263</span>     model=model,
-<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">    269</span>     **kwargs,
-<span class="ansi-green-fg">    270</span> )
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/space/patch.py:252</span>, in <span class="ansi-cyan-fg">PatchModule.__init__</span><span class="ansi-blue-fg">(self, model, name, cell_cls, shape, resolution, source_layer, xda, attr_name, apply_raster, masked, vector_file, raster_file, band, crs, total_bounds, width, height, **kwargs)</span>
+<span class="ansi-green-fg">    250</span> <span style="color: rgb(95,135,135)"># Ensure required parameters are provided</span>
+<span class="ansi-green-fg">    251</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> width <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span> <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> height <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span> <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> crs <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span> <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> total_bounds <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">252</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>(
+<span class="ansi-green-fg">    253</span>         <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Insufficient parameters provided. Must provide either: </span><span class="ansi-yellow-fg">"</span>
+<span class="ansi-green-fg">    254</span>         <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">1) shape and resolution, 2) source_layer, 3) xda, </span><span class="ansi-yellow-fg">"</span>
+<span class="ansi-green-fg">    255</span>         <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">4) vector_file and resolution, or 5) raster_file</span><span class="ansi-yellow-fg">"</span>
+<span class="ansi-green-fg">    256</span>     )
+<span class="ansi-green-fg">    258</span> <span style="color: rgb(95,135,135)"># Remove PatchModule-specific parameters that shouldn't be passed to RasterLayer</span>
+<span class="ansi-green-fg">    259</span> <span style="color: rgb(95,135,135)"># Even though they are explicit parameters, we remove them from kwargs as a safeguard</span>
+<span class="ansi-green-fg">    260</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> key <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">apply_raster</span><span class="ansi-yellow-fg">"</span>, <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">attr_name</span><span class="ansi-yellow-fg">"</span>]:
 
 <span class="ansi-red-fg">ValueError</span>: Insufficient parameters provided. Must provide either: 1) shape and resolution, 2) source_layer, 3) xda, 4) vector_file and resolution, or 5) raster_file</pre>
 </div>
@@ -3523,20 +3520,17 @@ model.run_model()</div>
 <span class="ansi-green-fg">    250</span> <span style="color: rgb(0,135,0)">self</span>.add_module(module)
 <span class="ansi-green-fg">    251</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> module
 
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/space/patch.py:254</span>, in <span class="ansi-cyan-fg">PatchModule.__init__</span><span class="ansi-blue-fg">(self, model, name, cell_cls, shape, resolution, source_layer, xda, attr_name, apply_raster, masked, vector_file, raster_file, band, crs, total_bounds, width, height, **kwargs)</span>
-<span class="ansi-green-fg">    252</span> <span style="color: rgb(95,135,135)"># Ensure required parameters are provided</span>
-<span class="ansi-green-fg">    253</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> width <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span> <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> height <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span> <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> crs <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span> <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> total_bounds <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">254</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>(
-<span class="ansi-green-fg">    255</span>         <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Insufficient parameters provided. Must provide either: </span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">    256</span>         <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">1) shape and resolution, 2) source_layer, 3) xda, </span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">    257</span>         <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">4) vector_file and resolution, or 5) raster_file</span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">    258</span>     )
-<span class="ansi-green-fg">    260</span> <span style="color: rgb(95,135,135)"># Initialize RasterLayer with the determined parameters</span>
-<span class="ansi-green-fg">    261</span> RasterLayer.<span class="ansi-blue-fg">__init__</span>(
-<span class="ansi-green-fg">    262</span>     <span style="color: rgb(0,135,0)">self</span>,
-<span class="ansi-green-fg">    263</span>     model=model,
-<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">    269</span>     **kwargs,
-<span class="ansi-green-fg">    270</span> )
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/space/patch.py:252</span>, in <span class="ansi-cyan-fg">PatchModule.__init__</span><span class="ansi-blue-fg">(self, model, name, cell_cls, shape, resolution, source_layer, xda, attr_name, apply_raster, masked, vector_file, raster_file, band, crs, total_bounds, width, height, **kwargs)</span>
+<span class="ansi-green-fg">    250</span> <span style="color: rgb(95,135,135)"># Ensure required parameters are provided</span>
+<span class="ansi-green-fg">    251</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> width <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span> <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> height <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span> <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> crs <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span> <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> total_bounds <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">252</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>(
+<span class="ansi-green-fg">    253</span>         <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Insufficient parameters provided. Must provide either: </span><span class="ansi-yellow-fg">"</span>
+<span class="ansi-green-fg">    254</span>         <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">1) shape and resolution, 2) source_layer, 3) xda, </span><span class="ansi-yellow-fg">"</span>
+<span class="ansi-green-fg">    255</span>         <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">4) vector_file and resolution, or 5) raster_file</span><span class="ansi-yellow-fg">"</span>
+<span class="ansi-green-fg">    256</span>     )
+<span class="ansi-green-fg">    258</span> <span style="color: rgb(95,135,135)"># Remove PatchModule-specific parameters that shouldn't be passed to RasterLayer</span>
+<span class="ansi-green-fg">    259</span> <span style="color: rgb(95,135,135)"># Even though they are explicit parameters, we remove them from kwargs as a safeguard</span>
+<span class="ansi-green-fg">    260</span> <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> key <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> [<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">apply_raster</span><span class="ansi-yellow-fg">"</span>, <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">attr_name</span><span class="ansi-yellow-fg">"</span>]:
 
 <span class="ansi-red-fg">ValueError</span>: Insufficient parameters provided. Must provide either: 1) shape and resolution, 2) source_layer, 3) xda, 4) vector_file and resolution, or 5) raster_file</pre>
 </div>
