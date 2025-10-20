@@ -5,6 +5,16 @@ on:
       - master
       - main
       - dev
+  workflow_dispatch:
+    inputs:
+      use_uv:
+        description: 'Use uv instead of Poetry'
+        required: false
+        default: 'false'
+      dry_run:
+        description: 'Dry-run build (no deploy)'
+        required: false
+        default: 'false'
 
 # 添加并发控制，防止多个部署任务同时推送到gh-pages分支
 concurrency:
@@ -26,10 +36,23 @@ jobs:
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+      # ===================== UV path (optional) =====================
+      - name: Setup uv
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.use_uv == 'true' }}
+        uses: astral-sh/setup-uv@v4
+      - name: Install dependencies (uv)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.use_uv == 'true' }}
+        run: |
+          set -e
+          uv pip install --system --upgrade pip
+          uv pip install --system git+https://${{ secrets.GH_TOKEN }}@github.com/squidfunk/mkdocs-material-insiders.git
+          uv sync
+      # =================== Poetry path (default) ====================
       - name: Cache Poetry and dependencies
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.use_uv == 'true') }}
         uses: actions/cache@v3
         with:
           path: |
@@ -38,38 +61,85 @@ jobs:
           key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
           restore-keys: |
             ${{ runner.os }}-poetry-
+      - name: Preflight installer URL (retry)
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.use_uv == 'true') }}
+        uses: nick-fields/retry@v3
+        with:
+          timeout_minutes: 2
+          max_attempts: 3
+          command: |
+            python - <<'PY'
+            import urllib.request
+            urllib.request.urlopen('https://install.python-poetry.org', timeout=10).read()
+            PY
       - name: Install Poetry
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.use_uv == 'true') }}
         uses: snok/install-poetry@v1
         with:
+          # 保持 latest，但显式指定 installer-url，减少 404 风险
           version: latest
           virtualenvs-create: true
           virtualenvs-in-project: true
-      - name: Install dependencies
+          installer-url: https://install.python-poetry.org
+        continue-on-error: true
+      - name: Fallback install Poetry via pipx (if action failed)
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.use_uv == 'true') && steps.install-poetry.outcome == 'failure' }}
+        run: |
+          python -m pip install --user pipx
+          python -m pipx ensurepath
+          ~/.local/bin/pipx install poetry
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+      - name: Install dependencies (Poetry)
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.use_uv == 'true') }}
         run: |
           poetry run pip install --upgrade pip
           set -e
           poetry run pip install git+https://${{ secrets.GH_TOKEN }}@github.com/squidfunk/mkdocs-material-insiders.git
           poetry install
+      # ======================== Dry-run build ========================
+      - name: Build docs only (dry-run)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run == 'true' }}
+        run: |
+          if [ "${{ inputs.use_uv }}" = "true" ]; then
+            uv run mkdocs build --strict
+          else
+            poetry run mkdocs build --strict
+          fi
+      # ========================= Deploy steps ========================
       - name: Deploy documentation (dev branch)
-        if: github.ref == 'refs/heads/dev'
+        if: ${{ inputs.dry_run != 'true' && github.ref == 'refs/heads/dev' }}
         run: |
           git fetch origin gh-pages --depth=1 || true
-          poetry run mike deploy --push dev
+          if [ "${{ inputs.use_uv }}" = "true" ]; then
+            uv run mike deploy --push dev
+          else
+            poetry run mike deploy --push dev
+          fi
 
       - name: Deploy documentation (master branch)
-        if: github.ref == 'refs/heads/master'
+        if: ${{ inputs.dry_run != 'true' && github.ref == 'refs/heads/master' }}
         run: |
           git fetch origin gh-pages --depth=1 || true
-          poetry run mike deploy --push --update-aliases 0.8 latest
-          poetry run mike set-default --push latest
+          if [ "${{ inputs.use_uv }}" = "true" ]; then
+            uv run mike deploy --push --update-aliases 0.8 latest
+            uv run mike set-default --push latest
+          else
+            poetry run mike deploy --push --update-aliases 0.8 latest
+            poetry run mike set-default --push latest
+          fi
 
       - name: Deploy documentation (version tags)
-        if: startsWith(github.ref, 'refs/tags/v')
+        if: ${{ inputs.dry_run != 'true' && startsWith(github.ref, 'refs/tags/v') }}
         run: |
           git fetch origin gh-pages --depth=1 || true
           VERSION=${GITHUB_REF#refs/tags/v}
           MAJOR_MINOR=$(echo $VERSION | cut -d. -f1-2)
-          poetry run mike deploy --push --update-aliases $MAJOR_MINOR latest
-          poetry run mike set-default --push latest
+          if [ "${{ inputs.use_uv }}" = "true" ]; then
+            uv run mike deploy --push --update-aliases $MAJOR_MINOR latest
+            uv run mike set-default --push latest
+          else
+            poetry run mike deploy --push --update-aliases $MAJOR_MINOR latest
+            poetry run mike set-default --push latest
+          fi
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
