@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.4](https://github.com/SongshGeoLab/ABSESpy/compare/v0.8.3...v0.8.4) (2025-10-20)
+
+
+### Bug Fixes
+
+* **refactor:** :recycle: Ensure backward compatibility in exp parameters setting ([ea4e52a](https://github.com/SongshGeoLab/ABSESpy/commit/ea4e52a76e7238491ad9fefb9b6f83101b0cf9ea))
+
 ## [0.8.3](https://github.com/SongshGeoLab/ABSESpy/compare/v0.8.2...v0.8.3) (2025-10-20)
 
 
