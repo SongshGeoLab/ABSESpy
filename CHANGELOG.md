@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.8.3](https://github.com/SongshGeoLab/ABSESpy/compare/v0.8.2...v0.8.3) (2025-10-20)
+
+
+### Bug Fixes
+
+* **random:** :bug: Enhance ListRandom functionality with ActorsList support ([f790b7c](https://github.com/SongshGeoLab/ABSESpy/commit/f790b7c24695bd96f044f9f07bef615b87968f68))
+* **sequences:** :bug: Re-include better() method to handle None threshold ([104b104](https://github.com/SongshGeoLab/ABSESpy/commit/104b104a51dc25c647f973b4331b09847da04f9f))
+
 ## [0.8.2](https://github.com/SongshGeoLab/ABSESpy/compare/v0.8.1...v0.8.2) (2025-10-17)
 
 
