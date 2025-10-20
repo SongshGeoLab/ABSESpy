@@ -144,5 +144,136 @@ def test_struct_mode_disabled_in_loaded_config() -> None:
     assert exp.cfg.new_key == "new_value"
 
 
+def test_raster_auto_application_with_attr_name(tmp_path) -> None:
+    """Test that providing attr_name automatically applies raster data (backward compatibility).
+
+    In 0.7.x, providing raster_file and attr_name would automatically apply the
+    raster data as a cell attribute. This behavior should be preserved in 0.8.x.
+    """
+    import numpy as np
+    import rioxarray
+
+    from abses.space.cells import PatchCell
+
+    # Create a temporary raster file
+    raster_data = np.array([[1.0, 2.0], [3.0, 4.0]])
+    xda = (
+        rioxarray.open_rasterio("data:image/tiff;base64,", masked=True)
+        if False
+        else None
+    )
+
+    # For a simpler test, create a model and use the module directly
+    config = DictConfig({"model": {"name": "test_model"}, "time": {"end": 10}})
+    model = MainModel(parameters=config)
+
+    # Create a simple raster file for testing
+    raster_file = tmp_path / "test_raster.tif"
+
+    # Create xarray with proper geo-referencing
+    import xarray as xr
+
+    xda = xr.DataArray(
+        raster_data,
+        dims=["y", "x"],
+        coords={
+            "y": [1.5, 0.5],
+            "x": [0.5, 1.5],
+        },
+    )
+    xda.rio.write_crs("EPSG:4326", inplace=True)
+    xda.rio.to_raster(raster_file)
+
+    # This should automatically apply raster as 'elevation' attribute
+    # without needing explicit apply_raster=True
+    module = model.nature.create_module(
+        raster_file=str(raster_file),
+        cell_cls=PatchCell,
+        attr_name="elevation",
+    )
+
+    # Verify that the elevation attribute was automatically applied
+    assert "elevation" in module.attributes
+    elevation_data = module.get_raster("elevation")
+    assert elevation_data is not None
+    assert elevation_data.shape == (1, 2, 2)
+
+    # Verify data values
+    cells = list(module.cells_lst)
+    assert all(hasattr(cell, "elevation") for cell in cells)
+
+
+def test_vector_auto_application_with_attr_name() -> None:
+    """Test that providing attr_name with vector_file automatically applies data.
+
+    This ensures consistency across different module creation methods.
+    """
+    import geopandas as gpd
+    from shapely.geometry import box
+
+    # Create a simple GeoDataFrame
+    gdf = gpd.GeoDataFrame(
+        {"value": [1, 2, 3, 4]},
+        geometry=[
+            box(0, 0, 1, 1),
+            box(1, 0, 2, 1),
+            box(0, 1, 1, 2),
+            box(1, 1, 2, 2),
+        ],
+        crs="EPSG:4326",
+    )
+
+    config = DictConfig({"model": {"name": "test_model"}, "time": {"end": 10}})
+    model = MainModel(parameters=config)
+
+    # This should automatically apply vector data as 'value' attribute
+    module = model.nature.create_module(
+        vector_file=gdf,
+        attr_name="value",
+        resolution=0.5,
+    )
+
+    # Verify that the value attribute was automatically applied
+    assert "value" in module.attributes
+    value_data = module.get_raster("value")
+    assert value_data is not None
+
+
+def test_xarray_auto_application_with_attr_name() -> None:
+    """Test that providing attr_name with xda automatically applies data.
+
+    This ensures consistency across all module creation methods.
+    """
+    import numpy as np
+    import xarray as xr
+
+    # Create a simple xarray DataArray
+    data = np.array([[1.0, 2.0], [3.0, 4.0]])
+    xda = xr.DataArray(
+        data,
+        dims=["y", "x"],
+        coords={
+            "y": [1.5, 0.5],
+            "x": [0.5, 1.5],
+        },
+    )
+    xda.rio.write_crs("EPSG:4326", inplace=True)
+
+    config = DictConfig({"model": {"name": "test_model"}, "time": {"end": 10}})
+    model = MainModel(parameters=config)
+
+    # This should automatically apply xarray data as 'temperature' attribute
+    module = model.nature.create_module(
+        xda=xda,
+        attr_name="temperature",
+    )
+
+    # Verify that the temperature attribute was automatically applied
+    assert "temperature" in module.attributes
+    temp_data = module.get_raster("temperature")
+    assert temp_data is not None
+    assert temp_data.shape == (1, 2, 2)
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
