@@ -26,7 +26,7 @@ include = [
 abses = "hydra_plugins.abses_searchpath_plugin:ABSESpySearchPathPlugin"
 
 [tool.poetry.dependencies]
-python = ">=3.11,<3.12"
+python = ">=3.11,<3.14"
 netcdf4 = ">=1.6"
 hydra-core = "~1.3"
 mesa = ">=3.1.0"
@@ -35,7 +35,7 @@ xarray = ">=2023"
 fiona = ">1.8"
 loguru = ">=0.7"
 rioxarray = ">=0.13"
-pendulum = "~2"
+pendulum = ">=3.0.0"
 geopandas = "~0"
 typing-extensions = "~4"
 fontawesome = ">=5"
@@ -47,6 +47,7 @@ icons = "*"
 solara = "*"
 
 [tool.poetry.group.dev.dependencies]
+ruff = ">=0.1.0"
 pytest-clarity = "*"
 pre-commit = ">=3.0.1"
 scriv = ">=1.2.0"
@@ -97,6 +98,44 @@ mkdocs-static-i18n = "^1.3.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[dependency-groups]
+dev = [
+    "tox>=4.31.0",
+]
+
+[tool.ruff]
+# Ruff configuration
+target-version = "py311"
+line-length = 88
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+]
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+    "docs",
+    "site",
+    "tmp",
+    "out",
+    "logs",
+]
+
+[tool.ruff.isort]
+known-first-party = ["abses"]
+
 [tool.interrogate]
 # Docstring coverage configuration
 ignore-init-method = true
@@ -113,7 +152,7 @@ color = true
 
 [tool.mypy]
 # Core settings
-python_version = "3.11"
+# python_version will be detected automatically from the runtime environment
 ignore_missing_imports = true
 disable_error_code = ["misc", "override", "arg-type", "assignment", "attr-defined", "union-attr", "type-arg"]
 

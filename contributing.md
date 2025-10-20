@@ -48,12 +48,12 @@ Wonderful! You can just start your work and read our workflow to prevent some er
 
 ## Set environment
 
-We recommend to set environment by `poetry`, you can also use `venv` or `conda` but it need some work done yourself.
+We recommend using `uv` for environment management. You can also use `venv` or `conda` if needed.
 
-- `poetry` is a command tool that we recommend installing in a global environment by `pip install poetry`
-- Enter your `ABSESpy` folder and create an environment for `poetry` by `poetry env use python`.
-- Run tools via uv, e.g. `uv run pytest`
-- You can read this [file](https://python-poetry.org/) to learn more about `poetry`
+- Install `uv` globally: `pip install uv` or `curl -LsSf https://astral.sh/uv/install.sh | sh`
+- Enter your `ABSESpy` folder and sync dependencies: `uv sync`
+- Run tools via uv: `uv run pytest`, `uv run mypy`, etc.
+- Learn more about [uv](https://docs.astral.sh/uv/)
 
 ## Test and code standard
 

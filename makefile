@@ -16,43 +16,30 @@ setup-dependencies:
 	uv sync
 
 setup-pre-commit:
-	poetry add --group dev flake8 isort nbstripout pydocstyle pre-commit-hooks interrogate sourcery mypy bandit black pylint
+	uv add --dev flake8 isort nbstripout pydocstyle pre-commit-hooks interrogate sourcery mypy bandit black pylint ruff
 
 install-jupyter:
-	poetry add ipykernel --group dev
-	poetry add --group dev jupyterlab
-	poetry add jupyterlab_execute_time --group dev
+	uv add --dev ipykernel jupyterlab jupyterlab-execute-time
 
 install-tests:
-	poetry add hydra-core
-	poetry add pytest allure-pytest --group dev
-	poetry add pytest-cov --group dev
-	poetry add pytest-clarity pytest-sugar --group dev
+	uv add hydra-core
+	uv add --dev pytest allure-pytest pytest-cov pytest-clarity pytest-sugar
 
 # https://timvink.github.io/mkdocs-git-authors-plugin/index.html
 install-docs:
-	poetry add --group docs mkdocs mkdocs-material
-	poetry add --group docs mkdocs-git-revision-date-localized-plugin
-	poetry add --group docs mkdocs-minify-plugin
-	poetry add --group docs mkdocs-redirects
-	poetry add --group docs mkdocs-awesome-pages-plugin
-	poetry add --group docs mkdocs-git-authors-plugin
-	poetry add --group docs mkdocstrings\[python\]
-	poetry add --group docs mkdocs-bibtex
-	poetry add --group docs mkdocs-macros-plugin
-	poetry add --group docs mkdocs-jupyter
-	poetry add --group docs mkdocs-callouts
-	poetry add --group docs mkdocs-glightbox
-	poetry add --group docs pymdown-extensions
+	uv add --group docs mkdocs mkdocs-material mkdocs-git-revision-date-localized-plugin mkdocs-minify-plugin mkdocs-redirects mkdocs-awesome-pages-plugin mkdocs-git-authors-plugin 'mkdocstrings[python]' mkdocs-bibtex mkdocs-macros-plugin mkdocs-jupyter mkdocs-callouts mkdocs-glightbox pymdown-extensions
 
 test:
-	poetry run pytest -vs --clean-alluredir --alluredir tmp/allure_results --cov=abses  --no-cov-on-fail
+	uv run pytest -vs --clean-alluredir --alluredir tmp/allure_results --cov=abses  --no-cov-on-fail
+
+test-all:
+	uv run --with tox tox -p auto
 
 report:
-	poetry run allure serve tmp/allure_results
+	uv run allure serve tmp/allure_results
 
 jupyter:
-	poetry run jupyter lab
+	uv run jupyter lab
 
 diagram:
 	pyreverse -o png -p ABSESpy abses
