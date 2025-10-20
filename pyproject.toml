@@ -1,7 +1,7 @@
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 norecursedirs = ["examples", "docs", ".*", "tmp", "out", "logs"]
-addopts = "-v --tb=short"
+addopts = "-v --tb=short --cov=abses"
 
 [tool.isort]
 profile = "black"
@@ -119,16 +119,6 @@ include = [
 # Ruff configuration
 target-version = "py311"
 line-length = 88
-select = [
-    "E",   # pycodestyle errors
-    "W",   # pycodestyle warnings
-    "F",   # pyflakes
-    "I",   # isort
-    "UP",  # pyupgrade
-]
-ignore = [
-    "E501",  # line too long (handled by formatter)
-]
 exclude = [
     ".git",
     ".mypy_cache",
@@ -145,7 +135,19 @@ exclude = [
     "logs",
 ]
 
-[tool.ruff.isort]
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "W293",  # blank line contains whitespace
+]
+
+[tool.ruff.lint.isort]
 known-first-party = ["abses"]
 
 [tool.interrogate]
