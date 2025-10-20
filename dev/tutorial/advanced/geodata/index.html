@@ -2581,7 +2581,7 @@ data.plot()</div>
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
 <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[1]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
-<pre>&lt;matplotlib.collections.QuadMesh at 0x7f1d8cb62e10&gt;</pre>
+<pre>&lt;matplotlib.collections.QuadMesh at 0x7f3ff97fb390&gt;</pre>
 </div>
 </div>
 <div class="jp-OutputArea-child">
@@ -2693,7 +2693,7 @@ module = model.nature.create_module(shape=(50, 40), name="test_module")</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre><span class="ansi-green-fg">2025-10-20 10:47:42.070</span> | <span class="ansi-bold">INFO    </span> | <span class="ansi-cyan-fg">abses.space.patch</span>:<span class="ansi-cyan-fg">__init__</span>:<span class="ansi-cyan-fg">272</span> - <span class="ansi-bold">Initializing a new Model Layer...</span>
+<pre><span class="ansi-green-fg">2025-10-20 12:37:01.317</span> | <span class="ansi-bold">INFO    </span> | <span class="ansi-cyan-fg">abses.space.patch</span>:<span class="ansi-cyan-fg">__init__</span>:<span class="ansi-cyan-fg">275</span> - <span class="ansi-bold">Initializing a new Model Layer...</span>
 </pre>
 </div>
 </div>
@@ -2852,7 +2852,7 @@ cropland.get_xarray().plot()</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre><span class="ansi-green-fg">2025-10-20 10:47:43.478</span> | <span class="ansi-bold">INFO    </span> | <span class="ansi-cyan-fg">abses.space.patch</span>:<span class="ansi-cyan-fg">__init__</span>:<span class="ansi-cyan-fg">272</span> - <span class="ansi-bold">Initializing a new Model Layer...</span>
+<pre><span class="ansi-green-fg">2025-10-20 12:37:02.766</span> | <span class="ansi-bold">INFO    </span> | <span class="ansi-cyan-fg">abses.space.patch</span>:<span class="ansi-cyan-fg">__init__</span>:<span class="ansi-cyan-fg">275</span> - <span class="ansi-bold">Initializing a new Model Layer...</span>
 </pre>
 </div>
 </div>
@@ -2879,30 +2879,30 @@ cropland.get_xarray().plot()</div>
 <span class="ansi-green-fg">     10</span> )
 <span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">12</span> <span class="ansi-yellow-bg">cropland</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">get_xarray</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>.plot()
 
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/space/patch.py:474</span>, in <span class="ansi-cyan-fg">PatchModule.get_xarray</span><span class="ansi-blue-fg">(self, attr_name, update)</span>
-<span class="ansi-green-fg">    460</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">get_xarray</span>(
-<span class="ansi-green-fg">    461</span>     <span style="color: rgb(0,135,0)">self</span>,
-<span class="ansi-green-fg">    462</span>     attr_name: Optional[<span style="color: rgb(0,135,0)">str</span>] = <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>,
-<span class="ansi-green-fg">    463</span>     update: <span style="color: rgb(0,135,0)">bool</span> = <span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
-<span class="ansi-green-fg">    464</span> ) -&gt; xr.DataArray:
-<span class="ansi-green-fg">    465</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">"""Creates an xarray DataArray representation with spatial coordinates.</span>
-<span class="ansi-green-fg">    466</span> 
-<span class="ansi-green-fg">    467</span> <span class="ansi-yellow-fg">    Args:</span>
-<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">    472</span> <span class="ansi-yellow-fg">        xarray.DataArray with spatial coordinates and CRS information.</span>
-<span class="ansi-green-fg">    473</span> <span class="ansi-yellow-fg">    """</span>
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">474</span>     data = <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">get_raster</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">attr_name</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">attr_name</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">update</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">update</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">    475</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> attr_name:
-<span class="ansi-green-fg">    476</span>         name = attr_name
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/space/patch.py:477</span>, in <span class="ansi-cyan-fg">PatchModule.get_xarray</span><span class="ansi-blue-fg">(self, attr_name, update)</span>
+<span class="ansi-green-fg">    463</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">get_xarray</span>(
+<span class="ansi-green-fg">    464</span>     <span style="color: rgb(0,135,0)">self</span>,
+<span class="ansi-green-fg">    465</span>     attr_name: Optional[<span style="color: rgb(0,135,0)">str</span>] = <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>,
+<span class="ansi-green-fg">    466</span>     update: <span style="color: rgb(0,135,0)">bool</span> = <span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
+<span class="ansi-green-fg">    467</span> ) -&gt; xr.DataArray:
+<span class="ansi-green-fg">    468</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">"""Creates an xarray DataArray representation with spatial coordinates.</span>
+<span class="ansi-green-fg">    469</span> 
+<span class="ansi-green-fg">    470</span> <span class="ansi-yellow-fg">    Args:</span>
+<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">    475</span> <span class="ansi-yellow-fg">        xarray.DataArray with spatial coordinates and CRS information.</span>
+<span class="ansi-green-fg">    476</span> <span class="ansi-yellow-fg">    """</span>
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">477</span>     data = <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">get_raster</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">attr_name</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">attr_name</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">update</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">update</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">    478</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> attr_name:
+<span class="ansi-green-fg">    479</span>         name = attr_name
 
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/space/patch.py:673</span>, in <span class="ansi-cyan-fg">PatchModule.get_raster</span><span class="ansi-blue-fg">(self, attr_name, update)</span>
-<span class="ansi-green-fg">    668</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>(
-<span class="ansi-green-fg">    669</span>         <span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Attribute </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>attr_name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg"> does not exist. </span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">    670</span>         <span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Choose from </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span style="color: rgb(0,135,0)">self</span>.attributes<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">, or set `attr_name` to `None` to retrieve all.</span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">    671</span>     )
-<span class="ansi-green-fg">    672</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> attr_name <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">673</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">assert</span> <span style="color: rgb(0,135,0)">bool</span>(<span style="color: rgb(0,135,0)">self</span>.attributes), <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">No attribute available.</span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">    674</span>     attr_names = <span style="color: rgb(0,135,0)">self</span>.attributes
-<span class="ansi-green-fg">    675</span> <span class="ansi-bold" style="color: rgb(0,135,0)">else</span>:
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/space/patch.py:676</span>, in <span class="ansi-cyan-fg">PatchModule.get_raster</span><span class="ansi-blue-fg">(self, attr_name, update)</span>
+<span class="ansi-green-fg">    671</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>(
+<span class="ansi-green-fg">    672</span>         <span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Attribute </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>attr_name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg"> does not exist. </span><span class="ansi-yellow-fg">"</span>
+<span class="ansi-green-fg">    673</span>         <span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Choose from </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span style="color: rgb(0,135,0)">self</span>.attributes<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">, or set `attr_name` to `None` to retrieve all.</span><span class="ansi-yellow-fg">"</span>
+<span class="ansi-green-fg">    674</span>     )
+<span class="ansi-green-fg">    675</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> attr_name <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">676</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">assert</span> <span style="color: rgb(0,135,0)">bool</span>(<span style="color: rgb(0,135,0)">self</span>.attributes), <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">No attribute available.</span><span class="ansi-yellow-fg">"</span>
+<span class="ansi-green-fg">    677</span>     attr_names = <span style="color: rgb(0,135,0)">self</span>.attributes
+<span class="ansi-green-fg">    678</span> <span class="ansi-bold" style="color: rgb(0,135,0)">else</span>:
 
 <span class="ansi-red-fg">AssertionError</span>: No attribute available.</pre>
 </div>
@@ -3438,15 +3438,15 @@ Attributes:
     institution:  Institute of Tibetan Plateau Research, Chinese Academy of S...
     title:        Monthly mean precipitation rate from the ITPCAS China Meteo...
     description:  Data from ITPCAS China Meteorological Forcing Dataset (Vers...
-    references:   He, J., and K. Yang, 2011: China Meteorological Forcing Dat...</pre><div class="xr-wrap" style="display:none"><div class="xr-header"><div class="xr-obj-type">xarray.Dataset</div></div><ul class="xr-sections"><li class="xr-section-item"><input class="xr-section-summary-in" disabled="" id="section-cfdbfd32-c1e9-4fe4-b95b-5b5b741ca42e" type="checkbox"><label class="xr-section-summary" for="section-cfdbfd32-c1e9-4fe4-b95b-5b5b741ca42e" title="Expand/collapse section">Dimensions:</label><div class="xr-section-inline-details"><ul class="xr-dim-list"><li><span class="xr-has-index">time</span>: 12</li><li><span class="xr-has-index">lat</span>: 400</li><li><span class="xr-has-index">lon</span>: 700</li></ul></div><div class="xr-section-details"></div></li><li class="xr-section-item"><input checked="" class="xr-section-summary-in" id="section-ca3ff743-f1d2-4c03-94b7-b386eff1573c" type="checkbox"><label class="xr-section-summary" for="section-ca3ff743-f1d2-4c03-94b7-b386eff1573c">Coordinates: <span>(3)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-var-name"><span class="xr-has-index">time</span></div><div class="xr-var-dims">(time)</div><div class="xr-var-dtype">datetime64[ns]</div><div class="xr-var-preview xr-preview">2018-01-16T10:30:00 ... 2018-12-...</div><input class="xr-var-attrs-in" id="attrs-95627a13-3371-4885-b251-60d0504f3799" type="checkbox"><label for="attrs-95627a13-3371-4885-b251-60d0504f3799" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use xlink:href="#icon-file-text2"></use></svg></label><input class="xr-var-data-in" id="data-7c971bc4-85b2-43b7-9f4e-24d01a957bc2" type="checkbox"><label for="data-7c971bc4-85b2-43b7-9f4e-24d01a957bc2" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use xlink:href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"><dt><span>standard_name :</span></dt><dd>time</dd><dt><span>long_name :</span></dt><dd>Time</dd><dt><span>axis :</span></dt><dd>T</dd></dl></div><div class="xr-var-data"><pre>array(['2018-01-16T10:30:00.000000000', '2018-02-14T22:30:00.000000000',
+    references:   He, J., and K. Yang, 2011: China Meteorological Forcing Dat...</pre><div class="xr-wrap" style="display:none"><div class="xr-header"><div class="xr-obj-type">xarray.Dataset</div></div><ul class="xr-sections"><li class="xr-section-item"><input class="xr-section-summary-in" disabled="" id="section-9442c432-abd3-483c-a5dd-690ca9775683" type="checkbox"><label class="xr-section-summary" for="section-9442c432-abd3-483c-a5dd-690ca9775683" title="Expand/collapse section">Dimensions:</label><div class="xr-section-inline-details"><ul class="xr-dim-list"><li><span class="xr-has-index">time</span>: 12</li><li><span class="xr-has-index">lat</span>: 400</li><li><span class="xr-has-index">lon</span>: 700</li></ul></div><div class="xr-section-details"></div></li><li class="xr-section-item"><input checked="" class="xr-section-summary-in" id="section-add61d32-3c65-4f89-8592-abc89a7b0feb" type="checkbox"><label class="xr-section-summary" for="section-add61d32-3c65-4f89-8592-abc89a7b0feb">Coordinates: <span>(3)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-var-name"><span class="xr-has-index">time</span></div><div class="xr-var-dims">(time)</div><div class="xr-var-dtype">datetime64[ns]</div><div class="xr-var-preview xr-preview">2018-01-16T10:30:00 ... 2018-12-...</div><input class="xr-var-attrs-in" id="attrs-f207eaaa-c34e-4764-a59e-daae9807325d" type="checkbox"><label for="attrs-f207eaaa-c34e-4764-a59e-daae9807325d" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use xlink:href="#icon-file-text2"></use></svg></label><input class="xr-var-data-in" id="data-159c90c8-735a-4633-8c95-6c39a0a75019" type="checkbox"><label for="data-159c90c8-735a-4633-8c95-6c39a0a75019" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use xlink:href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"><dt><span>standard_name :</span></dt><dd>time</dd><dt><span>long_name :</span></dt><dd>Time</dd><dt><span>axis :</span></dt><dd>T</dd></dl></div><div class="xr-var-data"><pre>array(['2018-01-16T10:30:00.000000000', '2018-02-14T22:30:00.000000000',
        '2018-03-16T10:30:00.000000000', '2018-04-15T22:30:00.000000000',
        '2018-05-16T10:30:00.000000000', '2018-06-15T22:30:00.000000000',
        '2018-07-16T10:30:00.000000000', '2018-08-16T10:30:00.000000000',
        '2018-09-15T22:30:00.000000000', '2018-10-16T10:30:00.000000000',
        '2018-11-15T22:30:00.000000000', '2018-12-16T10:30:00.000000000'],
-      dtype='datetime64[ns]')</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span class="xr-has-index">lat</span></div><div class="xr-var-dims">(lat)</div><div class="xr-var-dtype">float32</div><div class="xr-var-preview xr-preview">15.05 15.15 15.25 ... 54.85 54.95</div><input class="xr-var-attrs-in" id="attrs-8541097c-7bca-4032-a696-6b5c3a43ed3b" type="checkbox"><label for="attrs-8541097c-7bca-4032-a696-6b5c3a43ed3b" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use xlink:href="#icon-file-text2"></use></svg></label><input class="xr-var-data-in" id="data-c7e71540-d2ae-41ef-acf4-e5d563d96b5d" type="checkbox"><label for="data-c7e71540-d2ae-41ef-acf4-e5d563d96b5d" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use xlink:href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>long_name :</span></dt><dd>latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>axis :</span></dt><dd>Y</dd></dl></div><div class="xr-var-data"><pre>array([15.05    , 15.150001, 15.25    , ..., 54.75    , 54.85    , 54.95    ],
-      dtype=float32)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span class="xr-has-index">lon</span></div><div class="xr-var-dims">(lon)</div><div class="xr-var-dtype">float32</div><div class="xr-var-preview xr-preview">70.05 70.15 70.25 ... 139.9 140.0</div><input class="xr-var-attrs-in" id="attrs-c698638e-6ba2-48bc-bf64-35429a1968cd" type="checkbox"><label for="attrs-c698638e-6ba2-48bc-bf64-35429a1968cd" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use xlink:href="#icon-file-text2"></use></svg></label><input class="xr-var-data-in" id="data-c58540fb-c51c-4910-b6a1-a6c10b2068a1" type="checkbox"><label for="data-c58540fb-c51c-4910-b6a1-a6c10b2068a1" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use xlink:href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>long_name :</span></dt><dd>longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>axis :</span></dt><dd>X</dd></dl></div><div class="xr-var-data"><pre>array([ 70.05   ,  70.15   ,  70.25   , ..., 139.75   , 139.85   , 139.95001],
-      dtype=float32)</pre></div></li></ul></div></li><li class="xr-section-item"><input checked="" class="xr-section-summary-in" id="section-645aae65-8957-4bc3-9355-01b28d92fc0e" type="checkbox"><label class="xr-section-summary" for="section-645aae65-8957-4bc3-9355-01b28d92fc0e">Data variables: <span>(1)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-var-name"><span>prec</span></div><div class="xr-var-dims">(time, lat, lon)</div><div class="xr-var-dtype">float32</div><div class="xr-var-preview xr-preview">...</div><input class="xr-var-attrs-in" id="attrs-bdbcc44b-aa9a-481b-b1fa-4acfb4534cec" type="checkbox"><label for="attrs-bdbcc44b-aa9a-481b-b1fa-4acfb4534cec" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use xlink:href="#icon-file-text2"></use></svg></label><input class="xr-var-data-in" id="data-626bca2a-5735-4cfb-858e-e9092aa08fdf" type="checkbox"><label for="data-626bca2a-5735-4cfb-858e-e9092aa08fdf" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use xlink:href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"><dt><span>long_name :</span></dt><dd>Precipitation rate</dd><dt><span>units :</span></dt><dd>mm hr-1</dd></dl></div><div class="xr-var-data"><pre>[3360000 values with dtype=float32]</pre></div></li></ul></div></li><li class="xr-section-item"><input checked="" class="xr-section-summary-in" id="section-1c2065bf-2435-4b78-8fc9-a80f2d9ad299" type="checkbox"><label class="xr-section-summary" for="section-1c2065bf-2435-4b78-8fc9-a80f2d9ad299">Attributes: <span>(7)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><dl class="xr-attrs"><dt><span>Conventions :</span></dt><dd>CF-1.0</dd><dt><span>history :</span></dt><dd>Created at 2016-04-02 14:55:55 UTC by the ITPCAS Data Fusion System</dd><dt><span>source :</span></dt><dd>ITPCAS Data Fusion System (Version: 01.02.0240)</dd><dt><span>institution :</span></dt><dd>Institute of Tibetan Plateau Research, Chinese Academy of Sciences, Beijing, China</dd><dt><span>title :</span></dt><dd>Monthly mean precipitation rate from the ITPCAS China Meteorological Forcing Dataset</dd><dt><span>description :</span></dt><dd>Data from ITPCAS China Meteorological Forcing Dataset (Version: 01.06.0014; Category: B-01: 03hr, 0.10deg)</dd><dt><span>references :</span></dt><dd>He, J., and K. Yang, 2011: China Meteorological Forcing Dataset. Cold and Arid Regions Science Data Center, Lanzhou, Gansu, China, digital media, doi:10.3972/westdc.002.2014.db. [Available online at http://westdc.westgis.ac.cn/data/7a35329c-c53f-4267-aa07-e0037d913a21.]</dd></dl></div></li></ul></div></div>
+      dtype='datetime64[ns]')</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span class="xr-has-index">lat</span></div><div class="xr-var-dims">(lat)</div><div class="xr-var-dtype">float32</div><div class="xr-var-preview xr-preview">15.05 15.15 15.25 ... 54.85 54.95</div><input class="xr-var-attrs-in" id="attrs-61192a13-a1e6-4873-8b94-528cb2ac632c" type="checkbox"><label for="attrs-61192a13-a1e6-4873-8b94-528cb2ac632c" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use xlink:href="#icon-file-text2"></use></svg></label><input class="xr-var-data-in" id="data-dff687b1-197b-4216-b98f-abd6fdbe8349" type="checkbox"><label for="data-dff687b1-197b-4216-b98f-abd6fdbe8349" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use xlink:href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>long_name :</span></dt><dd>latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>axis :</span></dt><dd>Y</dd></dl></div><div class="xr-var-data"><pre>array([15.05    , 15.150001, 15.25    , ..., 54.75    , 54.85    , 54.95    ],
+      dtype=float32)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span class="xr-has-index">lon</span></div><div class="xr-var-dims">(lon)</div><div class="xr-var-dtype">float32</div><div class="xr-var-preview xr-preview">70.05 70.15 70.25 ... 139.9 140.0</div><input class="xr-var-attrs-in" id="attrs-968a7765-478f-458e-9015-d0f86e47306b" type="checkbox"><label for="attrs-968a7765-478f-458e-9015-d0f86e47306b" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use xlink:href="#icon-file-text2"></use></svg></label><input class="xr-var-data-in" id="data-bd53626a-7872-4cfe-a91a-a759702721bd" type="checkbox"><label for="data-bd53626a-7872-4cfe-a91a-a759702721bd" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use xlink:href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>long_name :</span></dt><dd>longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>axis :</span></dt><dd>X</dd></dl></div><div class="xr-var-data"><pre>array([ 70.05   ,  70.15   ,  70.25   , ..., 139.75   , 139.85   , 139.95001],
+      dtype=float32)</pre></div></li></ul></div></li><li class="xr-section-item"><input checked="" class="xr-section-summary-in" id="section-7ddf991d-c58f-40db-b5b3-036d218a5e80" type="checkbox"><label class="xr-section-summary" for="section-7ddf991d-c58f-40db-b5b3-036d218a5e80">Data variables: <span>(1)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-var-name"><span>prec</span></div><div class="xr-var-dims">(time, lat, lon)</div><div class="xr-var-dtype">float32</div><div class="xr-var-preview xr-preview">...</div><input class="xr-var-attrs-in" id="attrs-11a6b4c6-538d-4ddd-92b1-a5082b9252bf" type="checkbox"><label for="attrs-11a6b4c6-538d-4ddd-92b1-a5082b9252bf" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use xlink:href="#icon-file-text2"></use></svg></label><input class="xr-var-data-in" id="data-2237ad58-50ed-4e52-95db-11d06b12b522" type="checkbox"><label for="data-2237ad58-50ed-4e52-95db-11d06b12b522" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use xlink:href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"><dt><span>long_name :</span></dt><dd>Precipitation rate</dd><dt><span>units :</span></dt><dd>mm hr-1</dd></dl></div><div class="xr-var-data"><pre>[3360000 values with dtype=float32]</pre></div></li></ul></div></li><li class="xr-section-item"><input checked="" class="xr-section-summary-in" id="section-00597114-8d30-4d70-ab47-3b67b2156dd8" type="checkbox"><label class="xr-section-summary" for="section-00597114-8d30-4d70-ab47-3b67b2156dd8">Attributes: <span>(7)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><dl class="xr-attrs"><dt><span>Conventions :</span></dt><dd>CF-1.0</dd><dt><span>history :</span></dt><dd>Created at 2016-04-02 14:55:55 UTC by the ITPCAS Data Fusion System</dd><dt><span>source :</span></dt><dd>ITPCAS Data Fusion System (Version: 01.02.0240)</dd><dt><span>institution :</span></dt><dd>Institute of Tibetan Plateau Research, Chinese Academy of Sciences, Beijing, China</dd><dt><span>title :</span></dt><dd>Monthly mean precipitation rate from the ITPCAS China Meteorological Forcing Dataset</dd><dt><span>description :</span></dt><dd>Data from ITPCAS China Meteorological Forcing Dataset (Version: 01.06.0014; Category: B-01: 03hr, 0.10deg)</dd><dt><span>references :</span></dt><dd>He, J., and K. Yang, 2011: China Meteorological Forcing Dataset. Cold and Arid Regions Science Data Center, Lanzhou, Gansu, China, digital media, doi:10.3972/westdc.002.2014.db. [Available online at http://westdc.westgis.ac.cn/data/7a35329c-c53f-4267-aa07-e0037d913a21.]</dd></dl></div></li></ul></div></div>
 </div>
 </div>
 </div>
@@ -3984,9 +3984,9 @@ Attributes:
     institution:  Institute of Tibetan Plateau Research, Chinese Academy of S...
     title:        Monthly mean precipitation rate from the ITPCAS China Meteo...
     description:  Data from ITPCAS China Meteorological Forcing Dataset (Vers...
-    references:   He, J., and K. Yang, 2011: China Meteorological Forcing Dat...</pre><div class="xr-wrap" style="display:none"><div class="xr-header"><div class="xr-obj-type">xarray.Dataset</div></div><ul class="xr-sections"><li class="xr-section-item"><input class="xr-section-summary-in" disabled="" id="section-80a82a54-82a6-46e4-8866-833baedff38c" type="checkbox"><label class="xr-section-summary" for="section-80a82a54-82a6-46e4-8866-833baedff38c" title="Expand/collapse section">Dimensions:</label><div class="xr-section-inline-details"><ul class="xr-dim-list"><li><span class="xr-has-index">lat</span>: 400</li><li><span class="xr-has-index">lon</span>: 700</li></ul></div><div class="xr-section-details"></div></li><li class="xr-section-item"><input checked="" class="xr-section-summary-in" id="section-6f7a3b1a-6193-4f9e-8685-9ee0da4209a8" type="checkbox"><label class="xr-section-summary" for="section-6f7a3b1a-6193-4f9e-8685-9ee0da4209a8">Coordinates: <span>(3)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-var-name"><span class="xr-has-index">lat</span></div><div class="xr-var-dims">(lat)</div><div class="xr-var-dtype">float32</div><div class="xr-var-preview xr-preview">15.05 15.15 15.25 ... 54.85 54.95</div><input class="xr-var-attrs-in" id="attrs-19715e03-7200-4c21-86ba-df9bc6957261" type="checkbox"><label for="attrs-19715e03-7200-4c21-86ba-df9bc6957261" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use xlink:href="#icon-file-text2"></use></svg></label><input class="xr-var-data-in" id="data-1ad49b6c-ebbe-4049-8400-b7ac9893972f" type="checkbox"><label for="data-1ad49b6c-ebbe-4049-8400-b7ac9893972f" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use xlink:href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>long_name :</span></dt><dd>latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>axis :</span></dt><dd>Y</dd></dl></div><div class="xr-var-data"><pre>array([15.05    , 15.150001, 15.25    , ..., 54.75    , 54.85    , 54.95    ],
-      dtype=float32)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span class="xr-has-index">lon</span></div><div class="xr-var-dims">(lon)</div><div class="xr-var-dtype">float32</div><div class="xr-var-preview xr-preview">70.05 70.15 70.25 ... 139.9 140.0</div><input class="xr-var-attrs-in" id="attrs-bb487647-f8fe-41e3-95b7-1efddb5ef348" type="checkbox"><label for="attrs-bb487647-f8fe-41e3-95b7-1efddb5ef348" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use xlink:href="#icon-file-text2"></use></svg></label><input class="xr-var-data-in" id="data-99706a08-160a-4cfa-aaa3-a8538f7a33e9" type="checkbox"><label for="data-99706a08-160a-4cfa-aaa3-a8538f7a33e9" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use xlink:href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>long_name :</span></dt><dd>longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>axis :</span></dt><dd>X</dd></dl></div><div class="xr-var-data"><pre>array([ 70.05   ,  70.15   ,  70.25   , ..., 139.75   , 139.85   , 139.95001],
-      dtype=float32)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span>time</span></div><div class="xr-var-dims">()</div><div class="xr-var-dtype">datetime64[ns]</div><div class="xr-var-preview xr-preview">2018-01-16T10:30:00</div><input class="xr-var-attrs-in" id="attrs-43df525d-8b14-44b8-9b30-5bce1ed06369" type="checkbox"><label for="attrs-43df525d-8b14-44b8-9b30-5bce1ed06369" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use xlink:href="#icon-file-text2"></use></svg></label><input class="xr-var-data-in" id="data-ac98e8f5-81e1-40f7-8aa0-b5189a84eefb" type="checkbox"><label for="data-ac98e8f5-81e1-40f7-8aa0-b5189a84eefb" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use xlink:href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"><dt><span>standard_name :</span></dt><dd>time</dd><dt><span>long_name :</span></dt><dd>Time</dd><dt><span>axis :</span></dt><dd>T</dd></dl></div><div class="xr-var-data"><pre>array('2018-01-16T10:30:00.000000000', dtype='datetime64[ns]')</pre></div></li></ul></div></li><li class="xr-section-item"><input checked="" class="xr-section-summary-in" id="section-a2c31dd8-550c-42d7-879c-63459eea3aa7" type="checkbox"><label class="xr-section-summary" for="section-a2c31dd8-550c-42d7-879c-63459eea3aa7">Data variables: <span>(1)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-var-name"><span>prec</span></div><div class="xr-var-dims">(lat, lon)</div><div class="xr-var-dtype">float32</div><div class="xr-var-preview xr-preview">...</div><input class="xr-var-attrs-in" id="attrs-879de893-e05b-43f2-8e8b-e123cee7c155" type="checkbox"><label for="attrs-879de893-e05b-43f2-8e8b-e123cee7c155" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use xlink:href="#icon-file-text2"></use></svg></label><input class="xr-var-data-in" id="data-679d9416-3baa-4f15-81db-84377acf5807" type="checkbox"><label for="data-679d9416-3baa-4f15-81db-84377acf5807" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use xlink:href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"><dt><span>long_name :</span></dt><dd>Precipitation rate</dd><dt><span>units :</span></dt><dd>mm hr-1</dd></dl></div><div class="xr-var-data"><pre>[280000 values with dtype=float32]</pre></div></li></ul></div></li><li class="xr-section-item"><input checked="" class="xr-section-summary-in" id="section-3318e01b-b005-4858-89ba-ddeda37d6cc8" type="checkbox"><label class="xr-section-summary" for="section-3318e01b-b005-4858-89ba-ddeda37d6cc8">Attributes: <span>(7)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><dl class="xr-attrs"><dt><span>Conventions :</span></dt><dd>CF-1.0</dd><dt><span>history :</span></dt><dd>Created at 2016-04-02 14:55:55 UTC by the ITPCAS Data Fusion System</dd><dt><span>source :</span></dt><dd>ITPCAS Data Fusion System (Version: 01.02.0240)</dd><dt><span>institution :</span></dt><dd>Institute of Tibetan Plateau Research, Chinese Academy of Sciences, Beijing, China</dd><dt><span>title :</span></dt><dd>Monthly mean precipitation rate from the ITPCAS China Meteorological Forcing Dataset</dd><dt><span>description :</span></dt><dd>Data from ITPCAS China Meteorological Forcing Dataset (Version: 01.06.0014; Category: B-01: 03hr, 0.10deg)</dd><dt><span>references :</span></dt><dd>He, J., and K. Yang, 2011: China Meteorological Forcing Dataset. Cold and Arid Regions Science Data Center, Lanzhou, Gansu, China, digital media, doi:10.3972/westdc.002.2014.db. [Available online at http://westdc.westgis.ac.cn/data/7a35329c-c53f-4267-aa07-e0037d913a21.]</dd></dl></div></li></ul></div></div>
+    references:   He, J., and K. Yang, 2011: China Meteorological Forcing Dat...</pre><div class="xr-wrap" style="display:none"><div class="xr-header"><div class="xr-obj-type">xarray.Dataset</div></div><ul class="xr-sections"><li class="xr-section-item"><input class="xr-section-summary-in" disabled="" id="section-3c0302c2-a51b-4262-a1a0-4a4a96d2064e" type="checkbox"><label class="xr-section-summary" for="section-3c0302c2-a51b-4262-a1a0-4a4a96d2064e" title="Expand/collapse section">Dimensions:</label><div class="xr-section-inline-details"><ul class="xr-dim-list"><li><span class="xr-has-index">lat</span>: 400</li><li><span class="xr-has-index">lon</span>: 700</li></ul></div><div class="xr-section-details"></div></li><li class="xr-section-item"><input checked="" class="xr-section-summary-in" id="section-0591ef30-8857-4efb-9c46-c67f2afb3c01" type="checkbox"><label class="xr-section-summary" for="section-0591ef30-8857-4efb-9c46-c67f2afb3c01">Coordinates: <span>(3)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-var-name"><span class="xr-has-index">lat</span></div><div class="xr-var-dims">(lat)</div><div class="xr-var-dtype">float32</div><div class="xr-var-preview xr-preview">15.05 15.15 15.25 ... 54.85 54.95</div><input class="xr-var-attrs-in" id="attrs-b126ddcd-39c9-4c88-935f-a41cf2c42654" type="checkbox"><label for="attrs-b126ddcd-39c9-4c88-935f-a41cf2c42654" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use xlink:href="#icon-file-text2"></use></svg></label><input class="xr-var-data-in" id="data-aef91323-6dfb-4db7-9524-9a973e863449" type="checkbox"><label for="data-aef91323-6dfb-4db7-9524-9a973e863449" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use xlink:href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"><dt><span>standard_name :</span></dt><dd>latitude</dd><dt><span>long_name :</span></dt><dd>latitude</dd><dt><span>units :</span></dt><dd>degrees_north</dd><dt><span>axis :</span></dt><dd>Y</dd></dl></div><div class="xr-var-data"><pre>array([15.05    , 15.150001, 15.25    , ..., 54.75    , 54.85    , 54.95    ],
+      dtype=float32)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span class="xr-has-index">lon</span></div><div class="xr-var-dims">(lon)</div><div class="xr-var-dtype">float32</div><div class="xr-var-preview xr-preview">70.05 70.15 70.25 ... 139.9 140.0</div><input class="xr-var-attrs-in" id="attrs-a700377c-31b6-4e55-a526-9d4202a04211" type="checkbox"><label for="attrs-a700377c-31b6-4e55-a526-9d4202a04211" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use xlink:href="#icon-file-text2"></use></svg></label><input class="xr-var-data-in" id="data-a9f944e1-b310-44a3-84cd-3999e00928ac" type="checkbox"><label for="data-a9f944e1-b310-44a3-84cd-3999e00928ac" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use xlink:href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"><dt><span>standard_name :</span></dt><dd>longitude</dd><dt><span>long_name :</span></dt><dd>longitude</dd><dt><span>units :</span></dt><dd>degrees_east</dd><dt><span>axis :</span></dt><dd>X</dd></dl></div><div class="xr-var-data"><pre>array([ 70.05   ,  70.15   ,  70.25   , ..., 139.75   , 139.85   , 139.95001],
+      dtype=float32)</pre></div></li><li class="xr-var-item"><div class="xr-var-name"><span>time</span></div><div class="xr-var-dims">()</div><div class="xr-var-dtype">datetime64[ns]</div><div class="xr-var-preview xr-preview">2018-01-16T10:30:00</div><input class="xr-var-attrs-in" id="attrs-030c3471-a58c-40bb-a0fa-cd7d18659020" type="checkbox"><label for="attrs-030c3471-a58c-40bb-a0fa-cd7d18659020" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use xlink:href="#icon-file-text2"></use></svg></label><input class="xr-var-data-in" id="data-0560beff-7038-4a3f-8a89-8c727cb1680d" type="checkbox"><label for="data-0560beff-7038-4a3f-8a89-8c727cb1680d" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use xlink:href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"><dt><span>standard_name :</span></dt><dd>time</dd><dt><span>long_name :</span></dt><dd>Time</dd><dt><span>axis :</span></dt><dd>T</dd></dl></div><div class="xr-var-data"><pre>array('2018-01-16T10:30:00.000000000', dtype='datetime64[ns]')</pre></div></li></ul></div></li><li class="xr-section-item"><input checked="" class="xr-section-summary-in" id="section-a13bdb4a-b60d-42bc-b247-3673156bc256" type="checkbox"><label class="xr-section-summary" for="section-a13bdb4a-b60d-42bc-b247-3673156bc256">Data variables: <span>(1)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><ul class="xr-var-list"><li class="xr-var-item"><div class="xr-var-name"><span>prec</span></div><div class="xr-var-dims">(lat, lon)</div><div class="xr-var-dtype">float32</div><div class="xr-var-preview xr-preview">...</div><input class="xr-var-attrs-in" id="attrs-88157aba-90fa-4dd7-ad21-67fea667dd90" type="checkbox"><label for="attrs-88157aba-90fa-4dd7-ad21-67fea667dd90" title="Show/Hide attributes"><svg class="icon xr-icon-file-text2"><use xlink:href="#icon-file-text2"></use></svg></label><input class="xr-var-data-in" id="data-2b5177cf-571a-4dc4-a25c-be46bb2c461c" type="checkbox"><label for="data-2b5177cf-571a-4dc4-a25c-be46bb2c461c" title="Show/Hide data repr"><svg class="icon xr-icon-database"><use xlink:href="#icon-database"></use></svg></label><div class="xr-var-attrs"><dl class="xr-attrs"><dt><span>long_name :</span></dt><dd>Precipitation rate</dd><dt><span>units :</span></dt><dd>mm hr-1</dd></dl></div><div class="xr-var-data"><pre>[280000 values with dtype=float32]</pre></div></li></ul></div></li><li class="xr-section-item"><input checked="" class="xr-section-summary-in" id="section-65e42c77-15cf-48cd-a6be-5c959bc21537" type="checkbox"><label class="xr-section-summary" for="section-65e42c77-15cf-48cd-a6be-5c959bc21537">Attributes: <span>(7)</span></label><div class="xr-section-inline-details"></div><div class="xr-section-details"><dl class="xr-attrs"><dt><span>Conventions :</span></dt><dd>CF-1.0</dd><dt><span>history :</span></dt><dd>Created at 2016-04-02 14:55:55 UTC by the ITPCAS Data Fusion System</dd><dt><span>source :</span></dt><dd>ITPCAS Data Fusion System (Version: 01.02.0240)</dd><dt><span>institution :</span></dt><dd>Institute of Tibetan Plateau Research, Chinese Academy of Sciences, Beijing, China</dd><dt><span>title :</span></dt><dd>Monthly mean precipitation rate from the ITPCAS China Meteorological Forcing Dataset</dd><dt><span>description :</span></dt><dd>Data from ITPCAS China Meteorological Forcing Dataset (Version: 01.06.0014; Category: B-01: 03hr, 0.10deg)</dd><dt><span>references :</span></dt><dd>He, J., and K. Yang, 2011: China Meteorological Forcing Dataset. Cold and Arid Regions Science Data Center, Lanzhou, Gansu, China, digital media, doi:10.3972/westdc.002.2014.db. [Available online at http://westdc.westgis.ac.cn/data/7a35329c-c53f-4267-aa07-e0037d913a21.]</dd></dl></div></li></ul></div></div>
 </div>
 </div>
 <div class="jp-OutputArea-child">
@@ -4044,7 +4044,7 @@ cropland.get_xarray("prec").plot()</div>
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
 <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[8]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
-<pre>&lt;matplotlib.collections.QuadMesh at 0x7f1d6af9b4d0&gt;</pre>
+<pre>&lt;matplotlib.collections.QuadMesh at 0x7f3fd2a83010&gt;</pre>
 </div>
 </div>
 <div class="jp-OutputArea-child">
@@ -4275,16 +4275,16 @@ cropland.add_dynamic_variable(
 <span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[10]</span><span class="ansi-green-fg">, line 1</span>
 <span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-yellow-bg">cropland</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">dynamic_var</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-fg ansi-yellow-bg">"</span><span class="ansi-yellow-fg ansi-yellow-bg">prec</span><span class="ansi-yellow-fg ansi-yellow-bg">"</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">dtype</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">"</span><span class="ansi-yellow-fg ansi-yellow-bg">xarray</span><span class="ansi-yellow-fg ansi-yellow-bg">"</span><span class="ansi-yellow-bg">)</span>.plot()
 
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/space/patch.py:449</span>, in <span class="ansi-cyan-fg">PatchModule.dynamic_var</span><span class="ansi-blue-fg">(self, attr_name, dtype)</span>
-<span class="ansi-green-fg">    439</span> <span class="ansi-yellow-fg">"""Update and get dynamic variable.</span>
-<span class="ansi-green-fg">    440</span> 
-<span class="ansi-green-fg">    441</span> <span class="ansi-yellow-fg">Parameters:</span>
-<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">    446</span> <span class="ansi-yellow-fg">    2D numpy.ndarray data of the variable.</span>
-<span class="ansi-green-fg">    447</span> <span class="ansi-yellow-fg">"""</span>
-<span class="ansi-green-fg">    448</span> <span style="color: rgb(95,135,135)"># 获取动态变量，及其附加属性</span>
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">449</span> array = <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">super</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">dynamic_var</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">attr_name</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">    450</span> <span class="ansi-bold" style="color: rgb(0,135,0)">assert</span> <span style="color: rgb(0,135,0)">isinstance</span>(array, (np.ndarray, xr.DataArray, xr.Dataset))
-<span class="ansi-green-fg">    451</span> kwargs = <span style="color: rgb(0,135,0)">super</span>().dynamic_variables[attr_name].attrs
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/space/patch.py:452</span>, in <span class="ansi-cyan-fg">PatchModule.dynamic_var</span><span class="ansi-blue-fg">(self, attr_name, dtype)</span>
+<span class="ansi-green-fg">    442</span> <span class="ansi-yellow-fg">"""Update and get dynamic variable.</span>
+<span class="ansi-green-fg">    443</span> 
+<span class="ansi-green-fg">    444</span> <span class="ansi-yellow-fg">Parameters:</span>
+<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">    449</span> <span class="ansi-yellow-fg">    2D numpy.ndarray data of the variable.</span>
+<span class="ansi-green-fg">    450</span> <span class="ansi-yellow-fg">"""</span>
+<span class="ansi-green-fg">    451</span> <span style="color: rgb(95,135,135)"># 获取动态变量，及其附加属性</span>
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">452</span> array = <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">super</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">dynamic_var</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">attr_name</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">    453</span> <span class="ansi-bold" style="color: rgb(0,135,0)">assert</span> <span style="color: rgb(0,135,0)">isinstance</span>(array, (np.ndarray, xr.DataArray, xr.Dataset))
+<span class="ansi-green-fg">    454</span> kwargs = <span style="color: rgb(0,135,0)">super</span>().dynamic_variables[attr_name].attrs
 
 <span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/core/base_module.py:237</span>, in <span class="ansi-cyan-fg">BaseModelElement.dynamic_var</span><span class="ansi-blue-fg">(self, attr_name)</span>
 <span class="ansi-green-fg">    235</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">self</span>.time.tick <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> <span style="color: rgb(0,135,0)">self</span>._updated_ticks:
@@ -4501,69 +4501,33 @@ yr_basin.plot.show("area")</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.113</span> | <span class="ansi-bold">INFO    </span> | <span class="ansi-cyan-fg">abses.space.patch</span>:<span class="ansi-cyan-fg">__init__</span>:<span class="ansi-cyan-fg">275</span> - <span class="ansi-bold">Initializing a new Model Layer...</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre>/home/runner/work/ABSESpy/ABSESpy/abses/space/nature.py:85: UserWarning: Converting PatchModule from crs EPSG:4326 to the crs of BaseNature - EPSG:4326. Please check your crs settings if this is unintended, or set `GeoSpace.warn_crs_conversion` to `False` to suppress this warning message.
+  self.add_layer(module)
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
 <pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">TypeError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[12]</span><span class="ansi-green-fg">, line 3</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Create a new model, and import the above GeoDataFrame as a patch module.</span>
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[12]</span><span class="ansi-green-fg">, line 12</span>
 <span class="ansi-green-fg">      2</span> model = MainModel()
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> yr_basin = <span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">nature</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">create_module</span><span class="ansi-yellow-bg">(</span>
-<span class="ansi-green-fg">      4</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">how</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">"</span><span class="ansi-yellow-fg ansi-yellow-bg">from_vector</span><span class="ansi-yellow-fg ansi-yellow-bg">"</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">      5</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">vector_file</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">gdf</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">      6</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">resolution</span><span class="ansi-yellow-bg">=</span><span class="ansi-green-fg ansi-yellow-bg">0.1</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg">  </span><span class="ansi-yellow-bg" style="color: rgb(95,135,135)"># 0.1 degree.</span>
-<span class="ansi-green-fg">      7</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">major_layer</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">True</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">      8</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">name</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">"</span><span class="ansi-yellow-fg ansi-yellow-bg">yellow_river</span><span class="ansi-yellow-fg ansi-yellow-bg">"</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">      9</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">attr_name</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">"</span><span class="ansi-yellow-fg ansi-yellow-bg">area</span><span class="ansi-yellow-fg ansi-yellow-bg">"</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     10</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">apply_raster</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">True</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     11</span> <span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">     12</span> yr_basin.plot.show(<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">area</span><span class="ansi-yellow-fg">"</span>)
+<span class="ansi-green-fg">      3</span> yr_basin = model.nature.create_module(
+<span class="ansi-green-fg">      4</span>     how=<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">from_vector</span><span class="ansi-yellow-fg">"</span>,
+<span class="ansi-green-fg">      5</span>     vector_file=gdf,
+<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">     10</span>     apply_raster=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
+<span class="ansi-green-fg">     11</span> )
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">12</span> <span class="ansi-yellow-bg">yr_basin</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">plot</span>.show(<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">area</span><span class="ansi-yellow-fg">"</span>)
 
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/space/nature.py:76</span>, in <span class="ansi-cyan-fg">BaseNature.create_module</span><span class="ansi-blue-fg">(self, module_cls, major_layer, write_crs, *args, **kwargs)</span>
-<span class="ansi-green-fg">     60</span> <span class="ansi-yellow-fg">"""Creates a new raster layer (PatchModule) in this nature module.</span>
-<span class="ansi-green-fg">     61</span> 
-<span class="ansi-green-fg">     62</span> <span class="ansi-yellow-fg">Args:</span>
-<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">     73</span> <span class="ansi-yellow-fg">    The module is automatically added to nature's layers collection.</span>
-<span class="ansi-green-fg">     74</span> <span class="ansi-yellow-fg">"""</span>
-<span class="ansi-green-fg">     75</span> <span style="color: rgb(95,135,135)"># Create the module directly with the unified API</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">76</span> module = <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">super</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">create_module</span><span class="ansi-yellow-bg">(</span>
-<span class="ansi-green-fg">     77</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">module_cls</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">module_cls</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     78</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">args</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     79</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">     80</span> <span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">     82</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> major_layer <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">True</span>:
-<span class="ansi-green-fg">     83</span>     <span style="color: rgb(0,135,0)">self</span>.major_layer = module
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/core/base_subsystem.py:249</span>, in <span class="ansi-cyan-fg">BaseSubSystem.create_module</span><span class="ansi-blue-fg">(self, module_cls, *args, **kwargs)</span>
-<span class="ansi-green-fg">    238</span>     _ = kwargs.pop(<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">how</span><span class="ansi-yellow-fg">"</span>)
-<span class="ansi-green-fg">    239</span>     warnings.warn(
-<span class="ansi-green-fg">    240</span>         (
-<span class="ansi-green-fg">    241</span>             <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Argument </span><span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">how</span><span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg"> is deprecated and will be removed in a future </span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">    246</span>         stacklevel=<span class="ansi-green-fg">2</span>,
-<span class="ansi-green-fg">    247</span>     )
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">249</span> module = <span class="ansi-yellow-bg">module_cls</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">args</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">    250</span> <span style="color: rgb(0,135,0)">self</span>.add_module(module)
-<span class="ansi-green-fg">    251</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> module
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/space/patch.py:261</span>, in <span class="ansi-cyan-fg">PatchModule.__init__</span><span class="ansi-blue-fg">(self, model, name, cell_cls, shape, resolution, source_layer, xda, attr_name, apply_raster, masked, vector_file, raster_file, band, crs, total_bounds, width, height, **kwargs)</span>
-<span class="ansi-green-fg">    254</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>(
-<span class="ansi-green-fg">    255</span>         <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Insufficient parameters provided. Must provide either: </span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">    256</span>         <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">1) shape and resolution, 2) source_layer, 3) xda, </span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">    257</span>         <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">4) vector_file and resolution, or 5) raster_file</span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">    258</span>     )
-<span class="ansi-green-fg">    260</span> <span style="color: rgb(95,135,135)"># Initialize RasterLayer with the determined parameters</span>
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">261</span> <span class="ansi-yellow-bg">RasterLayer</span><span class="ansi-yellow-bg">.</span><span class="ansi-blue-fg ansi-yellow-bg">__init__</span><span class="ansi-yellow-bg">(</span>
-<span class="ansi-green-fg">    262</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">    263</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">    264</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">width</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">width</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">    265</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">height</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">height</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">    266</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">crs</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">crs</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg">  </span><span class="ansi-yellow-bg" style="color: rgb(95,135,135)"># Now using normalized CRS</span>
-<span class="ansi-green-fg">    267</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">total_bounds</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">total_bounds</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">    268</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">cell_cls</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">cell_cls</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">    269</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">    270</span> <span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">    272</span> logger.info(<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Initializing a new Model Layer...</span><span class="ansi-yellow-fg">"</span>)
-<span class="ansi-green-fg">    273</span> <span style="color: rgb(0,135,0)">self</span>._mask: np.ndarray = np.ones(<span style="color: rgb(0,135,0)">self</span>.shape2d).astype(<span style="color: rgb(0,135,0)">bool</span>)
-
-<span class="ansi-red-fg">TypeError</span>: RasterLayer.__init__() got an unexpected keyword argument 'apply_raster'</pre>
+<span class="ansi-red-fg">AttributeError</span>: 'PatchModule' object has no attribute 'plot'</pre>
 </div>
 </div>
 </div>
@@ -4621,18 +4585,107 @@ yr_basin.add_dynamic_variable(
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
 <pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-red-fg">TypeError</span>                                 Traceback (most recent call last)
 <span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[13]</span><span class="ansi-green-fg">, line 5</span>
 <span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">update_precipitation</span>(data, time):
 <span class="ansi-green-fg">      2</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> data.sel(time=time.dt, method=<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">nearest</span><span class="ansi-yellow-fg">"</span>)
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> <span class="ansi-yellow-bg">yr_basin</span>.add_dynamic_variable(
-<span class="ansi-green-fg">      6</span>     name=<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">prec</span><span class="ansi-yellow-fg">"</span>,
-<span class="ansi-green-fg">      7</span>     data=data,
-<span class="ansi-green-fg">      8</span>     function=update_precipitation,
-<span class="ansi-green-fg">      9</span>     cover_crs=<span class="ansi-bold" style="color: rgb(0,135,0)">True</span>,
-<span class="ansi-green-fg">     10</span> )
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> <span class="ansi-yellow-bg">yr_basin</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">add_dynamic_variable</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-fg">      6</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">name</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">"</span><span class="ansi-yellow-fg ansi-yellow-bg">prec</span><span class="ansi-yellow-fg ansi-yellow-bg">"</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">      7</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">data</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">data</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">      8</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">function</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">update_precipitation</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">      9</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">cover_crs</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">True</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">     10</span> <span class="ansi-yellow-bg">)</span>
 
-<span class="ansi-red-fg">NameError</span>: name 'yr_basin' is not defined</pre>
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/core/base_module.py:217</span>, in <span class="ansi-cyan-fg">BaseModelElement.add_dynamic_variable</span><span class="ansi-blue-fg">(self, name, data, function, **kwargs)</span>
+<span class="ansi-green-fg">    206</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">add_dynamic_variable</span>(
+<span class="ansi-green-fg">    207</span>     <span style="color: rgb(0,135,0)">self</span>, name: <span style="color: rgb(0,135,0)">str</span>, data: Any, function: Callable, **kwargs
+<span class="ansi-green-fg">    208</span> ) -&gt; <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
+<span class="ansi-green-fg">    209</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">"""Add a new dynamic variable.</span>
+<span class="ansi-green-fg">    210</span> 
+<span class="ansi-green-fg">    211</span> <span class="ansi-yellow-fg">    Parameters:</span>
+<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">    215</span> <span class="ansi-yellow-fg">        **kwargs: Additional attributes for the variable.</span>
+<span class="ansi-green-fg">    216</span> <span class="ansi-yellow-fg">    """</span>
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">217</span>     var = <span class="ansi-yellow-bg">BaseDynamicVariable</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-fg">    218</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">obj</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">    219</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">name</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">name</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">    220</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">data</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">data</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">    221</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">function</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">function</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">    222</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">,</span>
+<span class="ansi-green-fg">    223</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">    224</span>     <span style="color: rgb(0,135,0)">self</span>._dynamic_variables[name] = var
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/core/base_variable.py:78</span>, in <span class="ansi-cyan-fg">BaseDynamicVariable.__init__</span><span class="ansi-blue-fg">(self, name, obj, data, function, **kwargs)</span>
+<span class="ansi-green-fg">     76</span> <span style="color: rgb(0,135,0)">self</span>._cached_data: Any = <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>
+<span class="ansi-green-fg">     77</span> <span style="color: rgb(0,135,0)">self</span>.attrs = kwargs
+<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">78</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">now</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/core/base_variable.py:155</span>, in <span class="ansi-cyan-fg">BaseDynamicVariable.now</span><span class="ansi-blue-fg">(self)</span>
+<span class="ansi-green-fg">    153</span> required_attrs = <span style="color: rgb(0,135,0)">self</span>.get_required_attributes(<span style="color: rgb(0,135,0)">self</span>.function)
+<span class="ansi-green-fg">    154</span> args = {attr: <span style="color: rgb(0,135,0)">getattr</span>(<span style="color: rgb(0,135,0)">self</span>, attr) <span class="ansi-bold" style="color: rgb(0,135,0)">for</span> attr <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> required_attrs}
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">155</span> result = <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">function</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">args</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">    156</span> <span style="color: rgb(0,135,0)">self</span>._cached_data = result
+<span class="ansi-green-fg">    157</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> result
+
+<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[13]</span><span class="ansi-green-fg">, line 2</span>, in <span class="ansi-cyan-fg">update_precipitation</span><span class="ansi-blue-fg">(data, time)</span>
+<span class="ansi-green-fg">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">update_precipitation</span>(data, time):
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">data</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">sel</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">time</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">time</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">dt</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">method</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-fg ansi-yellow-bg">"</span><span class="ansi-yellow-fg ansi-yellow-bg">nearest</span><span class="ansi-yellow-fg ansi-yellow-bg">"</span><span class="ansi-yellow-bg">)</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/.venv/lib/python3.11/site-packages/xarray/core/dataset.py:2982</span>, in <span class="ansi-cyan-fg">Dataset.sel</span><span class="ansi-blue-fg">(self, indexers, method, tolerance, drop, **indexers_kwargs)</span>
+<span class="ansi-green-fg">   2914</span> <span class="ansi-yellow-fg">"""Returns a new dataset with each array indexed by tick labels</span>
+<span class="ansi-green-fg">   2915</span> <span class="ansi-yellow-fg">along the specified dimension(s).</span>
+<span class="ansi-green-fg">   2916</span> 
+<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">   2979</span> 
+<span class="ansi-green-fg">   2980</span> <span class="ansi-yellow-fg">"""</span>
+<span class="ansi-green-fg">   2981</span> indexers = either_dict_or_kwargs(indexers, indexers_kwargs, <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">sel</span><span class="ansi-yellow-fg">"</span>)
+<span class="ansi-green-fg">-&gt; </span><span class="ansi-green-fg">2982</span> query_results = <span class="ansi-yellow-bg">map_index_queries</span><span class="ansi-yellow-bg">(</span>
+<span class="ansi-green-fg">   2983</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">indexers</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">indexers</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">method</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">method</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">tolerance</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">tolerance</span>
+<span class="ansi-green-fg">   2984</span> <span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">   2986</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> drop:
+<span class="ansi-green-fg">   2987</span>     no_scalar_variables = {}
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/.venv/lib/python3.11/site-packages/xarray/core/indexing.py:201</span>, in <span class="ansi-cyan-fg">map_index_queries</span><span class="ansi-blue-fg">(obj, indexers, method, tolerance, **indexers_kwargs)</span>
+<span class="ansi-green-fg">    199</span>         results.append(IndexSelResult(labels))
+<span class="ansi-green-fg">    200</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">else</span>:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">201</span>         results.append(<span class="ansi-yellow-bg">index</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">sel</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">labels</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">options</span><span class="ansi-yellow-bg">)</span>)
+<span class="ansi-green-fg">    203</span> merged = merge_sel_results(results)
+<span class="ansi-green-fg">    205</span> <span style="color: rgb(95,135,135)"># drop dimension coordinates found in dimension indexers</span>
+<span class="ansi-green-fg">    206</span> <span style="color: rgb(95,135,135)"># (also drop multi-index if any)</span>
+<span class="ansi-green-fg">    207</span> <span style="color: rgb(95,135,135)"># (.sel() already ensures alignment)</span>
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/.venv/lib/python3.11/site-packages/xarray/core/indexes.py:856</span>, in <span class="ansi-cyan-fg">PandasIndex.sel</span><span class="ansi-blue-fg">(self, labels, method, tolerance)</span>
+<span class="ansi-green-fg">    854</span>     indexer = <span style="color: rgb(0,135,0)">self</span>.index.get_loc(label_value)
+<span class="ansi-green-fg">    855</span> <span class="ansi-bold" style="color: rgb(0,135,0)">elif</span> method <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">856</span>     indexer = <span class="ansi-yellow-bg">get_indexer_nd</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">index</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">label_array</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">method</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">tolerance</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">    857</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> np.any(indexer &lt; <span class="ansi-green-fg">0</span>):
+<span class="ansi-green-fg">    858</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">KeyError</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">not all values found in index </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>coord_name<span class="ansi-bold" style="color: rgb(175,95,135)">!r}</span><span class="ansi-yellow-fg">"</span>)
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/.venv/lib/python3.11/site-packages/xarray/core/indexes.py:631</span>, in <span class="ansi-cyan-fg">get_indexer_nd</span><span class="ansi-blue-fg">(index, labels, method, tolerance)</span>
+<span class="ansi-green-fg">    629</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> flat_labels.dtype == <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">float16</span><span class="ansi-yellow-fg">"</span>:
+<span class="ansi-green-fg">    630</span>     flat_labels = flat_labels.astype(<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">float64</span><span class="ansi-yellow-fg">"</span>)
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">631</span> flat_indexer = <span class="ansi-yellow-bg">index</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">get_indexer</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">flat_labels</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">method</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">method</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">tolerance</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">tolerance</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">    632</span> indexer = flat_indexer.reshape(labels.shape)
+<span class="ansi-green-fg">    633</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> indexer
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/.venv/lib/python3.11/site-packages/pandas/core/indexes/base.py:3900</span>, in <span class="ansi-cyan-fg">Index.get_indexer</span><span class="ansi-blue-fg">(self, target, method, limit, tolerance)</span>
+<span class="ansi-green-fg">   3895</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> np.array([], dtype=np.intp)
+<span class="ansi-green-fg">   3897</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span style="color: rgb(0,135,0)">self</span>._should_compare(target) <span class="ansi-bold" style="color: rgb(175,0,255)">and</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span style="color: rgb(0,135,0)">self</span>._should_partial_index(target):
+<span class="ansi-green-fg">   3898</span>     <span style="color: rgb(95,135,135)"># IntervalIndex get special treatment bc numeric scalars can be</span>
+<span class="ansi-green-fg">   3899</span>     <span style="color: rgb(95,135,135)">#  matched to Interval scalars</span>
+<span class="ansi-green-fg">-&gt; </span><span class="ansi-green-fg">3900</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">_get_indexer_non_comparable</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">target</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">method</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">method</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">unique</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">True</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">   3902</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">isinstance</span>(<span style="color: rgb(0,135,0)">self</span>.dtype, CategoricalDtype):
+<span class="ansi-green-fg">   3903</span>     <span style="color: rgb(95,135,135)"># _maybe_cast_listlike_indexer ensures target has our dtype</span>
+<span class="ansi-green-fg">   3904</span>     <span style="color: rgb(95,135,135)">#  (could improve perf by doing _should_compare check earlier?)</span>
+<span class="ansi-green-fg">   3905</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">assert</span> <span style="color: rgb(0,135,0)">self</span>.dtype == target.dtype
+
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/.venv/lib/python3.11/site-packages/pandas/core/indexes/base.py:6313</span>, in <span class="ansi-cyan-fg">Index._get_indexer_non_comparable</span><span class="ansi-blue-fg">(self, target, method, unique)</span>
+<span class="ansi-green-fg">   6311</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> method <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
+<span class="ansi-green-fg">   6312</span>     other_dtype = _unpack_nested_dtype(target)
+<span class="ansi-green-fg">-&gt; </span><span class="ansi-green-fg">6313</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">TypeError</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Cannot compare dtypes </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span style="color: rgb(0,135,0)">self</span>.dtype<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg"> and </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>other_dtype<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">"</span>)
+<span class="ansi-green-fg">   6315</span> no_matches = -<span class="ansi-green-fg">1</span> * np.ones(target.shape, dtype=np.intp)
+<span class="ansi-green-fg">   6316</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> unique:
+<span class="ansi-green-fg">   6317</span>     <span style="color: rgb(95,135,135)"># This is for get_indexer</span>
+
+<span class="ansi-red-fg">TypeError</span>: Cannot compare dtypes datetime64[ns] and datetime64[ns, Timezone('Etc/UTC')]</pre>
 </div>
 </div>
 </div>
@@ -4701,18 +4754,357 @@ yr_basin.random.new(County, size=50)</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[14]</span><span class="ansi-green-fg">, line 16</span>
-<span class="ansi-green-fg">      8</span>     color = <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">#FFFF80</span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">     11</span> model.agents.new_from_gdf(
-<span class="ansi-green-fg">     12</span>     gdf,
-<span class="ansi-green-fg">     13</span>     unique_id=<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">City_ID</span><span class="ansi-yellow-fg">"</span>,
-<span class="ansi-green-fg">     14</span>     attrs=[<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">area</span><span class="ansi-yellow-fg">"</span>, <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Province_n</span><span class="ansi-yellow-fg">"</span>],
-<span class="ansi-green-fg">     15</span> )
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">16</span> <span class="ansi-yellow-bg">yr_basin</span>.random.new(County, size=<span class="ansi-green-fg">50</span>)
-
-<span class="ansi-red-fg">NameError</span>: name 'yr_basin' is not defined</pre>
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.410</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.411</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.412</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.412</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.413</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.413</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.414</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.414</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.414</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.416</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.417</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.417</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.418</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.419</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.419</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.420</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.420</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.421</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.422</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.422</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.422</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.424</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.424</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.425</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.425</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.426</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.426</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.427</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.427</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.428</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.428</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.429</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.430</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.431</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.431</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.432</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.433</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.433</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.434</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.434</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.435</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.436</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.436</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.437</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.437</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.438</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.438</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.439</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.440</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre><span class="ansi-green-fg">2025-10-20 12:37:06.440</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [1]Agents for MainModel&gt; created 1 County.</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[14]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>&lt;ActorsList: (50)County&gt;</pre>
 </div>
 </div>
 </div>
@@ -4752,11 +5144,11 @@ yr_basin.random.new(County, size=50)</div>
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
 <pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
+<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
 <span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[15]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-yellow-bg">yr_basin</span>.plot.show(<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">prec</span><span class="ansi-yellow-fg">"</span>)
+<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-yellow-bg">yr_basin</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">plot</span>.show(<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">prec</span><span class="ansi-yellow-fg">"</span>)
 
-<span class="ansi-red-fg">NameError</span>: name 'yr_basin' is not defined</pre>
+<span class="ansi-red-fg">AttributeError</span>: 'PatchModule' object has no attribute 'plot'</pre>
 </div>
 </div>
 </div>
