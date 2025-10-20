@@ -35,8 +35,8 @@
 # 使用pip安装
 pip install mesa solara
 
-# 或使用poetry（推荐）
-poetry install
+# 或使用 uv（推荐）
+uv sync
 ```
 
 ## 运行方式

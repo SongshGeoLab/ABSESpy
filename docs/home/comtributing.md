@@ -12,7 +12,7 @@ In no particular order, examples include:
 - Clone your repository to your computer
 - Create a new branch for your work `git checkout -b YOUR_BRANCH`
 - Recommend run `git config pull.rebase true` to prevent messy merge commit
-- Install the environment `poetry install`
+- Install the environment `uv sync`
 - Edit your change such as code or docs. Save
 - Add your change file or added file by git `git add FILE_NAME`
 - Commit your changes with a message `git commit -m "Fix: DESCRIBE"`. The message should follow [conventional commit](https://www.conventionalcommits.org/en/v1.0.0/)

@@ -3,12 +3,14 @@
 ![ABSES_banner](https://songshgeo-picgo-1302043007.cos.ap-beijing.myqcloud.com/uPic/CleanShot%202023-10-19%20at%2019.08.12@2x.png)
 
 <div align="center"><p>
-    <!-- JOSS badge -->
-    <!-- <a href="https://joss.theoj.org/papers/b6f6440bc05648fa7945bec1ae901e52">
-        <img alt="Latest release" src="https://joss.theoj.org/papers/b6f6440bc05648fa7945bec1ae901e52/status.svg?style=for-the-badge&logo=probot&color=C9CBFF&logoColor=D9E0EE&labelColor=302D41" />
-    </a> -->
+    <a href="https://github.com/SongshGeoLab/ABSESpy/actions">
+        <img alt="Tests" src="https://img.shields.io/github/actions/workflow/status/SongshGeoLab/ABSESpy/tests.yml?branch=dev&style=for-the-badge&logo=github&label=Tests&color=C9CBFF&logoColor=D9E0EE&labelColor=302D41" />
+    </a>
+    <a href="https://www.python.org/">
+        <img alt="Python" src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue?style=for-the-badge&logo=python&color=8bd5ca&logoColor=D9E0EE&labelColor=302D41" />
+    </a>
     <a href="#contributors-">
-        <img alt="Latest release" src="https://img.shields.io/badge/all_contributors-1-orange.svg?style=for-the-badge&logo=probot&color=C9CBFF&logoColor=D9E0EE&labelColor=302D41" />
+        <img alt="Contributors" src="https://img.shields.io/badge/all_contributors-1-orange.svg?style=for-the-badge&logo=probot&color=C9CBFF&logoColor=D9E0EE&labelColor=302D41" />
     </a>
     <a href="https://github.com/SongshGeoLab/ABSESpy/releases/latest">
         <img alt="Latest release" src="https://img.shields.io/github/v/release/SongshGeoLab/ABSESpy?style=for-the-badge&logo=probot&color=C9CBFF&logoColor=D9E0EE&labelColor=302D41" />
