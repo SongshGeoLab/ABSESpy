@@ -14,6 +14,7 @@ and modules.
 
 from __future__ import annotations
 
+import warnings
 from abc import ABC
 from typing import Any, Callable, Dict, List, Optional, final
 
@@ -103,15 +104,59 @@ class BaseModelElement(BaseObservable, ABC, ModelElement):
 
     @property
     def params(self) -> DictConfig:
-        """Get component parameters.
+        """Get component parameters with backward compatibility.
 
         Returns configuration from model settings for this component's name.
+        For backward compatibility with 0.7.x, if the component name is not found,
+        it will try the lowercase version (useful for Actor classes).
+
         If no configuration exists, returns an empty DictConfig.
 
         Returns:
             Component parameters.
+
+        Example:
+            ```python
+            # For Actor classes, both configurations work:
+            # Config 1 (0.8.0+ style):
+            # Farmer:
+            #   initial_capital: 1000
+
+            # Config 2 (0.7.x style):
+            # farmer:
+            #   initial_capital: 1000
+
+            class Farmer(Actor):
+                def setup(self):
+                    capital = self.params.initial_capital  # Works with both
+            ```
         """
-        return self.model.settings.get(self.name, DictConfig({}))
+        # Try original name first (e.g., 'Farmer', 'farmland', 'nature')
+        params = self.model.settings.get(self.name, None)
+
+        # Fall back to lowercase for backward compatibility (mainly for Actor classes)
+        # This supports 0.7.x style where Actor parameters used lowercase class names
+        if params is None or len(params) == 0:
+            lowercase_name = self.name.lower()
+            # Only try lowercase if it's different from original name
+            if lowercase_name != self.name:
+                lowercase_params = self.model.settings.get(lowercase_name, None)
+                if lowercase_params is not None and len(lowercase_params) > 0:
+                    # Issue deprecation warning
+                    warnings.warn(
+                        f"Using lowercase parameter key '{lowercase_name}' for component '{self.name}' "
+                        f"is deprecated and will be removed in a future version. "
+                        f"Please rename '{lowercase_name}' to '{self.name}' in your configuration file.",
+                        DeprecationWarning,
+                        stacklevel=2,
+                    )
+                    params = lowercase_params
+                else:
+                    params = DictConfig({})
+            else:
+                params = DictConfig({})
+
+        return params
 
     # Alias for params
     p = params
