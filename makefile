@@ -13,7 +13,7 @@ setup:
 # pre-commit-hooks: https://github.com/pre-commit/pre-commit-hooks
 
 setup-dependencies:
-	poetry install
+	uv sync
 
 setup-pre-commit:
 	poetry add --group dev flake8 isort nbstripout pydocstyle pre-commit-hooks interrogate sourcery mypy bandit black pylint

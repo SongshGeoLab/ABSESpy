@@ -18,7 +18,7 @@ In no particular order, examples include:
 - Clone your repository to your computer
 - Create a new branch for your work `git checkout -b YOUR_BRANCH`
 - Recommend run `git config pull.rebase true` to prevent messy merge commit
-- Install the environment `poetry install`
+- Install the environment `uv sync`
 - Edit your change such as code or docs. Save
 - Add your change file or added file by git `git add FILE_NAME`
 - Commit your changes with a message `git commit -m "Fix: DESCRIBE"`. The message should follow [conventional commit](https://www.conventionalcommits.org/en/v1.0.0/)
@@ -52,8 +52,7 @@ We recommend to set environment by `poetry`, you can also use `venv` or `conda` 
 
 - `poetry` is a command tool that we recommend installing in a global environment by `pip install poetry`
 - Enter your `ABSESpy` folder and create an environment for `poetry` by `poetry env use python`.
-- Activate the environment by `poetry shell`.
-- Install the required packages by `poetry install`
+- Run tools via uv, e.g. `uv run pytest`
 - You can read this [file](https://python-poetry.org/) to learn more about `poetry`
 
 ## Test and code standard
@@ -97,7 +96,7 @@ pip install black
 black test.py
 ```
 
-Black need a file named "`pyproject.toml`" which had included in our project.
+Black needs a file named "`pyproject.toml`" which is included in our project.
 
 >You also can use `ruff`.
 

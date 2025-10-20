@@ -173,6 +173,10 @@ class Experiment:
         assert isinstance(cfg, (DictConfig, dict)), (
             f"cfg must be a DictConfig, got {type(cfg)}."
         )
+        # Disable struct mode for backward compatibility with projects < 0.8.x
+        # This allows dynamic key addition which was supported in older versions
+        if isinstance(cfg, DictConfig):
+            OmegaConf.set_struct(cfg, False)
         self._cfg = cfg
 
     def _is_hydra_parallel(self) -> bool:
@@ -289,11 +293,29 @@ class Experiment:
         cfg_path: Path,
         overrides: Optional[Dict[str, str | Iterable[Number]]] = None,
     ) -> Optional[DictConfig]:
-        """Initialize Hydra with overrides."""
+        """Initialize Hydra with overrides and disable struct mode for compatibility.
+
+        Args:
+            cfg_path: Path to the configuration file.
+            overrides: Optional dictionary of configuration overrides.
+
+        Returns:
+            Loaded configuration with struct mode disabled.
+
+        Note:
+            Struct mode is disabled to maintain backward compatibility with
+            projects from ABSESpy versions < 0.8.x.
+        """
         if self.is_hydra_job():
-            return HydraConfig.get().cfg
-        with initialize(version_base=None, config_path=str(cfg_path.parent)):
-            cfg = compose(config_name=cfg_path.stem, overrides=overrides)
+            cfg = HydraConfig.get().cfg
+        else:
+            with initialize(version_base=None, config_path=str(cfg_path.parent)):
+                cfg = compose(config_name=cfg_path.stem, overrides=overrides)
+
+        # Disable struct mode for backward compatibility
+        if cfg is not None:
+            OmegaConf.set_struct(cfg, False)
+
         return cfg
 
     # def _get_logging_mode(self, repeat_id: Optional[int] = None) -> str | bool:
