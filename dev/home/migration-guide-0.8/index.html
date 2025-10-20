@@ -2348,7 +2348,7 @@ Use a <strong>hook function</strong> to save time series data after each run:</p
 <ul>
 <li>The <code>exp.summary()</code> method only returns final state data</li>
 <li>For time series plots, you need to save and load the data using hooks</li>
-<li>See <a href="../wiki/logging-guide.md">Logging Guide</a> for details on using logger in hooks</li>
+<li>Use <code>logging.getLogger("abses")</code> in your hooks to access ABSESpy's logger</li>
 </ul>
 <h3 id="getting-help">Getting Help<a class="headerlink" href="#getting-help" title="Permanent link">¶</a></h3>
 <p>If you encounter any migration issues:</p>
