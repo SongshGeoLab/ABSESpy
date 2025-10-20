@@ -35,8 +35,8 @@ This example showcases the following ABSESpy-specific features:
 # Install with pip
 pip install mesa solara
 
-# Or use poetry (recommended)
-poetry install
+# Or use uv (recommended)
+uv sync
 ```
 
 ## Running the Model
