@@ -2796,20 +2796,16 @@ cropland.plot.show("test")</div>
 <span class="ansi-green-fg">     82</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> major_layer <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">True</span>:
 <span class="ansi-green-fg">     83</span>     <span style="color: rgb(0,135,0)">self</span>.major_layer = module
 
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/core/base_subsystem.py:233</span>, in <span class="ansi-cyan-fg">BaseSubSystem.create_module</span><span class="ansi-blue-fg">(self, module_cls, *args, **kwargs)</span>
-<span class="ansi-green-fg">    216</span> <span style="color: rgb(175,0,255)">@abstractmethod</span>
-<span class="ansi-green-fg">    217</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">create_module</span>(
-<span class="ansi-green-fg">    218</span>     <span style="color: rgb(0,135,0)">self</span>,
-<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">    221</span>     **kwargs: Any,
-<span class="ansi-green-fg">    222</span> ) -&gt; Any:
-<span class="ansi-green-fg">    223</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">"""Create a module and add it to the subsystem.</span>
-<span class="ansi-green-fg">    224</span> 
-<span class="ansi-green-fg">    225</span> <span class="ansi-yellow-fg">    Args:</span>
-<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">    231</span> <span class="ansi-yellow-fg">        Created module instance.</span>
-<span class="ansi-green-fg">    232</span> <span class="ansi-yellow-fg">    """</span>
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">233</span>     module = <span class="ansi-yellow-bg">module_cls</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">args</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">    234</span>     <span style="color: rgb(0,135,0)">self</span>.add_module(module)
-<span class="ansi-green-fg">    235</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> module
+<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/core/base_subsystem.py:249</span>, in <span class="ansi-cyan-fg">BaseSubSystem.create_module</span><span class="ansi-blue-fg">(self, module_cls, *args, **kwargs)</span>
+<span class="ansi-green-fg">    238</span>     _ = kwargs.pop(<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">how</span><span class="ansi-yellow-fg">"</span>)
+<span class="ansi-green-fg">    239</span>     warnings.warn(
+<span class="ansi-green-fg">    240</span>         (
+<span class="ansi-green-fg">    241</span>             <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Argument </span><span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">how</span><span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg"> is deprecated and will be removed in a future </span><span class="ansi-yellow-fg">"</span>
+<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">    246</span>         stacklevel=<span class="ansi-green-fg">2</span>,
+<span class="ansi-green-fg">    247</span>     )
+<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">249</span> module = <span class="ansi-yellow-bg">module_cls</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">args</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
+<span class="ansi-green-fg">    250</span> <span style="color: rgb(0,135,0)">self</span>.add_module(module)
+<span class="ansi-green-fg">    251</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> module
 
 <span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/space/patch.py:261</span>, in <span class="ansi-cyan-fg">PatchModule.__init__</span><span class="ansi-blue-fg">(self, model, name, cell_cls, shape, resolution, source_layer, xda, attr_name, apply_raster, masked, vector_file, raster_file, band, crs, total_bounds, width, height, **kwargs)</span>
 <span class="ansi-green-fg">    254</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>(
@@ -2831,7 +2827,7 @@ cropland.plot.show("test")</div>
 <span class="ansi-green-fg">    272</span> logger.info(<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Initializing a new Model Layer...</span><span class="ansi-yellow-fg">"</span>)
 <span class="ansi-green-fg">    273</span> <span style="color: rgb(0,135,0)">self</span>._mask: np.ndarray = np.ones(<span style="color: rgb(0,135,0)">self</span>.shape2d).astype(<span style="color: rgb(0,135,0)">bool</span>)
 
-<span class="ansi-red-fg">TypeError</span>: RasterLayer.__init__() got an unexpected keyword argument 'how'</pre>
+<span class="ansi-red-fg">TypeError</span>: RasterLayer.__init__() got an unexpected keyword argument 'apply_raster'</pre>
 </div>
 </div>
 </div>
