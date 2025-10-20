@@ -195,6 +195,8 @@ class ListRandom:
         if actor_attrs is None:
             actor_attrs = {}
         cells = self.choice(as_list=True, **kwargs)
+        # Ensure we operate on an ActorsList for chaining operations like `.apply()`
+        cells = self._to_actors_list(cells)
         objs = cells.apply(
             lambda c: c.agents.new(breed_cls=actor_cls, singleton=True, **actor_attrs)
         )

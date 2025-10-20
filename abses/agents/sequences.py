@@ -221,15 +221,18 @@ class ActorsList(Generic[A], AgentSet):
         """Select actors with a metric value better than a threshold.
 
         This method filters actors based on a numerical metric, selecting those
-        with values greater than the specified threshold.
+        with values greater than the specified threshold. If no threshold is
+        provided, returns actors with the maximum metric value.
 
         Parameters:
             metric: Name of the attribute to compare.
-            than: Threshold value. Can be a number or an actor (in which case
-                the actor's metric value is used).
+            than: Threshold value. Can be a number, an actor (in which case
+                the actor's metric value is used), or None (returns actors
+                with maximum metric value).
 
         Returns:
-            ActorsList containing actors with metric values greater than the threshold.
+            ActorsList containing actors with metric values greater than the threshold,
+            or actors with the maximum metric value if than is None.
 
         Example:
             ```python
@@ -238,10 +241,21 @@ class ActorsList(Generic[A], AgentSet):
 
             # Select farmers wealthier than a specific farmer
             richer = farmers.better('wealth', than=specific_farmer)
+
+            # Select the wealthiest farmer(s)
+            wealthiest = farmers.better('wealth')  # than=None
             ```
         """
         if isinstance(than, Agent):
             than = getattr(than, metric)
+        
+        # If no threshold provided, select actors with maximum metric value
+        if than is None:
+            if len(self) == 0:
+                return ActorsList(self._model, [])
+            max_value = max(getattr(agent, metric) for agent in self)
+            return self.select(lambda x: getattr(x, metric) == max_value)
+        
         return self.select(lambda x: getattr(x, metric) > than)
 
     def update(self, attr: str, values: Iterable[Any]) -> None:
