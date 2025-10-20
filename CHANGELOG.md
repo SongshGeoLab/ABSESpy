@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.5](https://github.com/SongshGeoLab/ABSESpy/compare/v0.8.4...v0.8.5) (2025-10-20)
+
+
+### Bug Fixes
+
+* **compatibility:** :bug: Ensure backward compatibility for raster and vector data application ([ae24d81](https://github.com/SongshGeoLab/ABSESpy/commit/ae24d819a98b9b7930f02f9ae509f861679dd7b7))
+
 ## [0.8.4](https://github.com/SongshGeoLab/ABSESpy/compare/v0.8.3...v0.8.4) (2025-10-20)
 
 
