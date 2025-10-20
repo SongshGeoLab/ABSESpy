@@ -46,13 +46,13 @@ install-docs:
 	poetry add --group docs pymdown-extensions
 
 test:
-	uv run pytest -vs --clean-alluredir --alluredir tmp/allure_results --cov=abses  --no-cov-on-fail
+	poetry run pytest -vs --clean-alluredir --alluredir tmp/allure_results --cov=abses  --no-cov-on-fail
 
 report:
-	uv run allure serve tmp/allure_results
+	poetry run allure serve tmp/allure_results
 
 jupyter:
-	uv run jupyter lab
+	poetry run jupyter lab
 
 diagram:
 	pyreverse -o png -p ABSESpy abses
