@@ -168,10 +168,10 @@ class PatchModule(BaseModule, RasterLayer):
             crs = xda.rio.crs
             total_bounds = xda.rio.bounds()
 
-            # Apply raster data if requested
-            if apply_raster and attr_name:
-                kwargs["apply_raster"] = True
-                kwargs["attr_name"] = attr_name
+            # Apply raster data if attr_name is provided (backward compatibility)
+            # In 0.7.x, providing attr_name automatically applied the raster data
+            if attr_name is not None:
+                apply_raster = True
 
         elif vector_file is not None:
             # Create from vector file
@@ -207,10 +207,9 @@ class PatchModule(BaseModule, RasterLayer):
             crs = xda.rio.crs
             total_bounds = xda.rio.bounds()
 
-            # Apply raster data if requested
-            if apply_raster:
-                kwargs["apply_raster"] = True
-                kwargs["attr_name"] = attr_name
+            # Apply raster data if attr_name is provided (backward compatibility)
+            if attr_name is not None:
+                apply_raster = True
 
         elif xda is not None:
             # Create from xarray DataArray
@@ -224,10 +223,9 @@ class PatchModule(BaseModule, RasterLayer):
             crs = xda.rio.crs
             total_bounds = xda.rio.bounds()
 
-            # Apply raster data if requested
-            if apply_raster:
-                kwargs["apply_raster"] = True
-                kwargs["attr_name"] = attr_name
+            # Apply raster data if attr_name is provided (backward compatibility)
+            if attr_name is not None:
+                apply_raster = True
 
         elif source_layer is not None:
             # Copy from existing layer
@@ -257,6 +255,11 @@ class PatchModule(BaseModule, RasterLayer):
                 "4) vector_file and resolution, or 5) raster_file"
             )
 
+        # Remove PatchModule-specific parameters that shouldn't be passed to RasterLayer
+        # Even though they are explicit parameters, we remove them from kwargs as a safeguard
+        for key in ["apply_raster", "attr_name"]:
+            kwargs.pop(key, None)
+
         # Initialize RasterLayer with the determined parameters
         RasterLayer.__init__(
             self,
@@ -278,7 +281,7 @@ class PatchModule(BaseModule, RasterLayer):
 
         # Apply raster data if requested
         if apply_raster and xda is not None and attr_name is not None:
-            self.apply_raster(xda.to_numpy(), attr_name=attr_name, **kwargs)
+            self.apply_raster(xda.to_numpy(), attr_name=attr_name)
 
     def _initialize_cells(
         self,
