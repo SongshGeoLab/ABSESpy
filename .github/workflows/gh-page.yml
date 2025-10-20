@@ -47,14 +47,15 @@ jobs:
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.use_uv == 'true' }}
         run: |
           set -e
-          uv pip install --system --upgrade pip
+          # First sync project dependencies to create the project env
+          uv sync
+          # Then install theme into the project env (not --system)
           if [ -n "${{ secrets.GH_TOKEN }}" ]; then
-            uv pip install --system git+https://${{ secrets.GH_TOKEN }}@github.com/squidfunk/mkdocs-material-insiders.git
+            uv pip install git+https://${{ secrets.GH_TOKEN }}@github.com/squidfunk/mkdocs-material-insiders.git
           else
             echo "GH_TOKEN not set; installing mkdocs-material (public) instead"
-            uv pip install --system mkdocs-material
+            uv pip install mkdocs-material
           fi
-          uv sync
       # =================== Poetry path (default) ====================
       - name: Cache Poetry and dependencies
         if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.use_uv == 'true') }}
@@ -111,27 +112,27 @@ jobs:
       - name: Build docs only (dry-run)
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run == 'true' }}
         run: |
-          if [ "${{ inputs.use_uv }}" = "true" ]; then
+          if [ "${{ github.event_name == 'workflow_dispatch' && inputs.use_uv }}" = "true" ]; then
             uv run mkdocs build --strict
           else
             poetry run mkdocs build --strict
           fi
       # ========================= Deploy steps ========================
       - name: Deploy documentation (dev branch)
-        if: ${{ inputs.dry_run != 'true' && github.ref == 'refs/heads/dev' }}
+        if: ${{ (github.event_name != 'workflow_dispatch' || inputs.dry_run != 'true') && github.ref == 'refs/heads/dev' }}
         run: |
           git fetch origin gh-pages --depth=1 || true
-          if [ "${{ inputs.use_uv }}" = "true" ]; then
+          if [ "${{ github.event_name == 'workflow_dispatch' && inputs.use_uv }}" = "true" ]; then
             uv run mike deploy --push dev
           else
             poetry run mike deploy --push dev
           fi
 
       - name: Deploy documentation (master branch)
-        if: ${{ inputs.dry_run != 'true' && github.ref == 'refs/heads/master' }}
+        if: ${{ (github.event_name != 'workflow_dispatch' || inputs.dry_run != 'true') && github.ref == 'refs/heads/master' }}
         run: |
           git fetch origin gh-pages --depth=1 || true
-          if [ "${{ inputs.use_uv }}" = "true" ]; then
+          if [ "${{ github.event_name == 'workflow_dispatch' && inputs.use_uv }}" = "true" ]; then
             uv run mike deploy --push --update-aliases 0.8 latest
             uv run mike set-default --push latest
           else
@@ -140,12 +141,12 @@ jobs:
           fi
 
       - name: Deploy documentation (version tags)
-        if: ${{ inputs.dry_run != 'true' && startsWith(github.ref, 'refs/tags/v') }}
+        if: ${{ (github.event_name != 'workflow_dispatch' || inputs.dry_run != 'true') && startsWith(github.ref, 'refs/tags/v') }}
         run: |
           git fetch origin gh-pages --depth=1 || true
           VERSION=${GITHUB_REF#refs/tags/v}
           MAJOR_MINOR=$(echo $VERSION | cut -d. -f1-2)
-          if [ "${{ inputs.use_uv }}" = "true" ]; then
+          if [ "${{ github.event_name == 'workflow_dispatch' && inputs.use_uv }}" = "true" ]; then
             uv run mike deploy --push --update-aliases $MAJOR_MINOR latest
             uv run mike set-default --push latest
           else
