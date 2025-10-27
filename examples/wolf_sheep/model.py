@@ -16,7 +16,9 @@ This example showcases:
 - Energy-based dynamics
 """
 
-from abses import Actor, MainModel, PatchCell, raster_attribute
+import matplotlib.pyplot as plt
+
+from abses import Actor, MainModel, PatchCell, alive_required, raster_attribute
 
 
 class Grass(PatchCell):
@@ -82,7 +84,7 @@ class Animal(Actor):
 
     def __init__(self, *args, **kwargs):
         Actor.__init__(self, *args, **kwargs)
-        self.energy = 5
+        self.energy = 50  # Start with much more energy to survive until finding food
 
     def update(self) -> None:
         """
@@ -96,6 +98,7 @@ class Animal(Actor):
         if self.energy <= 0:
             self.die()
 
+    @alive_required
     def reproduce(self) -> None:
         """
         Reproduce with probability-based on rep_rate parameter.
@@ -137,17 +140,17 @@ class Wolf(Animal):
         """
         Hunt and eat a sheep if present in the current cell.
 
-        Gains 2 energy when successfully catching a sheep.
+        Gains 5 energy when successfully catching a sheep (higher reward).
 
         ABSESpy Features:
-            - at.agents.select(agent_type=Sheep): Filter agents by type
-            - random.choice(when_empty="return None"): Handle empty results
+            - at.agents.select(): Filter agents in current cell
+            - random.choice(): Select random agent from list
             - die(): Automatic cleanup of eaten sheep
         """
         sheep = self.at.agents.select(agent_type=Sheep)
         if a_sheep := sheep.random.choice(when_empty="return None"):
             a_sheep.die()
-            self.energy += 2
+            self.energy += 10  # Much higher energy reward to sustain wolves
 
 
 class Sheep(Animal):
@@ -175,15 +178,18 @@ class Sheep(Animal):
         """
         Graze on grass if present in the current cell.
 
-        Gains 2 energy when successfully eating grass. Marks the cell
+        Gains 3 energy when successfully eating grass. Marks the cell
         as empty after grazing.
 
-        ABSESpy Feature: at provides direct access to current cell and its properties.
+        ABSESpy Features:
+            - at: Direct access to current cell
+            - Cell property access: Direct read/modify of cell state
         """
-        cell = self.at
-        if cell is not None and cell.empty is False:
-            self.energy += 2
-            cell._empty = True
+        if not self.on_earth or self.at is None:
+            return
+        if not self.at.empty:
+            self.energy += 3  # Higher energy reward
+            self.at._empty = True
 
 
 class WolfSheepModel(MainModel):
@@ -197,43 +203,75 @@ class WolfSheepModel(MainModel):
         - MainModel: Base class for simulation models
         - nature.create_module(): Create spatial grid
         - agents.new(): Batch create agents
-        - move.to(): Place agents on grid
+        - agents.move.to(): Batch place agents
         - agents.has(): Count agents by type
+        - cells_lst.shuffle_do(): Batch operations on cells
+        - nature.select(): Filter cells by attributes
+        - Dynamic plotting API: module.attr.plot()
         - Automatic agent scheduling and lifecycle management
     """
 
-    def setup(self) -> None:
+    def initialize(self) -> None:
         """
-        Initialize the grassland grid and populate with agents.
+        Initialize the grassland grid.
 
-        Creates a spatial grid with Grass cells, then adds wolves and sheep
-        at random locations.
+        Creates spatial grid with Grass cells.
         """
         # Initialize a grid with custom Grass cells
-        grassland = self.nature.create_module(
+        self.nature.create_module(
             shape=self.params.shape,
             name="grassland",
             cell_cls=Grass,
+            major_layer=True,
         )
         # Create initial populations using batch creation
         self.agents.new(Wolf, self.params.n_wolves)
         self.agents.new(Sheep, self.params.n_sheep)
-        # Place agents at random locations on the grassland
-        # ABSESpy Feature: move.to() with "random" placement
-        for agent in self.agents:
-            agent.move.to("random", layer=grassland)
+        # Place all agents at random locations using batch operation
+        # shuffle_do accepts method name and kwargs
+        self.agents.shuffle_do("move_to", to="random", layer=self.nature.grassland)
 
     def step(self) -> None:
         """
         Execute one time step of the simulation.
 
         Updates grass growth state and checks termination conditions.
-        Agent steps are automatically scheduled by ABSESpy.
+        Agent steps are scheduled here.
         """
-        # Apply grow to all grass cells
-        for cell in self.nature.array_cells.flatten():
-            cell.grow()
+        # Apply grow to all grass cells using batch operation
+        self.nature.grassland.cells_lst.shuffle_do("grow")
+        # Schedule agent steps
+        self.agents.shuffle_do("step")
+        self.datacollector.collect(self)
         self.check_end()
+
+    @property
+    def n_sheep(self) -> int:
+        """Get current number of sheep."""
+        return self.agents.has(Sheep)
+
+    @property
+    def n_wolves(self) -> int:
+        """Get current number of wolves."""
+        return self.agents.has(Wolf)
+
+    @property
+    def grass_coverage(self) -> float:
+        """
+        Calculate proportion of cells with grass.
+
+        Returns:
+            Proportion between 0.0 and 1.0.
+        """
+        grassland = self.nature.grassland
+        if grassland is None:
+            return 0.0
+
+        total = len(grassland.cells_lst)
+        if total == 0:
+            return 0.0
+        empty_count = len(grassland.select({"empty": True}))
+        return (total - empty_count) / total
 
     def check_end(self) -> None:
         """
@@ -246,10 +284,31 @@ class WolfSheepModel(MainModel):
 
         ABSESpy Feature: agents.has() counts agents by type.
         """
-        # end model
-        if not self.agents.has(Sheep):
-            self.running = False
-        elif not self.agents.has(Wolf):
+        if not self.agents.has(Sheep) or not self.agents.has(Wolf):
             self.running = False
         elif self.agents.has(Sheep) >= 400:
             self.running = False
+
+    @property
+    def population_ratio(self) -> float:
+        """
+        Calculate the ratio of sheep to total population.
+
+        Returns:
+            Float between 0.0 and 1.0.
+        """
+        total = self.n_sheep + self.n_wolves
+        return self.n_sheep / total if total > 0 else 0.0
+
+    def plot_state(self) -> None:
+        """
+        Plot the current ecosystem state.
+
+        Shows grass coverage and agent positions.
+        """
+        # Plot grass coverage
+        color_map = {False: "green", True: "brown"}
+
+        # Use dynamic plotting API
+        self.nature.empty.plot(cmap=color_map, title="Grass Coverage")
+        plt.show()
