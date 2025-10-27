@@ -843,3 +843,46 @@ class PatchModule(BaseModule, RasterLayer):
 
         row, col = pos
         return row < 0 or row >= self.height or col < 0 or col >= self.width
+
+    def count_agents(
+        self, agent_type: type[Actor], *, dtype: Literal["numpy", "xarray"] = "xarray"
+    ) -> Union[NDArray[np.int_], xr.DataArray]:
+        """
+        Count the number of agents of a specific type on each cell across the entire module.
+
+        Args:
+            agent_type: The agent class to count (e.g., Sheep, Wolf).
+            dtype: Return type. Options:
+                - "numpy": Returns 2D numpy array (default)
+                - "xarray": Returns xarray DataArray with spatial coordinates
+
+        Returns:
+            Agent counts as numpy array or xarray DataArray with shape (height, width).
+
+        Examples:
+            >>> # Get as numpy array (default)
+            >>> sheep_map = grassland.count_agents(Sheep)
+            >>>
+            >>> # Get as xarray with spatial coordinates
+            >>> sheep_map = grassland.count_agents(Sheep, dtype="xarray")
+            >>> # Now has .rio methods and coordinates
+            >>> sheep_map.rio.crs
+            >>> sheep_map.plot()
+        """
+        data = np.vectorize(lambda cell: cell.agents.has(agent_type))(self.array_cells)
+
+        if dtype == "xarray":
+            # Convert to xarray with spatial coordinates
+            coords = self.coords
+            xda = xr.DataArray(
+                data=data,
+                coords=coords,
+                name=agent_type.__name__.lower() + "_count",
+            )
+            # Add spatial reference information
+            xda = xda.rio.write_crs(self.crs)
+            xda = xda.rio.set_spatial_dims("x", "y")
+            xda = xda.rio.write_transform(self.transform)
+            return xda.rio.write_coordinate_system()
+
+        return data

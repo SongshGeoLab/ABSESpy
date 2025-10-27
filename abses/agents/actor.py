@@ -378,6 +378,17 @@ class Actor(mg.GeoAgent, _LinkNodeActor, BaseModelElement, ActorProtocol):
         """
         self.die()
 
+    def move_to(self, to: Any = "random", layer: Any = None) -> None:
+        """Move actor to a location (wrapper for move.to).
+
+        This method allows shuffle_do to be used with move operations.
+
+        Args:
+            to: Position to move to. Can be a PatchCell, Coordinate tuple, or "random".
+            layer: Layer to move to. If None, uses actor's current layer if available.
+        """
+        self.move.to(to=to, layer=layer)
+
     @alive_required
     def die(self) -> None:
         """Kill the actor and remove it from the simulation.
