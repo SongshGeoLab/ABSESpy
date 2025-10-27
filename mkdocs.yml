@@ -58,6 +58,37 @@ nav:
           - Time Control: api/time.md
           - Random: api/random.md
           - Experiment: api/experiment.md
+        - UML Documentation:
+          - Overview: uml/README.md
+          - Core Module:
+            - Class Diagram: uml/core/class_diagram.md
+            - Sequence Diagrams: uml/core/sequence_diagrams.md
+          - Agents Module:
+            - Class Diagram: uml/agents/class_diagram.md
+            - Sequence Diagrams: uml/agents/sequence_diagrams.md
+          - Space Module:
+            - Class Diagram: uml/space/class_diagram.md
+            - Sequence Diagrams: uml/space/sequence_diagrams.md
+          - Human Module:
+            - Class Diagram: uml/human/class_diagram.md
+            - Sequence Diagrams: uml/human/sequence_diagrams.md
+          - Utils Module:
+            - Class Diagram: uml/utils/class_diagram.md
+            - Sequence Diagrams: uml/utils/sequence_diagrams.md
+          - User Scenarios:
+            - Model Creation: uml/scenarios/01_model_creation.md
+            - Add Agents: uml/scenarios/02_add_agents.md
+            - Create Space: uml/scenarios/03_create_space.md
+            - Agent Movement: uml/scenarios/04_agent_movement.md
+            - Run Simulation: uml/scenarios/05_run_simulation.md
+            - Batch Experiment: uml/scenarios/06_batch_experiment.md
+          - Internal Flows:
+            - Module Lifecycle: uml/internals/01_module_lifecycle.md
+            - Observer Pattern: uml/internals/02_observer_pattern.md
+            - Agent Container: uml/internals/03_agent_container.md
+            - Raster Application: uml/internals/04_raster_application.md
+            - Link Management: uml/internals/05_link_management.md
+            - Time Driver: uml/internals/06_time_driver.md
 
 theme:
     name: "material"
@@ -185,27 +216,11 @@ plugins:
         canonical_version: latest
     # - typeset
 
-extra:
-  alternate:
-    - name: English
-      link:
-      lang: en
-    - name: Chinese
-      link: /ch/
-      lang: ch
-  # https://squidfunk.github.io/mkdocs-material/setup/setting-up-versioning/
-  version:
-    - provider: mike
-  tags:
-    model: tag
-
-
 markdown_extensions:
   - attr_list
   - admonition
   - md_in_html
   - pymdownx.details
-  - pymdownx.superfences
 
   - pymdownx.highlight:
       anchor_linenums: true
@@ -242,10 +257,36 @@ markdown_extensions:
   - pymdownx.snippets:
       auto_append:
         - includes/abbreviations.md
+
+  # Mermaid diagram support
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
 extra:
+  alternate:
+    - name: English
+      link:
+      lang: en
+    - name: Chinese
+      link: /ch/
+      lang: ch
+  # https://squidfunk.github.io/mkdocs-material/setup/setting-up-versioning/
+  version:
+    - provider: mike
+  tags:
+    model: tag
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/SongshGeoLab/ABSESpy
     # - icon: fontawesome/brands/web
     #   link: https://cv.songshgeo.com/
+
+# Add JavaScript for Mermaid diagrams
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js
+  - javascripts/mermaid-init.js
+
 repo_url: https://github.com/SongshGeoLab/ABSESpy
