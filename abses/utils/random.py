@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 from itertools import combinations
+from random import Random
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -35,14 +36,32 @@ if TYPE_CHECKING:
     from abses.core.types import WHEN_EMPTY
 
 
-class ListRandom:
-    """Create a random generator from an `ActorsList`"""
+class ListRandom(Random):
+    """Create a random generator from an `ActorsList`.
+
+    Inherits from Python's Random class to provide Mesa-compatible shuffle() method.
+    Extends Random with ABSESpy-specific methods for working with actors.
+    """
 
     def __init__(self, model: MainModelProtocol, actors: Iterable[Any]) -> None:
+        # Get seed from model and ensure it's a valid type
+        if hasattr(model, "_seed"):
+            seed = model._seed
+            # Ensure seed is a valid type for Random
+            if seed is not None and not isinstance(
+                seed, (int, float, str, bytes, bytearray)
+            ):
+                seed = None
+        else:
+            seed = None
+
+        # Initialize parent Random with seed
+        super().__init__(seed)
+
         self.model = model
         self.actors = self._to_actors_list(actors)
         self.rng = model.rng if model.rng else np.random.default_rng()
-        self.seed = model._seed
+        self.seed = seed
 
     def _to_actors_list(self, objs: Iterable) -> ActorsList:
         from abses.agents.sequences import ActorsList

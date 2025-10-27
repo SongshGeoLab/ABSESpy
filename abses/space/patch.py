@@ -494,6 +494,39 @@ class PatchModule(BaseModule, RasterLayer):
         """Randomly"""
         return self.cells_lst.random
 
+    def __getitem__(self, key: tuple) -> ActorsList[PatchCell]:
+        """Access cells using array indexing, returns ActorsList.
+
+        Enables numpy-style indexing to directly obtain ActorsList instead of raw arrays.
+
+        Args:
+            key: Index or slice tuple, e.g., '[:, 0]', '[1:3, 2:4]', etc.
+
+        Returns:
+            ActorsList containing the selected cells.
+
+        Examples:
+            >>> grid[:, 0]  # Get first column as ActorsList
+            >>> grid[1:3, 2:4]  # Get a subregion as ActorsList
+            >>> grid[0, 0]  # Get single cell as ActorsList
+        """
+        # Use array_cells indexing and convert result to ActorsList
+        selected_cells = self.array_cells[key]
+
+        # Convert to flat array for ActorsList
+        if isinstance(selected_cells, np.ndarray):
+            if selected_cells.ndim == 0:
+                # Scalar result (single cell)
+                selected_cells = np.array([selected_cells.item()])
+            elif selected_cells.ndim > 1:
+                # Multi-dimensional array - flatten it
+                selected_cells = selected_cells.flatten()
+        else:
+            # Handle non-array result
+            selected_cells = np.array([selected_cells])
+
+        return ActorsList(self.model, selected_cells)
+
     def _select_by_geometry(
         self,
         geometry: Geometry,

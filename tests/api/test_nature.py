@@ -324,3 +324,322 @@ class TestCreatingNewPatch:
         assert issubclass(layer.cell_cls, cell_cls)
         assert isinstance(layer.cells_lst.random.choice(), cell_cls)
         assert isinstance(layer, module_cls)
+
+
+class TestPatchModuleIndexing:
+    """Test the __getitem__ method of PatchModule.
+
+    This test class covers various indexing patterns:
+    - Single cell indexing
+    - Column/row selection
+    - Subregion selection
+    - Full array selection
+    - Edge cases and error handling
+    """
+
+    @pytest.fixture(name="large_module")
+    def create_large_module(self, model: MainModel) -> PatchModule:
+        """Create a larger module (5x5) for testing various indexing patterns."""
+        return model.nature.create_module(shape=(5, 5), resolution=1, name="large_test")
+
+    @pytest.mark.parametrize(
+        "key, expected_length",
+        [
+            # Single cell
+            ((0, 0), 1),
+            ((2, 3), 1),
+            ((4, 4), 1),
+            # First column (all rows, column 0)
+            ((slice(None), 0), 5),
+            # Last column (all rows, column 4)
+            ((slice(None), 4), 5),
+            # First row (row 0, all columns)
+            ((0, slice(None)), 5),
+            # Last row (row 4, all columns)
+            ((4, slice(None)), 5),
+            # Subregion (rows 1-3, columns 2-4)
+            ((slice(1, 4), slice(2, 5)), 9),
+            # All cells
+            ((slice(None), slice(None)), 25),
+        ],
+    )
+    def test_getitem_returns_actorslist(
+        self, large_module: PatchModule, key: tuple, expected_length: int
+    ) -> None:
+        """Test that __getitem__ returns ActorsList with correct length.
+
+        Scenarios tested:
+            - Single cell returns ActorsList with 1 element
+            - Column/row selection returns appropriate number of cells
+            - Subregion selection returns correct subset
+            - Full array returns all cells
+
+        Args:
+            large_module: A 5x5 grid module for testing
+            key: Index or slice tuple to test
+            expected_length: Expected number of cells in the result
+        """
+        # act
+        result = large_module[key]
+
+        # assert
+        assert isinstance(result, ActorsList)
+        assert len(result) == expected_length
+        for cell in result:
+            assert isinstance(cell, PatchCell)
+
+    @pytest.mark.parametrize(
+        "key",
+        [
+            (0, 0),
+            (2, 2),
+            (4, 4),
+        ],
+    )
+    def test_single_cell_indexing(self, large_module: PatchModule, key: tuple) -> None:
+        """Test indexing a single cell returns ActorsList with one element.
+
+        Scenarios:
+            - Accessing cells at different positions
+            - Verifying the single cell is the correct one
+
+        Args:
+            large_module: A 5x5 grid module for testing
+            key: Tuple of (row, col) to index
+        """
+        # act
+        result = large_module[key]
+
+        # assert
+        assert len(result) == 1
+        cell = result[0]
+        assert cell.indices == key
+
+    def test_single_cell_access_and_operations(self, large_module: PatchModule) -> None:
+        """Test that single cell access supports batch operations.
+
+        Scenario:
+            Access a single cell and verify it can be used in batch operations
+            like shuffle_do or trigger.
+
+        Args:
+            large_module: A 5x5 grid module for testing
+        """
+        # Setup: Add a custom method to PatchCell for testing
+        original_step = PatchCell.step if hasattr(PatchCell, "step") else None
+
+        def mock_step(self):
+            self._test_called = True
+
+        PatchCell.step = mock_step
+
+        try:
+            # act
+            cell_list = large_module[0, 0]
+
+            # Assert: Can call shuffle_do on single cell
+            cell_list.shuffle_do("step")
+            assert cell_list[0]._test_called
+
+        finally:
+            # Cleanup
+            if original_step:
+                PatchCell.step = original_step
+
+    @pytest.mark.parametrize(
+        "col_index",
+        [0, 1, 2, 3, 4],
+    )
+    def test_column_selection(self, large_module: PatchModule, col_index: int) -> None:
+        """Test selecting entire column returns all cells in that column.
+
+        Scenarios:
+            - Select first column (index 0)
+            - Select middle column (index 2)
+            - Select last column (index 4)
+
+        Args:
+            large_module: A 5x5 grid module for testing
+            col_index: Column index to select
+        """
+        # act
+        column = large_module[:, col_index]
+
+        # assert
+        assert len(column) == 5
+        for i, cell in enumerate(column):
+            # Check that cells are in the same column
+            assert cell.indices[1] == col_index
+
+    @pytest.mark.parametrize(
+        "row_start, row_end, col_start, col_end, expected_count",
+        [
+            (1, 3, 1, 3, 4),  # 2x2 subregion
+            (0, 2, 0, 2, 4),  # 2x2 starting at origin
+            (1, 4, 1, 4, 9),  # 3x3 subregion
+        ],
+    )
+    def test_subregion_selection(
+        self,
+        large_module: PatchModule,
+        row_start: int,
+        row_end: int,
+        col_start: int,
+        col_end: int,
+        expected_count: int,
+    ) -> None:
+        """Test selecting a subregion returns correct subset of cells.
+
+        Scenarios:
+            - Select 2x2 region in middle of grid
+            - Select 2x2 region at origin
+            - Select 3x3 region
+
+        Args:
+            large_module: A 5x5 grid module for testing
+            row_start: Starting row index (inclusive)
+            row_end: Ending row index (exclusive)
+            col_start: Starting column index (inclusive)
+            col_end: Ending column index (exclusive)
+            expected_count: Expected number of cells in result
+        """
+        # act
+        subregion = large_module[row_start:row_end, col_start:col_end]
+
+        # assert
+        assert len(subregion) == expected_count
+        for cell in subregion:
+            # Check all cells are within the subregion bounds
+            row, col = cell.indices
+            assert row_start <= row < row_end
+            assert col_start <= col < col_end
+
+    def test_full_array_selection(self, large_module: PatchModule) -> None:
+        """Test selecting all cells returns complete ActorsList.
+
+        Scenario:
+            Access all cells using [:,:] returns all 25 cells.
+
+        Args:
+            large_module: A 5x5 grid module for testing
+        """
+        # act
+        all_cells = large_module[:, :]
+
+        # assert
+        assert len(all_cells) == 25
+        assert len(all_cells) == large_module.width * large_module.height
+
+    def test_indexing_supports_batch_operations(
+        self, large_module: PatchModule
+    ) -> None:
+        """Test that indexed selection can be used with batch operations.
+
+        Scenarios:
+            - Select first column and call shuffle_do
+            - Verify all cells in column are processed
+
+        Args:
+            large_module: A 5x5 grid module for testing
+        """
+        # Setup: Add test attribute to track calls
+        for cell in large_module.cells_lst:
+            cell._test_called = False
+
+        # act
+        first_column = large_module[:, 0]
+        first_column.trigger(lambda c: setattr(c, "_test_called", True))
+
+        # assert
+        for cell in first_column:
+            assert cell._test_called
+
+    @pytest.mark.parametrize(
+        "key, operation",
+        [
+            (slice(None, None), "shuffle_do"),
+            (slice(None, None), "trigger"),
+        ],
+    )
+    def test_indexing_chainable_operations(
+        self, large_module: PatchModule, key: slice, operation: str
+    ) -> None:
+        """Test that indexed selection can be chained with operations.
+
+        Scenarios:
+            - Select cells and call shuffle_do
+            - Select cells and call trigger
+
+        Args:
+            large_module: A 5x5 grid module for testing
+            key: Slice to select cells
+            operation: Operation to test ('shuffle_do' or 'trigger')
+        """
+        # Setup
+        for cell in large_module.cells_lst:
+            cell._test_attr = 0
+
+        # act
+        selected = large_module[key]
+        getattr(selected, operation)(lambda c: setattr(c, "_test_attr", 1))
+
+        # assert
+        for cell in selected:
+            assert cell._test_attr == 1
+
+    def test_indexing_with_real_world_example(self, model: MainModel) -> None:
+        """Test __getitem__ with a real-world fire spread example.
+
+        Scenario:
+            Simulate the fire spread model's usage:
+            1. Select leftmost column
+            2. Call batch operation on selected cells
+            3. Verify operation succeeds
+
+        Args:
+            model: A MainModel instance for testing
+        """
+        # arrange: Create a grid like in fire_spread model
+        grid = model.nature.create_module(shape=(5, 5), cell_cls=PatchCell)
+
+        # act: Use __getitem__ to select leftmost column
+        leftmost_column = grid[:, 0]
+
+        # assert
+        assert isinstance(leftmost_column, ActorsList)
+        assert len(leftmost_column) == 5
+
+        # Verify can perform batch operations
+        leftmost_column.shuffle_do(lambda c: c)
+
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            (1, 1),  # Minimum size
+            (3, 3),  # Small grid
+            (10, 10),  # Medium grid
+        ],
+    )
+    def test_indexing_on_various_grid_sizes(
+        self, model: MainModel, shape: tuple[int, int]
+    ) -> None:
+        """Test __getitem__ works on grids of various sizes.
+
+        Scenarios:
+            - Works on 1x1 grid
+            - Works on 3x3 grid
+            - Works on 10x10 grid
+
+        Args:
+            model: A MainModel instance for testing
+            shape: Grid shape to test (height, width)
+        """
+        # arrange
+        grid = model.nature.create_module(shape=shape, cell_cls=PatchCell)
+
+        # act: Test full selection
+        all_cells = grid[:, :]
+
+        # assert
+        assert isinstance(all_cells, ActorsList)
+        assert len(all_cells) == shape[0] * shape[1]

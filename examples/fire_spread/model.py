@@ -23,7 +23,6 @@ from matplotlib import pyplot as plt
 from omegaconf import DictConfig
 
 from abses import Experiment, MainModel, PatchCell, raster_attribute
-from abses.agents.sequences import ActorsList
 
 
 class Tree(PatchCell):
@@ -58,7 +57,7 @@ class Tree(PatchCell):
         if self._state == 2:
             neighbors = self.neighboring(moore=False, radius=1)
             # apply to all neighboring patches: trigger ignite method
-            neighbors.select({"state": 1}).trigger("ignite")
+            neighbors.select({"state": 1}).shuffle_do("ignite")
             # after then, it becomes scorched and cannot be burned again.
             self._state = 3
 
@@ -112,23 +111,19 @@ class Forest(MainModel):
             major_layer=True,
         )
         # Randomly select cells for tree placement
-        all_cells = ActorsList(self, grid.array_cells.flatten())
-        chosen_patches = all_cells.random.choice(
-            size=self.num_trees, replace=False, as_list=True
-        )
-        # Grow trees on selected patches using trigger for batch operation
-        ActorsList(self, chosen_patches).trigger("grow")
-        # Ignite leftmost column trees using ActorsList
-        ActorsList(self, grid.array_cells[:, 0]).trigger("ignite")
+        chosen_patches = grid.random.choice(size=self.num_trees, replace=False)
+        # Grow trees on selected patches
+        chosen_patches.shuffle_do("grow")
+        # Ignite leftmost column trees (automatically returns ActorsList)
+        grid[:, 0].shuffle_do("ignite")
 
     def step(self) -> None:
         """
         Execute one time step of the simulation.
 
-        Iterates through all cells and executes their step method.
+        Executes step method on all cells using batch operation.
         """
-        for tree in self.nature.array_cells.flatten():
-            tree.step()
+        self.nature.cells_lst.shuffle_do("step")
 
     @property
     def burned_rate(self) -> float:
