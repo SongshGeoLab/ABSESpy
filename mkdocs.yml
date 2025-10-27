@@ -120,7 +120,7 @@ plugins:
     - search
     - mkdocs-jupyter:
         include_source: True
-        execute: true  # Now executing notebooks with updated API
+        execute: false  # Skip execution for faster build - keep notebook outputs
         allow_errors: true
     # i18n plugin conflicts with mkdocs-jupyter
     # Solution: Use Material tabs for bilingual content in .md files

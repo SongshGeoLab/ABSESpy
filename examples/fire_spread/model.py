@@ -9,17 +9,16 @@
 Forest fire spread model demonstrating ABSESpy's spatial modeling capabilities.
 
 This example showcases:
-- PatchCell state management
+- PatchCell tree_state management
 - Spatial diffusion through neighbor interaction
 - Raster attribute extraction
 - Batch operations with ActorsList
 """
 
+from enum import IntEnum
 from typing import Optional
 
 import hydra
-import numpy as np
-from matplotlib import pyplot as plt
 from omegaconf import DictConfig
 
 from abses import Experiment, MainModel, PatchCell, raster_attribute
@@ -29,54 +28,61 @@ class Tree(PatchCell):
     """
     Tree cell with four distinct states.
 
-    States:
-        0: Empty (no tree).
-        1: Intact tree.
-        2: Burning.
-        3: Scorched (burned, cannot burn again).
-
     ABSESpy Features Used:
         - PatchCell: Base class for spatial cells
-        - @raster_attribute: Decorator to extract state as raster data
+        - @raster_attribute: Decorator to extract tree_state as raster data
         - neighboring(): Get adjacent cells
         - select(): Filter cells by attributes
         - trigger(): Batch method invocation
     """
 
+    class State(IntEnum):
+        """Tree cell states."""
+
+        EMPTY = 0
+        INTACT = 1
+        BURNING = 2
+        SCORCHED = 3
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self._state = 0
+        self._state = self.State.EMPTY
 
     def step(self) -> None:
         """
         Execute one time step for this tree cell.
 
         If burning, ignites neighboring intact trees using Von Neumann neighborhood.
-        Then transitions to scorched state.
+        Then transitions to scorched tree_state.
         """
-        if self._state == 2:
+        if self._state == self.State.BURNING:
             neighbors = self.neighboring(moore=False, radius=1)
-            # apply to all neighboring patches: trigger ignite method
-            neighbors.select({"state": 1}).shuffle_do("ignite")
-            # after then, it becomes scorched and cannot be burned again.
-            self._state = 3
+            # Apply to all neighboring patches: trigger ignite method
+            neighbors.select({"tree_state": self.State.INTACT}).shuffle_do("ignite")
+            # After then, it becomes scorched and cannot be burned again.
+            self._state = self.State.SCORCHED
 
     def grow(self) -> None:
-        """Grow a tree on this cell (state transitions to 1)."""
-        self._state = 1
+        """Grow a tree on this cell (tree_state transitions to INTACT)."""
+        self._state = self.State.INTACT
 
     def ignite(self) -> None:
-        """Ignite this tree if intact (state transitions from 1 to 2)."""
-        if self._state == 1:
-            self._state = 2
+        """Ignite this tree if intact (tree_state transitions from INTACT to BURNING)."""
+        if self._state == self.State.INTACT:
+            self._state = self.State.BURNING
+
+    @property
+    def state(self) -> int:
+        """Get the current state value."""
+        return int(self._state)
 
     @raster_attribute
-    def state(self) -> int:
+    def tree_state(self) -> int:
         """
-        Return the current state code.
+        Return the current tree_state code.
 
         The @raster_attribute decorator enables extraction of this property
-        as spatial raster data via module.get_raster('state').
+        as spatial raster data via module.get_raster('tree_state').
         """
         return self._state
 
@@ -96,6 +102,21 @@ class Forest(MainModel):
         - Experiment: Batch runs and parameter sweeps
     """
 
+    def initialize(self) -> None:
+        # Create spatial grid using nature subsystem
+        self.nature.create_module(
+            name="forest",
+            shape=self.params.shape,
+            cell_cls=Tree,
+            major_layer=True,
+        )
+        # Randomly select cells for tree placement
+        chosen_patches = self.nature.forest.random.choice(
+            size=self.num_trees, replace=False
+        )
+        # Grow trees on selected patches
+        chosen_patches.shuffle_do("grow")
+
     def setup(self) -> None:
         """
         Initialize the forest grid and set initial conditions.
@@ -103,19 +124,8 @@ class Forest(MainModel):
         Creates a spatial grid with Tree cells, randomly distributes trees
         according to density parameter, and ignites leftmost column.
         """
-        # Create spatial grid using nature subsystem
-        grid = self.nature.create_module(
-            name="forest",
-            shape=self.params.shape,
-            cell_cls=Tree,
-            major_layer=True,
-        )
-        # Randomly select cells for tree placement
-        chosen_patches = grid.random.choice(size=self.num_trees, replace=False)
-        # Grow trees on selected patches
-        chosen_patches.shuffle_do("grow")
         # Ignite leftmost column trees (automatically returns ActorsList)
-        grid[:, 0].shuffle_do("ignite")
+        self.nature.forest[:, 0].shuffle_do("ignite")
 
     def step(self) -> None:
         """
@@ -131,11 +141,12 @@ class Forest(MainModel):
         Calculate the proportion of burned trees.
 
         Returns:
-            Ratio of scorched trees (state=3) to total trees.
+            Ratio of scorched trees to total trees.
         """
-        state = self.nature.get_raster("state")
-        burned_count = np.squeeze(state == 3).sum()
-        return float(burned_count) / self.num_trees if self.num_trees > 0 else 0.0
+        # Select all cells with SCORCHED tree_state
+        burned_trees = self.nature.select({"tree_state": Tree.State.SCORCHED})
+        # Calculate the proportion
+        return len(burned_trees) / self.num_trees if self.num_trees > 0 else 0.0
 
     @property
     def num_trees(self) -> int:
@@ -147,25 +158,6 @@ class Forest(MainModel):
         """
         shape = self.params.shape
         return int(shape[0] * shape[1] * self.params.density)
-
-    def plot_state(self) -> None:
-        """
-        Visualize the current state of all trees.
-
-        Uses get_xarray() to extract spatial data with coordinates,
-        displaying empty (black), intact (green), burning (orange),
-        and scorched (red) cells.
-        """
-        categories = {
-            0: "black",  # Empty
-            1: "green",  # Intact
-            2: "orange",  # Burning
-            3: "red",  # Scorched
-        }
-        cmap = plt.cm.colors.ListedColormap([categories[i] for i in sorted(categories)])
-        data = self.nature.get_xarray("state")
-        data.plot(cmap=cmap)
-        plt.show()
 
 
 @hydra.main(version_base=None, config_path="", config_name="config")

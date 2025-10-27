@@ -17,10 +17,11 @@ Each includes complete source code, documentation, and tests.
 
     Demonstrates spatial modeling, raster attributes, and visualization.
 
-    **Features**: `@raster_attribute`, `neighboring()`, `trigger()`
+    **Features**: `@raster_attribute`, dynamic plotting, enum-based states, indexed grid access
 
-    [:octicons-arrow-right-24: Tutorial](../tutorial/completing/fire_tutorial.ipynb) ·
-    [:octicons-code-24: Source](https://github.com/SongshGeo/ABSESpy/tree/master/examples/fire_spread)
+    [:octicons-book-24: Quick Start](https://github.com/SongshGeoLab/ABSESpy/tree/dev/examples/fire_spread/fire_quick_start.ipynb) ·
+    [:octicons-arrow-right-24: Full Tutorial](../tutorial/completing/fire_tutorial.ipynb) ·
+    [:octicons-code-24: Source](https://github.com/SongshGeoLab/ABSESpy/tree/dev/examples/fire_spread)
 
 -   :wolf: __Wolf-Sheep Predation__
 

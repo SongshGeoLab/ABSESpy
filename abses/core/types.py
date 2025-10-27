@@ -16,6 +16,8 @@ from __future__ import annotations
 
 from typing import (
     TYPE_CHECKING,
+    Any,
+    Dict,
     TypeAlias,
     TypeVar,
 )
@@ -54,7 +56,9 @@ if TYPE_CHECKING:
 
     # Complex type aliases that depend on concrete classes
     Raster: TypeAlias = np.ndarray | xr.DataArray | xr.Dataset
-    CellFilter: TypeAlias = str | np.ndarray | xr.DataArray | Geometry | None
+    CellFilter: TypeAlias = (
+        str | np.ndarray | xr.DataArray | Geometry | Dict[str, Any] | None
+    )
     ActorTypes: TypeAlias = type[Actor] | list[type[Actor]]
     Actors: TypeAlias = Actor | ActorsList | list[Actor]
     DateOrTick: TypeAlias = DateTime | int

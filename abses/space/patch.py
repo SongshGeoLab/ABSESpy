@@ -527,6 +527,37 @@ class PatchModule(BaseModule, RasterLayer):
 
         return ActorsList(self.model, selected_cells)
 
+    def __getattr__(self, name: str) -> Any:
+        """Enable dynamic access to raster attributes with plotting capability.
+
+        When accessing a raster attribute (decorated with @raster_attribute),
+        returns a PlotableAttribute wrapper that provides a .plot() method
+        for convenient visualization.
+
+        Args:
+            name: Name of the attribute to access.
+
+        Returns:
+            PlotableAttribute if the attribute is a raster property,
+            otherwise raises AttributeError.
+
+        Examples:
+            >>> # Access and plot a raster attribute
+            >>> grid.state.plot(cmap={0: 'black', 1: 'green'})
+            >>> # Save plot to file
+            >>> grid.elevation.plot(save_path='elevation.png', show=False)
+        """
+        # Check if it's a raster attribute
+        if name in self.cell_properties:
+            from abses.viz import PlotableAttribute
+
+            return PlotableAttribute(module=self, attr_name=name)
+
+        # Raise AttributeError if not found
+        raise AttributeError(
+            f"'{self.__class__.__name__}' object has no attribute '{name}'"
+        )
+
     def _select_by_geometry(
         self,
         geometry: Geometry,
@@ -550,7 +581,7 @@ class PatchModule(BaseModule, RasterLayer):
 
     def select(
         self,
-        where: Optional[CellFilter] = None,
+        where: Optional[CellFilter | dict[str, Any]] = None,
     ) -> ActorsList[PatchCell]:
         """Selects cells based on specified criteria.
 
@@ -560,6 +591,7 @@ class PatchModule(BaseModule, RasterLayer):
                 - str: Select by attribute name
                 - numpy.ndarray: Boolean mask array
                 - Shapely.Geometry: Select cells intersecting geometry
+                - dict: Select by attribute-value pairs, e.g., {"state": 3}
 
         Returns:
             ActorsList containing selected cells.
@@ -572,7 +604,15 @@ class PatchModule(BaseModule, RasterLayer):
             >>> high_cells = module.select(module.get_raster("elevation") > 100)
             >>> # Select cells within polygon
             >>> cells = module.select(polygon)
+            >>> # Select cells by attribute dict
+            >>> burned = module.select({"state": 3})
         """
+        # Handle dictionary filters (common use case)
+        if isinstance(where, dict):
+            # Delegate to cells_lst.select which supports dict filters
+            return self.cells_lst.select(where)
+
+        # Handle other filter types
         if isinstance(where, Geometry):
             mask_ = self._select_by_geometry(geometry=where)
         elif isinstance(where, (np.ndarray, str, xr.DataArray)) or where is None:
