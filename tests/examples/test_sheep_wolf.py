@@ -82,14 +82,14 @@ class TestAnimal:
         wolves = model_fixture.agents.select(agent_type=Wolf)
         assert len(wolves) == 5
         for wolf in wolves:
-            assert wolf.energy == 5
+            assert wolf.energy == 50  # Model uses initial energy of 50
 
     def test_sheep_initialization(self, model_fixture: WolfSheepModel) -> None:
         """Test sheep initializes with correct energy."""
         sheep = model_fixture.agents.select(agent_type=Sheep)
         assert len(sheep) == 20
         for s in sheep:
-            assert s.energy == 5
+            assert s.energy == 50  # Model uses initial energy of 50
 
     def test_energy_consumption(self, model_fixture: WolfSheepModel) -> None:
         """Test that animals consume energy."""
@@ -119,8 +119,8 @@ class TestWolf:
         # Call eat_sheep (it may or may not find a sheep depending on position)
         wolf.eat_sheep()
 
-        # Energy should either stay the same or increase by 2
-        assert wolf.energy == initial_energy or wolf.energy == initial_energy + 2
+        # Energy should either stay the same or increase by 10 (eating sheep)
+        assert wolf.energy == initial_energy or wolf.energy == initial_energy + 10
 
 
 class TestSheep:

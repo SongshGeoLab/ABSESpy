@@ -30,12 +30,19 @@ nav:
           - B06: tutorial/beginner/movement.ipynb
           - B07: tutorial/beginner/predation_tutorial.ipynb
           - B08: tutorial/beginner/hotelling_tutorial.ipynb
+        - Intermediate Level:
+          - I01: tutorial/intermediate/containers_and_indexing.ipynb
+          - I02: tutorial/intermediate/evaluate_and_decide.ipynb
+          - I03: tutorial/intermediate/linking_actors.ipynb
         - Advanced Level:
           - A01: tutorial/advanced/geodata.ipynb
+          - A02: tutorial/advanced/experiments_and_jobs.ipynb
+          - A03: tutorial/advanced/logging_and_config.ipynb
+          - A04: tutorial/advanced/protocols_and_extensions.ipynb
           # - A02: tutorial/advanced/human_behavior_simulation.ipynb  # File not found
         - Competing Level:
           - C01: tutorial/completing/fire_tutorial.ipynb
-          - C02: tutorial/completing/linking_actors.ipynb
+          # moved to Intermediate Level as I03
     - Examples:
         - Official Examples: examples/official.md
         - Gallery: examples/gallery.md
