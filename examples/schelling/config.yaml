@@ -1,0 +1,36 @@
+defaults:
+  - default
+  - _self_
+
+exp:
+  name: schelling
+  outdir: out
+  repeats: 5              # number of repeated runs for statistics
+  seed: 42                # base random seed
+
+reports:
+  model:
+    happy_ratio: "happy_ratio"
+  agent:
+    type: "type"
+  final:
+    happy_ratio: "happy_ratio"
+
+model:
+  width: 50           # grid width
+  height: 50          # grid height
+  density: 0.7        # initial occupancy rate (0-1)
+
+SchellingAgent:
+  minority_prob: 0.4   # probability an agent is minority (type=1)
+  homophily: 0.6       # minimum similar-neighbor ratio to be happy
+  radius: 1            # neighborhood radius (Moore)
+
+time:
+  end: 20            # max steps for a single run
+
+log:
+  name: schelling
+  level: INFO
+  console: false
+  file: false
