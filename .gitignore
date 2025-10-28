@@ -124,6 +124,24 @@ venv.bak/
 # mkdocs documentation
 /site
 
+# Generated markdown from notebooks (regenerate with: ./scripts/convert_notebooks.sh)
+# Only track non-converted markdown files (manually written guides)
+!docs/tutorial/tutorial.md
+!docs/tutorial/tutorial.zh.md
+!docs/tutorial/tutorial_guide_from_*.md
+
+# Ignore all converted .md files (auto-generated from .ipynb)
+docs/tutorial/beginner/*.md
+docs/tutorial/intermediate/*.md
+docs/tutorial/advanced/*.md
+docs/tutorial/completing/*.md
+
+# Generated image/asset directories (_files folders are regenerated during build)
+# Note: These are kept locally for mkdocs serve, but not committed
+docs/tutorial/**/*_files/
+docs/tutorial/**/*.checkpoint.ipynb
+docs/tutorial/advanced/.ipynb_checkpoints/
+
 # mypy
 .mypy_cache/
 .dmypy.json

@@ -31,17 +31,15 @@ nav:
           - B07: tutorial/beginner/predation_tutorial.ipynb
           - B08: tutorial/beginner/hotelling_tutorial.ipynb
         - Intermediate Level:
-          - I01: tutorial/intermediate/containers_and_indexing.ipynb
-          - I02: tutorial/intermediate/evaluate_and_decide.ipynb
-          - I03: tutorial/intermediate/linking_actors.ipynb
+          - I01: tutorial/intermediate/linking_actors.ipynb
         - Advanced Level:
           - A01: tutorial/advanced/geodata.ipynb
-          - A02: tutorial/advanced/experiments_and_jobs.ipynb
-          - A03: tutorial/advanced/logging_and_config.ipynb
-          - A04: tutorial/advanced/protocols_and_extensions.ipynb
+          - A02: tutorial/advanced/viz_model.ipynb
           # - A02: tutorial/advanced/human_behavior_simulation.ipynb  # File not found
-        - Competing Level:
+        - Complete Examples:
           - C01: tutorial/completing/fire_tutorial.ipynb
+          - C02: tutorial/completing/linking_actors.ipynb
+          - C03: tutorial/completing/random_seed.ipynb
           # moved to Intermediate Level as I03
     - Examples:
         - Official Examples: examples/official.md
@@ -65,41 +63,13 @@ nav:
           - Time Control: api/time.md
           - Random: api/random.md
           - Experiment: api/experiment.md
-        - UML Documentation:
-          - Overview: uml/README.md
-          - Core Module:
-            - Class Diagram: uml/core/class_diagram.md
-            - Sequence Diagrams: uml/core/sequence_diagrams.md
-          - Agents Module:
-            - Class Diagram: uml/agents/class_diagram.md
-            - Sequence Diagrams: uml/agents/sequence_diagrams.md
-          - Space Module:
-            - Class Diagram: uml/space/class_diagram.md
-            - Sequence Diagrams: uml/space/sequence_diagrams.md
-          - Human Module:
-            - Class Diagram: uml/human/class_diagram.md
-            - Sequence Diagrams: uml/human/sequence_diagrams.md
-          - Utils Module:
-            - Class Diagram: uml/utils/class_diagram.md
-            - Sequence Diagrams: uml/utils/sequence_diagrams.md
-          - User Scenarios:
-            - Model Creation: uml/scenarios/01_model_creation.md
-            - Add Agents: uml/scenarios/02_add_agents.md
-            - Create Space: uml/scenarios/03_create_space.md
-            - Agent Movement: uml/scenarios/04_agent_movement.md
-            - Run Simulation: uml/scenarios/05_run_simulation.md
-            - Batch Experiment: uml/scenarios/06_batch_experiment.md
-          - Internal Flows:
-            - Module Lifecycle: uml/internals/01_module_lifecycle.md
-            - Observer Pattern: uml/internals/02_observer_pattern.md
-            - Agent Container: uml/internals/03_agent_container.md
-            - Raster Application: uml/internals/04_raster_application.md
-            - Link Management: uml/internals/05_link_management.md
-            - Time Driver: uml/internals/06_time_driver.md
 
 theme:
     name: "material"
     logo: "https://songshgeo-picgo-1302043007.cos.ap-beijing.myqcloud.com/uPic/logo_abses.svg"
+    extra_css:
+      - assets/_mkdocstrings.css
+      - assets/notebook-styles.css
     palette:
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
@@ -125,69 +95,7 @@ theme:
         - content.tooltips
 plugins:
     - search
-    - mkdocs-jupyter:
-        include_source: True
-        execute: false  # Skip execution for faster build - keep notebook outputs
-        allow_errors: true
-    # i18n plugin conflicts with mkdocs-jupyter
-    # Solution: Use Material tabs for bilingual content in .md files
-    # Notebooks will remain English-only
-    # - i18n:
-    #     docs_structure: suffix
-    #     fallback_to_default: true
-    #     reconfigure_material: true
-    #     reconfigure_search: true
-    #     languages:
-    #       - locale: en
-    #         default: true
-    #         name: English
-    #         build: true
-    #       - locale: zh
-    #         name: 中文
-    #         build: true
-    #     nav_translations:
-    #                       Home: 首页
-    #                       Installation: 安装
-    #                       Getting started: 快速开始
-    #                       Guide Checklist: 指南检查清单
-    #                       Dependencies: 依赖项
-    #                       License: 许可证
-    #                       Contributions: 贡献
-    #                       Acknowledge: 致谢
-    #                       Wiki: 维基
-    #                       Refers: 参考
-    #                       Materials: 材料
-    #                       Concepts: 概念
-    #                       Paper: 论文
-    #                       Tutorials: 教程
-    #                       Tutorial: 教程
-    #                       Start from ABM: 从ABM开始
-    #                       Start from SES: 从SES开始
-    #                       Beginner Level: 初级教程
-    #                       Advanced Level: 高级教程
-    #                       Competing Level: 完善教程
-    #                       Examples: 示例
-    #                       Official Examples: 官方示例
-    #                       Gallery: 画廊
-    #                       Community Examples: 社区示例
-    #                       API references: API参考
-    #                       Model structure: 模型结构
-    #                       Main Model: 主模型
-    #                       Natural Modules: 自然模块
-    #                       PatchModule (layer): 网格模块
-    #                       Human Modules: 人类模块
-    #                       Cells: 单元格
-    #                       Actors' Operation: 智能体操作
-    #                       Actor (Agent): 智能体
-    #                       Actors Container: 智能体容器
-    #                       Actors List: 智能体列表
-    #                       Movements: 移动
-    #                       Interlinks: 连接
-    #                       Workflow Control: 工作流控制
-    #                       Time Control: 时间控制
-    #                   Random: 随机
-    #                   Experiment: 实验
-    # - markdown-exec
+    - mkdocs-jupyter
     - mkdocstrings:
         handlers:
           python:
@@ -275,12 +183,11 @@ markdown_extensions:
 extra:
   alternate:
     - name: English
-      link:
+      link: /
       lang: en
-    - name: Chinese
-      link: /ch/
-      lang: ch
-  # https://squidfunk.github.io/mkdocs-material/setup/setting-up-versioning/
+    - name: 中文
+      link: /zh/
+      lang: zh
   version:
     - provider: mike
   tags:
