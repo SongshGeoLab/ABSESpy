@@ -47,6 +47,7 @@ from abses.utils.func import get_buffer, set_null_values
 from abses.utils.random import ListRandom
 
 if TYPE_CHECKING:
+    from abses.core.protocols import ActorProtocol
     from abses.core.types import (
         CellFilter,
         MainModelProtocol,
@@ -845,44 +846,153 @@ class PatchModule(BaseModule, RasterLayer):
         return row < 0 or row >= self.height or col < 0 or col >= self.width
 
     def count_agents(
-        self, agent_type: type[Actor], *, dtype: Literal["numpy", "xarray"] = "xarray"
-    ) -> Union[NDArray[np.int_], xr.DataArray]:
+        self,
+        agent_type: Type[ActorProtocol] | None = None,
+        *,
+        dtype: Literal["numpy", "xarray"] = "xarray",
+    ) -> NDArray[np.int_] | xr.DataArray:
         """
         Count the number of agents of a specific type on each cell across the entire module.
 
         Args:
             agent_type: The agent class to count (e.g., Sheep, Wolf).
             dtype: Return type. Options:
-                - "numpy": Returns 2D numpy array (default)
-                - "xarray": Returns xarray DataArray with spatial coordinates
+                - "numpy": Returns 2D numpy array
+                - "xarray": Returns xarray DataArray with spatial coordinates (default)
 
         Returns:
             Agent counts as numpy array or xarray DataArray with shape (height, width).
 
         Examples:
-            >>> # Get as numpy array (default)
+            >>> # Get as xarray with spatial coordinates (default)
             >>> sheep_map = grassland.count_agents(Sheep)
-            >>>
-            >>> # Get as xarray with spatial coordinates
-            >>> sheep_map = grassland.count_agents(Sheep, dtype="xarray")
             >>> # Now has .rio methods and coordinates
             >>> sheep_map.rio.crs
             >>> sheep_map.plot()
+            >>>
+            >>> # Get as numpy array
+            >>> sheep_map = grassland.count_agents(Sheep, dtype="numpy")
         """
-        data = np.vectorize(lambda cell: cell.agents.has(agent_type))(self.array_cells)
+        data = self.apply(lambda cell: cell.agents.has(agent_type))
 
         if dtype == "xarray":
             # Convert to xarray with spatial coordinates
-            coords = self.coords
             xda = xr.DataArray(
                 data=data,
-                coords=coords,
-                name=agent_type.__name__.lower() + "_count",
+                coords=self.coords,
+                name=agent_type.__name__.lower() + "_count"
+                if agent_type
+                else "agent_count",
             )
             # Add spatial reference information
             xda = xda.rio.write_crs(self.crs)
-            xda = xda.rio.set_spatial_dims("x", "y")
-            xda = xda.rio.write_transform(self.transform)
-            return xda.rio.write_coordinate_system()
+            return xda
+
+        return data
+
+    def apply_agents(
+        self,
+        func: Optional[Callable[[Actor], Any]] = None,
+        *,
+        attr: Optional[str] = None,
+        default: Any = np.nan,
+        aggregator: Optional[Callable[[ActorsList[Actor]], Any]] = None,
+        dtype: Literal["numpy", "xarray"] = "numpy",
+        name: Optional[str] = None,
+    ) -> np.ndarray | xr.DataArray:
+        """Apply a function or attribute access to the agent(s) on each cell.
+
+        This method vectorizes over the raster cells and, for each cell, operates on
+        its linked agents. It supports three usage modes:
+
+        1) Single-agent access (capacity=1 typical):
+           - Provide ``attr`` (str) to fetch an attribute from the only agent.
+           - Or provide ``func(agent)`` to compute a value from the only agent.
+           If the cell is empty, returns ``default``.
+
+        2) Aggregation over multiple agents per cell:
+           - Provide ``aggregator(actors: ActorsList)`` to reduce the cell's
+             agents into a single value (e.g., len(actors), sum(...)).
+
+        3) xarray output:
+           - Set ``dtype='xarray'`` to get an ``xr.DataArray`` with spatial coords
+             and CRS info baked in.
+
+        Args:
+            func: Function to apply to a single agent on each cell.
+            attr: Attribute name to fetch from a single agent on each cell.
+            default: Value to use when a cell has no agent (or attribute missing).
+            aggregator: Function that reduces ``ActorsList`` of a cell to one value.
+            dtype: Output type. ``'numpy'`` or ``'xarray'``.
+            name: Optional name for the xarray DataArray.
+
+        Returns:
+            A 2D numpy array or xarray DataArray of computed values per cell.
+
+        Notes:
+            - If both ``aggregator`` and (``func``/``attr``) are provided, ``aggregator``
+              takes precedence and receives the entire cell ``ActorsList``.
+            - When using ``attr`` or ``func`` and multiple agents exist on a cell,
+              the first agent is used via ``actors.item(default=None)``.
+        """
+
+        if aggregator is None and func is None and attr is None:
+            raise ValueError("One of 'aggregator', 'func', or 'attr' must be provided.")
+
+        def _to_float(val: Any) -> float:
+            """Cast to float, returning NaN on failure."""
+            try:
+                return float(val)
+            except Exception:
+                return float("nan")
+
+        def _cell_compute(cell: PatchCell) -> Any:
+            # Aggregation path over all agents on the cell
+            if aggregator is not None:
+                actors_list = ActorsList(self.model, cell.agents)
+                if len(actors_list) == 0:
+                    return default
+                try:
+                    return _to_float(aggregator(actors_list))
+                except Exception:
+                    logger.warning(
+                        "apply_agents aggregator raised; filling NaN.",
+                    )
+                    return float("nan")
+
+            # Single-agent path (use first/only agent if present)
+            agent = cell.agents.item(default=None)
+            if agent is None:
+                return default
+            if attr is not None:
+                try:
+                    return _to_float(getattr(agent, attr, default))
+                except Exception:
+                    logger.warning(
+                        "apply_agents attr access raised; filling NaN. attr=%r",
+                        attr,
+                    )
+                    return float("nan")
+            # func provided
+            if func is None:
+                return default
+            try:
+                return _to_float(func(agent))
+            except Exception:
+                logger.warning(
+                    "apply_agents func raised; filling NaN. func=%r",
+                    getattr(func, "__name__", repr(func)),
+                )
+                return float("nan")
+
+        # compute and force float dtype for NaN safety
+        data = self.apply(_cell_compute).astype(float)
+
+        if dtype == "xarray":
+            xda = xr.DataArray(
+                data=data, coords=self.coords, name=name or "applied_agents"
+            )
+            xda = xda.rio.write_crs(self.crs)
+            return xda
 
         return data

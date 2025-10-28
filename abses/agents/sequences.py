@@ -131,6 +131,58 @@ class ActorsList(Generic[A], AgentSet):
                 )
         return True
 
+    @property
+    def linked_agents(self) -> ActorsList[A]:
+        """Get the agents from the list.
+
+        This property returns agents based on the list content:
+        - If the list contains all cells, returns all agents located on those cells
+        - If the list contains all actors, returns the cells where the actors are located
+        - If the list is mixed, raises an error
+
+        Returns:
+            ActorsList containing the relevant agents (from cells) or cells (from actors).
+
+        Raises:
+            ABSESpyError: If the list contains both cells and actors (mixed).
+
+        Example:
+            ```python
+            # From cells -> agents on those cells
+            cells = model.nature.grid.cells_lst.select(lambda c: c.wealth > 100)
+            agents_on_rich_cells = cells.linked_agents  # All agents on these cells
+
+            # From actors -> cells where these actors are
+            agents = model.agents.select(lambda a: a.wealth > 100)
+            cells_where_agents_are = agents.linked_agents  # Cells where these agents are located
+            ```
+        """
+        from abses.utils.errors import ABSESpyError
+
+        if self.is_mixed:
+            raise ABSESpyError(
+                "Mixed list contains both cells and actors. Cannot get agents."
+                " Please filter the list to contain only cells or only actors."
+            )
+
+        if self.is_cells:
+            # Collect all agents from all cells
+            all_agents = []
+            for cell in self:
+                all_agents.extend(cell.agents)  # _CellAgentsContainer is iterable
+            return ActorsList(model=self._model, objs=all_agents)
+
+        if self.is_actors:
+            # Get cells where these actors are located
+            cells = []
+            for actor in self:
+                if hasattr(actor, "at") and actor.at is not None:
+                    cells.append(actor.at)
+            return ActorsList(model=self._model, objs=cells)
+
+        # Empty list or unknown type
+        return ActorsList(model=self._model, objs=[])
+
     def to_dict(self) -> Dict[str, ActorsList[A]]:
         """Convert all actors to a dictionary grouped by breed.
 
@@ -248,14 +300,14 @@ class ActorsList(Generic[A], AgentSet):
         """
         if isinstance(than, Agent):
             than = getattr(than, metric)
-        
+
         # If no threshold provided, select actors with maximum metric value
         if than is None:
             if len(self) == 0:
                 return ActorsList(self._model, [])
             max_value = max(getattr(agent, metric) for agent in self)
             return self.select(lambda x: getattr(x, metric) == max_value)
-        
+
         return self.select(lambda x: getattr(x, metric) > than)
 
     def update(self, attr: str, values: Iterable[Any]) -> None:
@@ -331,7 +383,9 @@ class ActorsList(Generic[A], AgentSet):
         """
         return np.array(self.map(func_name, *args, **kwargs))
 
-    def item(self, how: HOW_TO_SELECT = "item", index: int = 0) -> Optional[A]:
+    def item(
+        self, how: HOW_TO_SELECT = "item", index: int = 0, default: Optional[A] = ...
+    ) -> Optional[A]:
         """Get a single actor from the list.
 
         This method provides convenient access to a single actor from the list
@@ -363,7 +417,7 @@ class ActorsList(Generic[A], AgentSet):
             ```
         """
         if how == "only":
-            return get_only_item(self)
+            return get_only_item(self, default=default)
         if how == "item":
             return self[index] if len(self) > index else None
         raise ValueError(f"Invalid how method '{how}'.")
@@ -380,3 +434,81 @@ class ActorsList(Generic[A], AgentSet):
     @random.setter
     def random(self, random: np.random.Generator) -> None:
         pass
+
+    @property
+    def is_cells(self) -> bool:
+        """Check if this list contains cells (PatchCell) rather than regular actors.
+
+        Returns:
+            True if all elements are PatchCell instances (or subclasses), False otherwise.
+            Returns False for empty lists or mixed/actor-only lists.
+
+        Example:
+            ```python
+            cells = model.nature.grid.cells_lst
+            print(cells.is_cells)  # True
+
+            agents = model.agents
+            print(agents.is_cells)  # False
+            ```
+        """
+        if len(self) == 0:
+            return False
+        # Lazy import to avoid circular dependency
+        from abses.space.cells import PatchCell
+
+        return all(isinstance(elem, PatchCell) for elem in self)
+
+    @property
+    def is_actors(self) -> bool:
+        """Check if this list contains regular actors rather than cells.
+
+        Returns:
+            True if all elements are regular Actor instances (or subclasses), False otherwise.
+            Returns False for empty lists or mixed/cell-only lists.
+
+        Example:
+            ```python
+            cells = model.nature.grid.cells_lst
+            print(cells.is_actors)  # False
+
+            agents = model.agents
+            print(agents.is_actors)  # True
+            ```
+        """
+        if len(self) == 0:
+            return False
+        # Lazy import to avoid circular dependency
+        from abses.agents.actor import Actor
+        from abses.space.cells import (
+            PatchCell,  # Exclude cells since they inherit ActorProtocol
+        )
+
+        return all(
+            isinstance(elem, Actor) and not isinstance(elem, PatchCell) for elem in self
+        )
+
+    @property
+    def is_mixed(self) -> bool:
+        """Check if this list contains both cells and actors.
+
+        Returns:
+            True if the list contains both PatchCell and Actor instances.
+
+        Example:
+            ```python
+            mixed_list = ActorsList(model, [cell1, actor1, cell2])
+            print(mixed_list.is_mixed)  # True
+            ```
+        """
+        if len(self) == 0:
+            return False
+        # Lazy import to avoid circular dependency
+        from abses.agents.actor import Actor
+        from abses.space.cells import PatchCell
+
+        has_cells = any(isinstance(elem, PatchCell) for elem in self)
+        has_actors = any(
+            isinstance(elem, Actor) and not isinstance(elem, PatchCell) for elem in self
+        )
+        return has_cells and has_actors

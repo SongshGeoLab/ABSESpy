@@ -159,6 +159,11 @@ class PatchCell(_LinkNodeCell, BaseModelElement, ActorProtocol):
         """The crs of this cell, the same as the layer."""
         return self.layer.crs
 
+    @property
+    def is_empty(self) -> bool:
+        """Check if the cell is empty."""
+        return len(self.agents) == 0
+
     def _set_layer(self, layer: PatchModule) -> None:
         if not isinstance(layer, RasterBase):
             raise TypeError(f"{type(layer)} is not valid layer.")
