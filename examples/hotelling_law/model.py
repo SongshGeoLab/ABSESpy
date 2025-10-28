@@ -2,144 +2,161 @@
 # -*-coding:utf-8 -*-
 # @Author  : Shuang (Twist) Song
 # @Contact   : SongshGeo@gmail.com
-# GitHub   : https://github.com/SongshGeo
-# Website: https://cv.songshgeo.com/
+# @GitHub   : https://github.com/SongshGeo
+# @Website: https://cv.songshgeo.com/
 
 """
-Hotelling's Law model.
+Hotelling's Law model implemented in an idiomatic ABSESpy style.
+
+This example uses ABSESpy primitives for:
+- Spatial cells as customers (`PatchCell`)
+- Mobile shops as agents (`Actor`)
+- Batch operations via `ActorsList`
+- Minimal loops with vectorized distance computation
+
+Key ideas:
+- Each customer (cell) links to its preferred shop (nearest + cheapest)
+- Shops adapt price and position to maximize their service area
 """
+
+from __future__ import annotations
+
+from typing import Optional
 
 import numpy as np
-from scipy.spatial.distance import cdist
 
 from abses import Actor, ActorsList, MainModel, PatchCell
 
 
 class Customer(PatchCell):
-    """
-    Each patch cell represents a customer.
-    Customer prefers to buy from the nearest & cheapest shop.
+    """Customer cell.
+
+    Each `Customer` occupies exactly one spatial cell. Preference is represented
+    as a link to the chosen `Shop` (link name: "prefer").
     """
 
-    def find_preference(self):
-        """Find the nearest & cheapest shop."""
-        stores: ActorsList[Actor] = self.model.actors
-        # Create a list of all shops
-        prices = stores.array("price")
-        # Create a list of all distances from the customer to each shop
-        distances = cdist(
-            np.array([self.indices]),
-            np.array([shop.at.indices for shop in stores]),
-        )[0]
-        # Pair each shop to its distance & price
-        _pair = dict(zip(stores, distances + prices))
-        prefer_store = min(_pair, key=_pair.get)
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self._prefer_idx: int = -1
+
+    def find_preference(self) -> None:
+        """Find and link to preferred shop using ABSESpy batch helpers.
+
+        - Collect shop positions/prices via ActorsList.evaluate/array
+        - Vectorize distance computation; pick argmin
+        - Record internal prefer index for later rasterization
+        """
+        shops: ActorsList[Actor] = self.model.actors
+        if len(shops) == 0:
+            self._prefer_idx = -1
+            self.link.clean()
+            return
+
+        # Positions/prices as numpy arrays
+        positions = shops.apply(lambda s: s.at.indices).astype(float)  # (n,2)
+        prices = shops.apply(lambda s: s.price).astype(float)  # (n,)
+
+        deltas = positions - np.asarray(self.indices, dtype=float)
+        distances = np.sqrt((deltas**2).sum(axis=1))  # (n,)
+        scores = distances + prices
+
+        prefer_idx = int(np.argmin(scores))
+        self._prefer_idx = prefer_idx
+
+        # Update link
         self.link.clean()
-        self.link.by(prefer_store, link_name="prefer")
+        self.link.by(shops[prefer_idx], link_name="prefer")
 
 
 class Shop(Actor):
-    """
-    Shop agent
-    """
+    """Shop agent that adapts price and position."""
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.price = 10
-        self.next_position = None
-        self.next_price = None
+        self.price: float = 10.0
+        self.next_position: Optional[PatchCell] = None
+        self.next_price: Optional[float] = None
 
     @property
     def area_count(self) -> int:
-        """Return the number of customers in the shop's area."""
+        """Number of customers preferring this shop."""
         return len(self.link.get("prefer", direction="out"))
 
-    def step(self):
+    def step(self) -> None:
         self.adjust_price()
         self.adjust_position()
 
-    def advance(self):
+    def advance(self) -> None:
         self.affect_price()
         self.affect_position()
 
-    def adjust_price(self):
-        """Evaluate the potential revenue for each possible price change.
-        Choose the one with the highest potential revenue."""
-        # Save initial price
-        init_price = self.price
+    def adjust_price(self) -> None:
+        init_price: float = float(self.price)
+        candidate_prices = np.asarray(
+            [init_price - 1.0, init_price, init_price + 1.0], dtype=float
+        )
+        # One-liner: choose best price candidate with automatic rollback of price
+        best_price = self.evaluate(
+            candidate_prices,
+            lambda actor, p: (
+                setattr(actor, "price", float(p))
+                or actor.model.recalculate_preferences()
+                or float(actor.area_count) * float(actor.price)
+            ),
+            dtype=float,
+            how="max",
+            preserve_attrs=("price",),
+        )
+        self.next_price = (
+            (init_price - 1.0) if best_price is None else float(best_price)
+        )
 
-        # Build a list of all possible prices
-        _possible_prices = [init_price - 1, init_price, init_price + 1]
-
-        # Pair each possible price change to its potential revenue
-        _potential_revenues = {}
-        for price in _possible_prices:
-            self.price = price
-            self.model.recalculate_preferences()
-            _potential_revenues[price] = self.area_count * price
-        # Check if all potential revenues are 0
-        # if so, decrease price by 1
-        if all(value == 0 for value in _potential_revenues.values()):
-            self.next_price = self.price - 1
-        # Otherwise, choose the price with the highest potential revenue
-        else:
-            self.next_price = max(_potential_revenues, key=_potential_revenues.get)
-
-        # Reset price to initial price
-        self.price = init_price
-
-    def adjust_position(self):
-        """Evaluate the potential areas for each possible move.
-        Choose the one with the highest potential area."""
-        cell_now = self.at
-        # Get all possible candidates for the next position
-        _possible_moves = self.at.neighboring(moore=True, include_center=False)
-
-        # Pair each possible move to their potential areas
-        _potential_areas = {}
-        for move in _possible_moves:
-            self.move.to(move)
-            self.model.recalculate_preferences()
-            _potential_areas[move] = self.area_count
-
-        # Single out the store with the highest potential area and save it
-        _choice = max(_potential_areas, key=_potential_areas.get)
-        self.next_position = _choice
-
-        # Pull back to initial position if the potential area
-        self.move.to(cell_now)
-
-    def affect_price(self) -> None:
-        """Change the price of the shop to the next price."""
-        self.price = self.next_price
-
-    def affect_position(self) -> None:
-        """Change the position of the shop to the next position."""
-        self.move.to(self.next_position)
+    def adjust_position(self) -> None:
+        cell_now: PatchCell = self.at
+        candidates: ActorsList[PatchCell] = self.at.neighboring(
+            moore=True, include_center=False
+        )
+        if len(candidates) == 0:
+            self.next_position = cell_now
+            return
+        # One-liner: choose best move candidate with automatic rollback of position
+        self.next_position = self.evaluate(
+            candidates,
+            lambda actor, cell: (
+                actor.move.to(cell)
+                or actor.model.recalculate_preferences()
+                or int(actor.area_count)
+            ),
+            dtype=int,
+            how="max",
+            preserve_position=True,
+        )
 
 
 class Hotelling(MainModel):
-    """
-    Model class for the Hotelling's Law example.
-    """
+    """Hotelling's Law model class using ABSESpy primitives."""
 
-    def setup(self):
-        num_agents = self.params.get("n_agents", 3)
-        # Initialize a grid
+    def setup(self) -> None:
+        num_agents: int = int(self.params.get("n_agents", 3))
         layer = self.nature.create_module(
             cell_cls=Customer,
             name="market",
             shape=(10, 10),
         )
-
-        # Create some agents on random cells
-        shops = self.agents.new(Shop, num_agents)
+        shops: ActorsList[Shop] = self.agents.new(Shop, num_agents)
         shops.apply(lambda shop: shop.move.to("random", layer=layer))
 
-    def step(self):
-        # recalculate areas and assign them to each agent
+    def step(self) -> None:
         self.recalculate_preferences()
+        self.agents.shuffle_do("step")
 
-    def recalculate_preferences(self):
-        """Let all customers (PatchCell) find their preferences shop."""
-        self.nature.major_layer.select().trigger("find_preference")
+    def advance(self) -> None:
+        self.agents.shuffle_do("advance")
+
+    def recalculate_preferences(self) -> None:
+        """Batch-recalculate preferences and expose a raster for visualization."""
+        # Batch trigger preference update on all customers
+        self.nature.select().trigger("find_preference")
+        # Expose prefer index as raster attribute via apply
+        prefer_idx_raster = self.nature.apply(lambda c: getattr(c, "_prefer_idx", -1))
+        self.nature.apply_raster(prefer_idx_raster, attr_name="prefer_idx")
