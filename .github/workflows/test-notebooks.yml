@@ -18,8 +18,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install uv
-        run: |
-          pip install uv
+        uses: astral-sh/setup-uv@v4
 
       - name: Install deps
         run: |
@@ -29,5 +28,4 @@ jobs:
         env:
           ABSESPY_PROJECT_ROOT: ${{ github.workspace }}
         run: |
-          pytest
-
+          uv run pytest --nbmake "docs/tutorial/**/*.ipynb" -v --tb=short --ignore=site
