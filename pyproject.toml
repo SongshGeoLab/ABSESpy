@@ -1,0 +1,7 @@
+[project]
+name = "abses"
+version = "0.0.0-local"
+dependencies = [
+    "mkdocs>=1.6.1",
+    # "mkdocs-material @ git+https://@github.com/squidfunk/mkdocs-material-insiders.git",
+]
