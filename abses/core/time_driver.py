@@ -123,6 +123,8 @@ class TimeDriver(BaseModelElement, TimeDriverProtocol):
         super().__init__(model=model, name="time")
         self._history: Deque[DateTime] = deque()
         self._history_ticks: Deque[int] = deque()
+        # End time can only be DateTime | int | None at runtime
+        self._end_dt: DateTime | int | None = None
         self._parse_ticking_mode(set(self.params.keys()))
         self._parse_time_settings(self.params)
         self._dt = self.start_dt
@@ -332,18 +334,25 @@ class TimeDriver(BaseModelElement, TimeDriverProtocol):
     @end_at.setter
     def end_at(self, dt: Optional[DateOrTick | str]) -> None:
         """Set the end time."""
-        is_tick = is_positive_int(dt, raise_error=False)
-        if dt is None or is_tick:
-            self._end_dt = dt
-            return
-        # If the end time is a string / datetime object.
-        if isinstance(dt, str):
-            dt = parse_datetime(dt)
-        if isinstance(dt, datetime) and not isinstance(dt, DateTime):
-            dt = pendulum.instance(dt).replace(tzinfo=None)
-        elif isinstance(dt, DateTime):
-            dt = dt.replace(tzinfo=None)
-        self._end_dt = dt
+        # Normalize into DateTime | int | None
+        normalized: DateTime | int | None
+        if dt is None:
+            normalized = None
+        elif is_positive_int(dt, raise_error=False):
+            normalized = int(dt)  # mypy: dt is int-like here
+        else:
+            # If the end time is a string / datetime object.
+            if isinstance(dt, str):
+                tmp = parse_datetime(dt)
+            else:
+                tmp = dt
+            if isinstance(tmp, datetime) and not isinstance(tmp, DateTime):
+                normalized = pendulum.instance(tmp).replace(tzinfo=None)
+            elif isinstance(tmp, DateTime):
+                normalized = tmp.replace(tzinfo=None)
+            else:
+                raise TypeError(f"Wrong type for end time: {type(dt)}.")
+        self._end_dt = normalized
 
     @property
     def dt(self) -> DateTime:

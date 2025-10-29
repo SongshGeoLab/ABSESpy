@@ -24,9 +24,14 @@ FONT_AWESOME = FontProperties(fname=str(FONT))
 
 # https://stackoverflow.com/questions/52902086/how-to-use-font-awesome-symbol-as-marker-in-matplotlib
 def get_marker(symbol: str) -> Path:
-    """Returns Font Awesome marker."""
+    """Return a Matplotlib Path for a given marker symbol.
+
+    If ``symbol`` is a built-in matplotlib marker (e.g. "o", "x"), convert it to
+    a ``Path`` via ``MarkerStyle(symbol).get_path()``. Otherwise, treat it as a
+    Font Awesome icon name and build a path from the configured font file.
+    """
     if symbol in markers.MarkerStyle.markers:
-        return symbol
+        return markers.MarkerStyle(symbol).get_path()
     symbol = fa.icons.get(symbol)
     if not symbol:
         raise KeyError(f"Could not find {symbol} in marker style.")
