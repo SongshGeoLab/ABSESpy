@@ -6,7 +6,7 @@
       
       
       
-        <link rel="prev" href="../../tutorial/completing/linking_actors/">
+        <link rel="prev" href="../../tutorial/completing/random_seed/">
       
       
         <link rel="next" href="../gallery/">
@@ -89,6 +89,10 @@
     <div data-md-component="announce">
       
     </div>
+    
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
     
     
       
@@ -1129,7 +1133,7 @@
   
   
   <span class="md-ellipsis">
-    Advanced Level
+    Intermediate Level
     
   </span>
   
@@ -1140,7 +1144,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_5">
             <span class="md-nav__icon md-icon"></span>
-            Advanced Level
+            Intermediate Level
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1151,12 +1155,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorial/advanced/geodata/" class="md-nav__link">
+      <a href="../../tutorial/intermediate/linking_actors/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Setup Nature Modules
+    Network of links between actors
     
   </span>
   
@@ -1201,7 +1205,7 @@
   
   
   <span class="md-ellipsis">
-    Competing Level
+    Advanced Level
     
   </span>
   
@@ -1212,7 +1216,102 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_6">
             <span class="md-nav__icon md-icon"></span>
-            Competing Level
+            Advanced Level
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/advanced/geodata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setup Nature Modules
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/advanced/viz_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Vizualized model
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7">
+        
+          
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Complete Examples
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7">
+            <span class="md-nav__icon md-icon"></span>
+            Complete Examples
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1228,7 +1327,7 @@
   
   
   <span class="md-ellipsis">
-    Fire Spread Simulation
+    Fire Spread Model - Complete Tutorial for Beginners
     
   </span>
   
@@ -1252,6 +1351,29 @@
   
   <span class="md-ellipsis">
     Network of links between actors
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorial/completing/random_seed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Random Seed to Control Experiment
     
   </span>
   
@@ -2093,54 +2215,43 @@
 <p>These examples demonstrate core ABSESpy features through classic <abbr title="Agent-based model">ABM</abbr> models.
 Each includes complete source code, documentation, and tests.</p>
 <h3 id="available-examples">Available Examples<a class="headerlink" href="#available-examples" title="Permanent link">¶</a></h3>
-<div class="language-text highlight"><pre><span></span><code>&lt;div class="grid cards" markdown&gt;
-
-- :fire: __Fire Spread__
-
-  ---
-
-  Demonstrates spatial modeling, raster attributes, and visualization.
-
-  **Features**: `@raster_attribute`, `neighboring()`, `trigger()`
-
-  [:octicons-arrow-right-24: Tutorial](../tutorial/completing/fire_tutorial.ipynb) |
-  [:octicons-code-24: Source](https://github.com/SongshGeo/ABSESpy/tree/master/examples/fire_spread)
-
-- :wolf: __Wolf-Sheep Predation__
-
-  ---
-
-  Agent lifecycle, movement, and ecological interactions.
-
-  **Features**: `move.random()`, `at.agents`, `die()`, reproduction
-
-  [:octicons-arrow-right-24: Tutorial](../tutorial/beginner/predation_tutorial.ipynb) |
-  [:octicons-code-24: Source](https://github.com/SongshGeo/ABSESpy/tree/master/examples/wolf_sheep)
-
-- :cityscape: __Schelling Segregation__
-
-  ---
-
-  Mesa framework integration and social dynamics modeling.
-
-  **Features**: `shuffle_do()`, `self.p`, Mesa compatibility
-
-  [:octicons-code-24: Source](https://github.com/SongshGeo/ABSESpy/tree/master/examples/schelling) |
-  [:octicons-book-24: README](https://github.com/SongshGeo/ABSESpy/blob/master/examples/schelling/README.md)
-
-- :chart_with_upwards_trend: __Hotelling's Law__
-
-  ---
-
-  Decision-making framework and spatial competition.
-
-  **Features**: Links between Actors and PatchCells
-
-  [:octicons-arrow-right-24: Tutorial](../tutorial/beginner/hotelling_tutorial.ipynb) |
-  [:octicons-code-24: Source](https://github.com/SongshGeo/ABSESpy/tree/master/examples/hotelling_law)
-
-&lt;/div&gt;
-</code></pre></div>
+<div class="grid cards">
+<ul>
+<li>
+<p><img alt="🔥" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f525.svg" title=":fire:"> <strong>Fire Spread</strong></p>
+<hr>
+<p>Demonstrates spatial modeling, raster attributes, and visualization.</p>
+<p><strong>Features</strong>: <code>@raster_attribute</code>, dynamic plotting, enum-based states, indexed grid access</p>
+<p><a href="https://github.com/SongshGeoLab/ABSESpy/tree/dev/examples/fire_spread/fire_quick_start.ipynb"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 3.75A.75.75 0 0 1 .75 3h7.497c1.566 0 2.945.8 3.751 2.014A4.5 4.5 0 0 1 15.75 3h7.5a.75.75 0 0 1 .75.75v15.063a.75.75 0 0 1-.755.75l-7.682-.052a3 3 0 0 0-2.142.878l-.89.891a.75.75 0 0 1-1.061 0l-.902-.901a3 3 0 0 0-2.121-.879H.75a.75.75 0 0 1-.75-.75Zm12.75 15.232a4.5 4.5 0 0 1 2.823-.971l6.927.047V4.5h-6.75a3 3 0 0 0-3 3ZM11.247 7.497a3 3 0 0 0-3-2.997H1.5V18h6.947c1.018 0 2.006.346 2.803.98Z"></path></svg></span> Quick Start</a> ·
+<a href="../../tutorial/completing/fire_tutorial/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"></path></svg></span> Full Tutorial</a> ·
+<a href="https://github.com/SongshGeoLab/ABSESpy/tree/dev/examples/fire_spread"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.22 4.97a.75.75 0 0 1 1.06 0l6.5 6.5a.75.75 0 0 1 0 1.06l-6.5 6.5a.749.749 0 0 1-1.275-.326.75.75 0 0 1 .215-.734L21.19 12l-5.97-5.97a.75.75 0 0 1 0-1.06m-6.44 0a.75.75 0 0 1 0 1.06L2.81 12l5.97 5.97a.749.749 0 0 1-.326 1.275.75.75 0 0 1-.734-.215l-6.5-6.5a.75.75 0 0 1 0-1.06l6.5-6.5a.75.75 0 0 1 1.06 0"></path></svg></span> Source</a></p>
+</li>
+<li>
+<p><img alt="🐺" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f43a.svg" title=":wolf:"> <strong>Wolf-Sheep Predation</strong></p>
+<hr>
+<p>Agent lifecycle, movement, and ecological interactions.</p>
+<p><strong>Features</strong>: <code>move.random()</code>, <code>at.agents</code>, <code>die()</code>, reproduction</p>
+<p><a href="../../tutorial/beginner/predation_tutorial/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"></path></svg></span> Tutorial</a> ·
+<a href="https://github.com/SongshGeo/ABSESpy/tree/master/examples/wolf_sheep"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.22 4.97a.75.75 0 0 1 1.06 0l6.5 6.5a.75.75 0 0 1 0 1.06l-6.5 6.5a.749.749 0 0 1-1.275-.326.75.75 0 0 1 .215-.734L21.19 12l-5.97-5.97a.75.75 0 0 1 0-1.06m-6.44 0a.75.75 0 0 1 0 1.06L2.81 12l5.97 5.97a.749.749 0 0 1-.326 1.275.75.75 0 0 1-.734-.215l-6.5-6.5a.75.75 0 0 1 0-1.06l6.5-6.5a.75.75 0 0 1 1.06 0"></path></svg></span> Source</a></p>
+</li>
+<li>
+<p><img alt="🏙" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f3d9.svg" title=":cityscape:"> <strong>Schelling Segregation</strong></p>
+<hr>
+<p>Mesa framework integration and social dynamics modeling.</p>
+<p><strong>Features</strong>: <code>shuffle_do()</code>, <code>self.p</code>, Mesa compatibility</p>
+<p><a href="https://github.com/SongshGeo/ABSESpy/tree/master/examples/schelling"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.22 4.97a.75.75 0 0 1 1.06 0l6.5 6.5a.75.75 0 0 1 0 1.06l-6.5 6.5a.749.749 0 0 1-1.275-.326.75.75 0 0 1 .215-.734L21.19 12l-5.97-5.97a.75.75 0 0 1 0-1.06m-6.44 0a.75.75 0 0 1 0 1.06L2.81 12l5.97 5.97a.749.749 0 0 1-.326 1.275.75.75 0 0 1-.734-.215l-6.5-6.5a.75.75 0 0 1 0-1.06l6.5-6.5a.75.75 0 0 1 1.06 0"></path></svg></span> Source</a> ·
+<a href="https://github.com/SongshGeo/ABSESpy/blob/master/examples/schelling/README.md"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M0 3.75A.75.75 0 0 1 .75 3h7.497c1.566 0 2.945.8 3.751 2.014A4.5 4.5 0 0 1 15.75 3h7.5a.75.75 0 0 1 .75.75v15.063a.75.75 0 0 1-.755.75l-7.682-.052a3 3 0 0 0-2.142.878l-.89.891a.75.75 0 0 1-1.061 0l-.902-.901a3 3 0 0 0-2.121-.879H.75a.75.75 0 0 1-.75-.75Zm12.75 15.232a4.5 4.5 0 0 1 2.823-.971l6.927.047V4.5h-6.75a3 3 0 0 0-3 3ZM11.247 7.497a3 3 0 0 0-3-2.997H1.5V18h6.947c1.018 0 2.006.346 2.803.98Z"></path></svg></span> README</a></p>
+</li>
+<li>
+<p><img alt="📈" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@15.1.0/assets/svg/1f4c8.svg" title=":chart_with_upwards_trend:"> <strong>Hotelling's Law</strong></p>
+<hr>
+<p>Decision-making framework and spatial competition.</p>
+<p><strong>Features</strong>: Links between Actors and PatchCells</p>
+<p><a href="../../tutorial/beginner/hotelling_tutorial/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.22 19.03a.75.75 0 0 1 0-1.06L18.19 13H3.75a.75.75 0 0 1 0-1.5h14.44l-4.97-4.97a.749.749 0 0 1 .326-1.275.75.75 0 0 1 .734.215l6.25 6.25a.75.75 0 0 1 0 1.06l-6.25 6.25a.75.75 0 0 1-1.06 0"></path></svg></span> Tutorial</a> ·
+<a href="https://github.com/SongshGeo/ABSESpy/tree/master/examples/hotelling_law"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.22 4.97a.75.75 0 0 1 1.06 0l6.5 6.5a.75.75 0 0 1 0 1.06l-6.5 6.5a.749.749 0 0 1-1.275-.326.75.75 0 0 1 .215-.734L21.19 12l-5.97-5.97a.75.75 0 0 1 0-1.06m-6.44 0a.75.75 0 0 1 0 1.06L2.81 12l5.97 5.97a.749.749 0 0 1-.326 1.275.75.75 0 0 1-.734-.215l-6.5-6.5a.75.75 0 0 1 0-1.06l6.5-6.5a.75.75 0 0 1 1.06 0"></path></svg></span> Source</a></p>
+</li>
+</ul>
+</div>
 <h3 id="framework-advantages">Framework Advantages<a class="headerlink" href="#framework-advantages" title="Permanent link">¶</a></h3>
 <p>These examples highlight how ABSESpy reduces development effort:</p>
 <ul>
@@ -2214,10 +2325,14 @@ Each includes complete source code, documentation, and tests.</p>
     
     
       
-      <script id="__config" type="application/json">{"base": "../..", "features": ["header.autohide", "navigation.tabs", "navigation.tracking", "toc.follow", "content.tooltips", "content.code.copy", "content.tooltips"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["header.autohide", "navigation.tabs", "navigation.tracking", "toc.follow", "content.tooltips", "content.code.copy", "content.tooltips"], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": {"model": "tag"}, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": [{"provider": "mike"}]}</script>
     
     
       <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+      
+        <script src="../../javascripts/mermaid-init.js"></script>
       
     
   

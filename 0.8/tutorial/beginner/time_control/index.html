@@ -90,6 +90,10 @@
       
     </div>
     
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
     
       
 
@@ -1240,7 +1244,7 @@
   
   
   <span class="md-ellipsis">
-    Advanced Level
+    Intermediate Level
     
   </span>
   
@@ -1251,7 +1255,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_5">
             <span class="md-nav__icon md-icon"></span>
-            Advanced Level
+            Intermediate Level
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1262,12 +1266,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/geodata/" class="md-nav__link">
+      <a href="../../intermediate/linking_actors/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Setup Nature Modules
+    Network of links between actors
     
   </span>
   
@@ -1312,7 +1316,7 @@
   
   
   <span class="md-ellipsis">
-    Competing Level
+    Advanced Level
     
   </span>
   
@@ -1323,7 +1327,102 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_6">
             <span class="md-nav__icon md-icon"></span>
-            Competing Level
+            Advanced Level
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/geodata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setup Nature Modules
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/viz_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Vizualized model
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7">
+        
+          
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Complete Examples
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7">
+            <span class="md-nav__icon md-icon"></span>
+            Complete Examples
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1339,7 +1438,7 @@
   
   
   <span class="md-ellipsis">
-    Fire Spread Simulation
+    Fire Spread Model - Complete Tutorial for Beginners
     
   </span>
   
@@ -1363,6 +1462,29 @@
   
   <span class="md-ellipsis">
     Network of links between actors
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../completing/random_seed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Random Seed to Control Experiment
     
   </span>
   
@@ -2652,7 +2774,7 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[1]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="CodeMirror cm-s-jupyter">
 <div class="zeroclipboard-container">
 <clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-1">
@@ -2670,14 +2792,14 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 <span class="c1"># create a tick mode model.</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">MainModel</span><span class="p">()</span>
 
-<span class="n">model</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">ticking_mode</span>
+<span class="n">model</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">is_tick_mode</span>
 </pre></div>
 <div class="clipboard-copy-txt" id="cell-1">from abses import MainModel
 
 # create a tick mode model.
 model = MainModel()
 
-model.time.ticking_mode</div>
+model.time.is_tick_mode</div>
 </div>
 </div>
 </div>
@@ -2686,22 +2808,10 @@ model.time.ticking_mode</div>
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[1]</span><span class="ansi-green-fg">, line 6</span>
-<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># create a tick mode model.</span>
-<span class="ansi-green-fg">      4</span> model = MainModel()
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">6</span> <span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">time</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">ticking_mode</span>
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/core/time_driver.py:133</span>, in <span class="ansi-cyan-fg">TimeDriver.__getattr__</span><span class="ansi-blue-fg">(self, name)</span>
-<span class="ansi-green-fg">    131</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(<span style="color: rgb(0,135,0)">self</span>, name: <span style="color: rgb(0,135,0)">str</span>):
-<span class="ansi-green-fg">    132</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">"""Redirect all undefined attributes to the datetime object."""</span>
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">133</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">getattr</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">dt</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">name</span><span class="ansi-yellow-bg">)</span>
-
-<span class="ansi-red-fg">AttributeError</span>: 'DateTime' object has no attribute 'ticking_mode'</pre>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[&nbsp;]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>'tick'</pre>
 </div>
 </div>
 </div>
@@ -2762,7 +2872,7 @@ model.time</div>
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
 <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[2]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
-<pre>&lt;TimeDriver: %2025-%23-%1 %21:%10:%4&gt;</pre>
+<pre>&lt;TimeDriver: tick[5]&gt;</pre>
 </div>
 </div>
 </div>
@@ -2812,7 +2922,7 @@ model.time</div>
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
 <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[3]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
-<pre>DateTime(2025, 10, 20, 21, 23, 12, 96303, tzinfo=Timezone('Etc/UTC'))</pre>
+<pre>DateTime(2025, 2, 16, 13, 49, 22, 415343)</pre>
 </div>
 </div>
 </div>
@@ -2846,7 +2956,7 @@ model.time</div>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[4]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="CodeMirror cm-s-jupyter">
 <div class="zeroclipboard-container">
 <clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-4">
@@ -2868,7 +2978,7 @@ model.time</div>
 <span class="n">model</span> <span class="o">=</span> <span class="n">MainModel</span><span class="p">(</span><span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">)</span>
 
 <span class="c1"># Another ticking model.</span>
-<span class="n">model</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">ticking_mode</span>
+<span class="n">model</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">is_tick_mode</span>
 </pre></div>
 <div class="clipboard-copy-txt" id="cell-4">parameters = {
     "time": {
@@ -2879,7 +2989,7 @@ model.time</div>
 model = MainModel(parameters=parameters)
 
 # Another ticking model.
-model.time.ticking_mode</div>
+model.time.is_tick_mode</div>
 </div>
 </div>
 </div>
@@ -2888,22 +2998,10 @@ model.time.ticking_mode</div>
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[4]</span><span class="ansi-green-fg">, line 10</span>
-<span class="ansi-green-fg">      7</span> model = MainModel(parameters=parameters)
-<span class="ansi-green-fg">      9</span> <span style="color: rgb(95,135,135)"># Another ticking model.</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">10</span> <span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">time</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">ticking_mode</span>
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/core/time_driver.py:133</span>, in <span class="ansi-cyan-fg">TimeDriver.__getattr__</span><span class="ansi-blue-fg">(self, name)</span>
-<span class="ansi-green-fg">    131</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(<span style="color: rgb(0,135,0)">self</span>, name: <span style="color: rgb(0,135,0)">str</span>):
-<span class="ansi-green-fg">    132</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">"""Redirect all undefined attributes to the datetime object."""</span>
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">133</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">getattr</span>(<span style="color: rgb(0,135,0)">self</span>.dt, name)
-
-<span class="ansi-red-fg">AttributeError</span>: 'DateTime' object has no attribute 'ticking_mode'</pre>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[&nbsp;]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>'duration'</pre>
 </div>
 </div>
 </div>
@@ -2963,7 +3061,7 @@ model.time</div>
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
 <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[5]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
-<pre>&lt;TimeDriver: %2031-%23-%1 %21:%10:%4&gt;</pre>
+<pre>&lt;TimeDriver: 2031-02-16 13:49:22&gt;</pre>
 </div>
 </div>
 </div>
@@ -3085,13 +3183,13 @@ model.time</div>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=0cb9b8c9-6cea-476d-8209-d43b5457e8af">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs" id="cell-id=0cb9b8c9-6cea-476d-8209-d43b5457e8af">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[6]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="CodeMirror cm-s-jupyter">
 <div class="zeroclipboard-container">
 <clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-6">
@@ -3107,37 +3205,20 @@ model.time</div>
 <div class="highlight-ipynb hl-python"><pre><span></span><span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"time"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"irregular"</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"start"</span><span class="p">:</span> <span class="s2">"2020-01-01"</span><span class="p">,</span> <span class="s2">"end"</span><span class="p">:</span> <span class="s2">"2022-01-01"</span><span class="p">}}</span>
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">MainModel</span><span class="p">(</span><span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">go</span><span class="p">(</span><span class="n">years</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">go</span><span class="p">(</span><span class="n">ticks</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">months</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">go</span><span class="p">(</span><span class="n">ticks</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">days</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+<span class="c1"># In irregular mode, use to() for datetime jumps and go(ticks=...) for tick-only steps</span>
+<span class="n">model</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">"2021-01-01"</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">go</span><span class="p">(</span><span class="n">ticks</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="s2">"2021-06-01"</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">go</span><span class="p">(</span><span class="n">ticks</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span> 
 </pre></div>
 <div class="clipboard-copy-txt" id="cell-6">parameters = {"time": {"irregular": True, "start": "2020-01-01", "end": "2022-01-01"}}
 
 model = MainModel(parameters=parameters)
-model.time.go(years=1)
-model.time.go(ticks=0, months=5)
-model.time.go(ticks=3, days=100)</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">TypeError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 4</span>
-<span class="ansi-green-fg">      1</span> parameters = {<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">time</span><span class="ansi-yellow-fg">"</span>: {<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">irregular</span><span class="ansi-yellow-fg">"</span>: <span class="ansi-bold" style="color: rgb(0,135,0)">True</span>, <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">start</span><span class="ansi-yellow-fg">"</span>: <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">2020-01-01</span><span class="ansi-yellow-fg">"</span>, <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">end</span><span class="ansi-yellow-fg">"</span>: <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">2022-01-01</span><span class="ansi-yellow-fg">"</span>}}
-<span class="ansi-green-fg">      3</span> model = MainModel(parameters=parameters)
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">4</span> <span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">time</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">go</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">years</span><span class="ansi-yellow-bg">=</span><span class="ansi-green-fg ansi-yellow-bg">1</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">      5</span> model.time.go(ticks=<span class="ansi-green-fg">0</span>, months=<span class="ansi-green-fg">5</span>)
-<span class="ansi-green-fg">      6</span> model.time.go(ticks=<span class="ansi-green-fg">3</span>, days=<span class="ansi-green-fg">100</span>)
-
-<span class="ansi-red-fg">TypeError</span>: TimeDriver.go() got an unexpected keyword argument 'years'</pre>
+# In irregular mode, use to() for datetime jumps and go(ticks=...) for tick-only steps
+model.time.to("2021-01-01")
+model.time.go(ticks=0)
+model.time.to("2021-06-01")
+model.time.go(ticks=3) </div>
 </div>
 </div>
 </div>
@@ -3149,7 +3230,7 @@ model.time.go(ticks=3, days=100)</div>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[7]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="CodeMirror cm-s-jupyter">
 <div class="zeroclipboard-container">
 <clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-7">
@@ -3163,12 +3244,14 @@ model.time.go(ticks=3, days=100)</div>
 </clipboard-copy>
 </div>
 <div class="highlight-ipynb hl-python"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">time</span>
-<span class="n">model</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">end_dt</span>
+<span class="c1"># end_dt removed in newer API; display end condition via parameters or dt</span>
+<span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">time</span><span class="p">,</span> <span class="s2">"end"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
 <span class="n">model</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">should_end</span>
 </pre></div>
 <div class="clipboard-copy-txt" id="cell-7">model.time
-model.time.end_dt
+# end_dt removed in newer API; display end condition via parameters or dt
+getattr(model.time, "end", None)
 
 model.time.should_end</div>
 </div>
@@ -3179,22 +3262,10 @@ model.time.should_end</div>
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[7]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> model.time
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> <span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">time</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">end_dt</span>
-<span class="ansi-green-fg">      4</span> model.time.should_end
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/core/time_driver.py:133</span>, in <span class="ansi-cyan-fg">TimeDriver.__getattr__</span><span class="ansi-blue-fg">(self, name)</span>
-<span class="ansi-green-fg">    131</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">__getattr__</span>(<span style="color: rgb(0,135,0)">self</span>, name: <span style="color: rgb(0,135,0)">str</span>):
-<span class="ansi-green-fg">    132</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">"""Redirect all undefined attributes to the datetime object."""</span>
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">133</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">getattr</span>(<span style="color: rgb(0,135,0)">self</span>.dt, name)
-
-<span class="ansi-red-fg">AttributeError</span>: 'DateTime' object has no attribute 'end_dt'</pre>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[&nbsp;]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>False</pre>
 </div>
 </div>
 </div>
@@ -3266,7 +3337,7 @@ data_1</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>/tmp/ipykernel_3125/3255829277.py:3: FutureWarning: 'Y' is deprecated and will be removed in a future version, please use 'YE' instead.
+<pre>/var/folders/s9/w7bh_d6x1h915wcvpbp117tm0000gn/T/ipykernel_95879/3255829277.py:3: FutureWarning: 'Y' is deprecated and will be removed in a future version, please use 'YE' instead.
   dt_index = pd.date_range("2000-01-01", "2020-01-01", freq="Y")
 </pre>
 </div>
@@ -3577,7 +3648,7 @@ model.human.dynamic_var("data_1")</div>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[13]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="CodeMirror cm-s-jupyter">
 <div class="zeroclipboard-container">
 <clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-13">
@@ -3590,14 +3661,14 @@ model.human.dynamic_var("data_1")</div>
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">abses.time</span><span class="w"> </span><span class="kn">import</span> <span class="n">time_condition</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">abses</span><span class="w"> </span><span class="kn">import</span> <span class="n">Actor</span>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">abses</span><span class="w"> </span><span class="kn">import</span> <span class="n">Actor</span>
 
 
 <span class="k">class</span><span class="w"> </span><span class="nc">TestActor</span><span class="p">(</span><span class="n">Actor</span><span class="p">):</span>
-    <span class="nd">@time_condition</span><span class="p">(</span><span class="n">condition</span><span class="o">=</span><span class="p">{</span><span class="s2">"month"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"day"</span><span class="p">:</span> <span class="mi">1</span><span class="p">},</span> <span class="n">when_run</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">happy_new_year</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s2">"Today is 1th, January, Happy new year!"</span><span class="p">)</span>
+        <span class="c1"># emulate time_condition: run only on Jan 1st</span>
+        <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">month</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">model</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">day</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"Today is 1th, January, Happy new year!"</span><span class="p">)</span>
 
 
 <span class="n">parameters</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"time"</span><span class="p">:</span> <span class="p">{</span><span class="s2">"start"</span><span class="p">:</span> <span class="s2">"1996-12-24"</span><span class="p">,</span> <span class="s2">"days"</span><span class="p">:</span> <span class="mi">1</span><span class="p">}}</span>
@@ -3611,14 +3682,14 @@ model.human.dynamic_var("data_1")</div>
     <span class="n">model</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">go</span><span class="p">()</span>
     <span class="n">agent</span><span class="o">.</span><span class="n">happy_new_year</span><span class="p">()</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-13">from abses.time import time_condition
-from abses import Actor
+<div class="clipboard-copy-txt" id="cell-13">from abses import Actor
 
 
 class TestActor(Actor):
-    @time_condition(condition={"month": 1, "day": 1}, when_run=True)
     def happy_new_year(self):
-        print("Today is 1th, January, Happy new year!")
+        # emulate time_condition: run only on Jan 1st
+        if model.time.dt.month == 1 and model.time.dt.day == 1:
+            print("Today is 1th, January, Happy new year!")
 
 
 parameters = {"time": {"start": "1996-12-24", "days": 1}}
@@ -3641,15 +3712,19 @@ for _ in range(10):
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">ModuleNotFoundError</span>                       Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[13]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">abses</span><span class="ansi-blue-intense-fg ansi-bold">.</span><span class="ansi-blue-intense-fg ansi-bold">time</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> time_condition
-<span class="ansi-green-fg">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">abses</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> Actor
-<span class="ansi-green-fg">      5</span> <span class="ansi-bold" style="color: rgb(0,135,0)">class</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">TestActor</span>(Actor):
-
-<span class="ansi-red-fg">ModuleNotFoundError</span>: No module named 'abses.time'</pre>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Time now is &lt;TimeDriver: 1996-12-24 00:00:00&gt;
+Time now is &lt;TimeDriver: 1996-12-25 00:00:00&gt;
+Time now is &lt;TimeDriver: 1996-12-26 00:00:00&gt;
+Time now is &lt;TimeDriver: 1996-12-27 00:00:00&gt;
+Time now is &lt;TimeDriver: 1996-12-28 00:00:00&gt;
+Time now is &lt;TimeDriver: 1996-12-29 00:00:00&gt;
+Time now is &lt;TimeDriver: 1996-12-30 00:00:00&gt;
+Time now is &lt;TimeDriver: 1996-12-31 00:00:00&gt;
+Today is 1th, January, Happy new year!
+Time now is &lt;TimeDriver: 1997-01-01 00:00:00&gt;
+Time now is &lt;TimeDriver: 1997-01-02 00:00:00&gt;
+</pre>
 </div>
 </div>
 </div>
@@ -3672,7 +3747,7 @@ for _ in range(10):
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[14]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="CodeMirror cm-s-jupyter">
 <div class="zeroclipboard-container">
 <clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-14">
@@ -3685,7 +3760,9 @@ for _ in range(10):
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TestActor_2</span><span class="p">(</span><span class="n">Actor</span><span class="p">):</span>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">abses.core.time_driver</span><span class="w"> </span><span class="kn">import</span> <span class="n">time_condition</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TestActor_2</span><span class="p">(</span><span class="n">Actor</span><span class="p">):</span>
     <span class="nd">@time_condition</span><span class="p">(</span><span class="n">condition</span><span class="o">=</span><span class="p">{</span><span class="s2">"month"</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">"day"</span><span class="p">:</span> <span class="mi">6</span><span class="p">},</span> <span class="n">when_run</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">working</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">"I have to work today 😭!"</span><span class="p">)</span>
@@ -3697,7 +3774,9 @@ for _ in range(10):
     <span class="n">model</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">go</span><span class="p">()</span>
     <span class="n">agent_2</span><span class="o">.</span><span class="n">working</span><span class="p">()</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-14">class TestActor_2(Actor):
+<div class="clipboard-copy-txt" id="cell-14">from abses.core.time_driver import time_condition
+
+class TestActor_2(Actor):
     @time_condition(condition={"month": 1, "day": 6}, when_run=False)
     def working(self):
         print("I have to work today 😭!")
@@ -3718,16 +3797,17 @@ for _ in range(5):
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[14]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">class</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">TestActor_2</span>(<span class="ansi-yellow-bg">Actor</span>):
-<span class="ansi-green-fg">      2</span>     <span style="color: rgb(175,0,255)">@time_condition</span>(condition={<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">month</span><span class="ansi-yellow-fg">"</span>: <span class="ansi-green-fg">1</span>, <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">day</span><span class="ansi-yellow-fg">"</span>: <span class="ansi-green-fg">6</span>}, when_run=<span class="ansi-bold" style="color: rgb(0,135,0)">False</span>)
-<span class="ansi-green-fg">      3</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">working</span>(<span style="color: rgb(0,135,0)">self</span>):
-<span class="ansi-green-fg">      4</span>         <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">I have to work today 😭!</span><span class="ansi-yellow-fg">"</span>)
-
-<span class="ansi-red-fg">NameError</span>: name 'Actor' is not defined</pre>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Time now is &lt;TimeDriver: 1997-01-03 00:00:00&gt;
+I have to work today 😭!
+Time now is &lt;TimeDriver: 1997-01-04 00:00:00&gt;
+I have to work today 😭!
+Time now is &lt;TimeDriver: 1997-01-05 00:00:00&gt;
+Time now is &lt;TimeDriver: 1997-01-06 00:00:00&gt;
+I have to work today 😭!
+Time now is &lt;TimeDriver: 1997-01-07 00:00:00&gt;
+I have to work today 😭!
+</pre>
 </div>
 </div>
 </div>
@@ -3817,10 +3897,14 @@ for _ in range(5):
     
     
       
-      <script id="__config" type="application/json">{"base": "../../..", "features": ["header.autohide", "navigation.tabs", "navigation.tracking", "toc.follow", "content.tooltips", "content.code.copy", "content.tooltips"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["header.autohide", "navigation.tabs", "navigation.tracking", "toc.follow", "content.tooltips", "content.code.copy", "content.tooltips"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": {"model": "tag"}, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": [{"provider": "mike"}]}</script>
     
     
       <script src="../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+      
+        <script src="../../../javascripts/mermaid-init.js"></script>
       
     
   
