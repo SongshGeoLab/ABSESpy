@@ -9,19 +9,19 @@ exp:
 
 reports:
   final:
-    burned: "burned_rate"
+    burned_rate: "burned_rate"
 
 
 model:
-  density: 0.4
+  density: 0.7
   shape:
     - 100
     - 100
 
 time:
-  end: 25
+  end: 100
 
 log:
   name: fire_spread
   level: INFO
-  console: true
+  console: false

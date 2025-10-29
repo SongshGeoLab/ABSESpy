@@ -17,10 +17,12 @@ from typing import (
     Any,
     Callable,
     Optional,
+    Sequence,
     cast,
 )
 
 import mesa_geo as mg
+import numpy as np
 from shapely import Point
 from shapely.geometry.base import BaseGeometry
 
@@ -378,6 +380,17 @@ class Actor(mg.GeoAgent, _LinkNodeActor, BaseModelElement, ActorProtocol):
         """
         self.die()
 
+    def move_to(self, to: Any = "random", layer: Any = None) -> None:
+        """Move actor to a location (wrapper for move.to).
+
+        This method allows shuffle_do to be used with move operations.
+
+        Args:
+            to: Position to move to. Can be a PatchCell, Coordinate tuple, or "random".
+            layer: Layer to move to. If None, uses actor's current layer if available.
+        """
+        self.move.to(to=to, layer=layer)
+
     @alive_required
     def die(self) -> None:
         """Kill the actor and remove it from the simulation.
@@ -462,3 +475,70 @@ class Actor(mg.GeoAgent, _LinkNodeActor, BaseModelElement, ActorProtocol):
             ```
         """
         ...
+
+    def evaluate(
+        self,
+        candidates: Any,
+        scorer: Callable[["Actor", Any], Any],
+        *,
+        dtype: Any | None = float,
+        how: Optional[str] = None,
+        preserve_position: bool = False,
+        preserve_attrs: Optional[Sequence[str]] = None,
+    ) -> Any:
+        """Evaluate a scorer across candidates and optionally choose the best.
+
+        Workflow:
+        1) Normalize candidates to a sequence (ActorsList stays as-is)
+        2) For each candidate: score with optional rollback of position/attrs
+        3) Return scores (ndarray) or the best candidate per 'how' ('max'/'min')
+        """
+        from abses.agents.sequences import ActorsList  # local import
+
+        # 1) Normalize candidates to a single representation
+        is_actors_list = isinstance(candidates, ActorsList)
+        seq = (
+            candidates
+            if is_actors_list
+            else (
+                list(candidates)
+                if not isinstance(candidates, np.ndarray)
+                else candidates
+            )
+        )
+
+        # 2) Define scoring with rollback
+        def _score_with_rollback(candidate: Any) -> Any:
+            original_cell = self.at if preserve_position else None
+            original_attrs: dict[str, Any] = {}
+            if preserve_attrs:
+                for attr in preserve_attrs:
+                    original_attrs[attr] = getattr(self, attr)
+            try:
+                return scorer(self, candidate)
+            finally:
+                # restore attributes
+                for attr, val in original_attrs.items():
+                    setattr(self, attr, val)
+                # restore position
+                if (
+                    preserve_position
+                    and original_cell is not None
+                    and self.at is not original_cell
+                ):
+                    self.move.to(original_cell)
+
+        # 3) Compute scores via a single code path
+        if is_actors_list:
+            scores = np.asarray(
+                seq.apply(lambda c: _score_with_rollback(c)), dtype=dtype
+            )
+        else:
+            scores = np.asarray([_score_with_rollback(c) for c in seq], dtype=dtype)
+
+        if how is None:
+            return scores
+        if len(scores) == 0:
+            return None
+        idx = int(np.argmax(scores)) if how == "max" else int(np.argmin(scores))
+        return seq[idx] if not is_actors_list else seq[idx]

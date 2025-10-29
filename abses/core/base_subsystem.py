@@ -143,20 +143,25 @@ class BaseSubSystem(BaseModule, SubSystemProtocol, ABC):
         return f"<{self.name} ({str(self.major_layer)}): {flag}>"
 
     def __getattr__(self, name: str) -> Any:
-        """Delegate attribute access to major_layer when not found.
+        """Delegate attribute access to modules or major_layer when not found.
 
         Args:
             name: Name of the attribute being accessed.
 
         Returns:
-            Value of the attribute from major_layer.
+            Value of the attribute from modules dict or major_layer.
 
         Raises:
-            AttributeError: If no major layer is set or attribute not found.
+            AttributeError: If attribute not found in modules or major layer.
         """
         try:
             return super().__getattribute__(name)
         except AttributeError as e:
+            # First, check if it's a module name
+            if name in self._modules:
+                return self._modules[name]
+
+            # Then, try to delegate to major_layer if it exists
             if self._major_layer is None:
                 raise AttributeError(
                     f"Attribute '{name}' not found in {self.__class__.__name__},"
@@ -166,7 +171,7 @@ class BaseSubSystem(BaseModule, SubSystemProtocol, ABC):
                 return getattr(self._major_layer, name)
             except AttributeError as e2:
                 raise AttributeError(
-                    f"Attribute '{name}' not found in either BaseNature or major layer ({self._major_layer.name})"
+                    f"Attribute '{name}' not found in either {self.__class__.__name__} or major layer ({self._major_layer.name})"
                 ) from e2
 
     @property

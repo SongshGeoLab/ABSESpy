@@ -108,10 +108,22 @@ jobs:
             poetry run pip install mkdocs-material
           fi
           poetry install
+      # ======================== Convert Notebooks ========================
+      - name: Convert notebooks to markdown
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.dry_run != 'true' }}
+        run: |
+          chmod +x scripts/convert_notebooks.sh
+          if [ "${{ github.event_name == 'workflow_dispatch' && inputs.use_uv }}" = "true" ]; then
+            ./scripts/convert_notebooks.sh
+          else
+            poetry run jupyter nbconvert --to markdown $(find docs/tutorial -name "*.ipynb" -type f ! -path "*/.ipynb_checkpoints/*") --output-dir docs/tutorial
+          fi
       # ======================== Dry-run build ========================
       - name: Build docs only (dry-run)
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run == 'true' }}
         run: |
+          chmod +x scripts/convert_notebooks.sh
+          ./scripts/convert_notebooks.sh
           if [ "${{ github.event_name == 'workflow_dispatch' && inputs.use_uv }}" = "true" ]; then
             uv run mkdocs build --strict
           else

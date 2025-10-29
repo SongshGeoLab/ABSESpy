@@ -1,0 +1,32 @@
+defaults:
+  - default
+  - _self_
+
+exp:
+  name: wolf_sheep
+  outdir: out
+  repeats: 11
+
+reports:
+  model:
+    n_sheep: "n_sheep"
+    n_wolves: "n_wolves"
+    population_ratio: "population_ratio"
+    grass_coverage: "grass_coverage"
+
+model:
+  shape:
+    - 30
+    - 30
+  n_sheep: 50
+  n_wolves: 10
+  rep_rate: 0.01
+
+time:
+  end: 200
+
+log:
+  name: wolf_sheep
+  level: INFO
+  console: false
+

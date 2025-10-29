@@ -9,7 +9,7 @@ line_length = 79
 
 [project]
 name = "abses"
-version = "0.8.5"
+version = "0.7.5"
 description = "ABSESpy makes it easier to build artificial Social-ecological systems with real GeoSpatial datasets and fully incorporate human behaviour."
 authors = [{name = "Shuang Song", email = "songshgeo@gmail.com"}]
 license = {text = "Apache 2.0 License"}
@@ -42,6 +42,15 @@ dependencies = [
     "urllib3",
     "icons",
     "solara",
+    "mkdocs>=1.6.1",
+    # Note: mkdocs-material-insiders requires authentication and MUST NOT be declared here
+    # to avoid build backend variable expansion errors (e.g. Unknown context field).
+    # Install locally via environment variable before building docs, e.g.:
+    #   export MKDOCS_INSIDER=your_token
+    #   uv pip install "git+https://${MKDOCS_INSIDER}@github.com/squidfunk/mkdocs-material-insiders.git"
+    "mkdocs-jupyter>=0.25.1",
+    "mkdocstrings>=0.30.1",
+    "mkdocs-static-i18n>=1.3.0",
 ]
 
 [project.urls]
@@ -98,10 +107,15 @@ dev = [
     "mkdocs-simple-hooks>=0.1.5",
     "pymdown-extensions>=10.7",
     "mkdocs-static-i18n>=1.3.0",
+    "nbmake>=1.5.5",
+    "nbconvert>=7.16.6",
 ]
 
 [tool.uv]
 package = true
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [build-system]
 requires = ["hatchling"]

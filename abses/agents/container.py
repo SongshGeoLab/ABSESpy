@@ -74,8 +74,8 @@ class _AgentsContainer:
 
     def __getattr__(self, name: str) -> Any:
         """Get an attribute from the container."""
-        if not name.startswith("_") and hasattr(self._agents, name):
-            return getattr(self._agents, name)
+        if not name.startswith("_") and hasattr(self.lst, name):
+            return getattr(self.lst, name)
         raise AttributeError(
             f"'{self.__class__.__name__}' object has no attribute '{name}'"
         )
@@ -175,6 +175,11 @@ class _AgentsContainer:
             raise ABSESpyError(f"{self} is full.")
         if self.model.agents.is_full:
             raise ABSESpyError(f"{self.model.agents} is full.")
+
+    @property
+    def lst(self) -> ActorsList[ActorProtocol]:
+        """Get the list of agents in the container."""
+        return ActorsList(model=self.model, objs=self._agents)
 
     def add(self, agent: ActorProtocol) -> None:
         """Add one agent to the container.

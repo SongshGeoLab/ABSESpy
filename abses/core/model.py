@@ -30,7 +30,7 @@ from omegaconf import DictConfig
 from abses import __version__
 from abses.agents.container import _ModelAgentsContainer
 from abses.core.base import BaseStateManager
-from abses.core.primitives import DEFAULT_INIT_ORDER, DEFAULT_RUN_ORDER
+from abses.core.primitives import DEFAULT_INIT_ORDER, DEFAULT_RUN_ORDER, State
 from abses.core.protocols import (
     ActorsListProtocol,
     ExperimentProtocol,
@@ -122,7 +122,12 @@ class MainModel(Model, BaseStateManager):
         self.datacollector: ABSESpyDataCollector = ABSESpyDataCollector(
             parameters.get("reports", {})
         )
+
+        # Call initialize on model first
+        self.initialize()
+        # Then initialize subsystems
         self.do_each("_initialize", order=DEFAULT_INIT_ORDER)
+        self.set_state(State.INIT)
 
         # Setup logging if configured
         log_cfg = self.settings.get("log", {})
@@ -270,11 +275,19 @@ class MainModel(Model, BaseStateManager):
             return
 
         # Parse logging configuration
+        # Only setup logging if console or file logging is explicitly enabled
         name = str(log_cfg.get("name", "model")).replace(".log", "")
         level = log_cfg.get("level", "INFO")
         rotation = log_cfg.get("rotation", None)  # e.g., "1 day"
         retention = log_cfg.get("retention", None)  # e.g., "10 days"
-        console = log_cfg.get("console", True)
+
+        # Default: no output unless explicitly configured
+        console = log_cfg.get("console", False)
+        file_logging = self.outpath is not None
+
+        # Only setup logger if at least one output is enabled
+        if not (console or file_logging):
+            return
 
         # Setup integrated logging for ABSESpy and Mesa
         setup_model_logger(

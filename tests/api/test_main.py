@@ -23,7 +23,7 @@ class TestMain:
         """测试模型的默认属性"""
         # params 里 1 被 testing.yaml 第一层的 3 覆盖
         # 这个应该出现在
-        assert repr(model) == "<[v0] MainModel(NEW)>"
+        assert repr(model) == "<[v0] MainModel(INIT)>"
         assert isinstance(model.settings, DictConfig)
         assert model.params == main_config.model
         assert model.time.strftime("%Y") == "2000"

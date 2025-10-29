@@ -326,10 +326,12 @@ def search_unique_key(
     raise ValueError(f"Invalid value for when_multiple: {when_multiple}")
 
 
-def get_only_item(agents: Sequence[Any]) -> Any:
+def get_only_item(agents: Sequence[Any], default: Optional[Any] = ...) -> Any:
     """Select one agent"""
     if len(agents) == 0:
-        raise ValueError("No agent found.")
+        if default is ...:
+            raise ValueError("No agent found.")
+        return default
     if len(agents) == 1:
         return agents[0]
     raise ValueError("More than one agent.")

@@ -47,6 +47,7 @@ from abses.utils.func import get_buffer, set_null_values
 from abses.utils.random import ListRandom
 
 if TYPE_CHECKING:
+    from abses.core.protocols import ActorProtocol
     from abses.core.types import (
         CellFilter,
         MainModelProtocol,
@@ -494,6 +495,70 @@ class PatchModule(BaseModule, RasterLayer):
         """Randomly"""
         return self.cells_lst.random
 
+    def __getitem__(self, key: tuple) -> ActorsList[PatchCell]:
+        """Access cells using array indexing, returns ActorsList.
+
+        Enables numpy-style indexing to directly obtain ActorsList instead of raw arrays.
+
+        Args:
+            key: Index or slice tuple, e.g., '[:, 0]', '[1:3, 2:4]', etc.
+
+        Returns:
+            ActorsList containing the selected cells.
+
+        Examples:
+            >>> grid[:, 0]  # Get first column as ActorsList
+            >>> grid[1:3, 2:4]  # Get a subregion as ActorsList
+            >>> grid[0, 0]  # Get single cell as ActorsList
+        """
+        # Use array_cells indexing and convert result to ActorsList
+        selected_cells = self.array_cells[key]
+
+        # Convert to flat array for ActorsList
+        if isinstance(selected_cells, np.ndarray):
+            if selected_cells.ndim == 0:
+                # Scalar result (single cell)
+                selected_cells = np.array([selected_cells.item()])
+            elif selected_cells.ndim > 1:
+                # Multi-dimensional array - flatten it
+                selected_cells = selected_cells.flatten()
+        else:
+            # Handle non-array result
+            selected_cells = np.array([selected_cells])
+
+        return ActorsList(self.model, selected_cells)
+
+    def __getattr__(self, name: str) -> Any:
+        """Enable dynamic access to raster attributes with plotting capability.
+
+        When accessing a raster attribute (decorated with @raster_attribute),
+        returns a PlotableAttribute wrapper that provides a .plot() method
+        for convenient visualization.
+
+        Args:
+            name: Name of the attribute to access.
+
+        Returns:
+            PlotableAttribute if the attribute is a raster property,
+            otherwise raises AttributeError.
+
+        Examples:
+            >>> # Access and plot a raster attribute
+            >>> grid.state.plot(cmap={0: 'black', 1: 'green'})
+            >>> # Save plot to file
+            >>> grid.elevation.plot(save_path='elevation.png', show=False)
+        """
+        # Check if it's a raster attribute
+        if name in self.cell_properties:
+            from abses.viz import PlotableAttribute
+
+            return PlotableAttribute(module=self, attr_name=name)
+
+        # Raise AttributeError if not found
+        raise AttributeError(
+            f"'{self.__class__.__name__}' object has no attribute '{name}'"
+        )
+
     def _select_by_geometry(
         self,
         geometry: Geometry,
@@ -517,7 +582,7 @@ class PatchModule(BaseModule, RasterLayer):
 
     def select(
         self,
-        where: Optional[CellFilter] = None,
+        where: Optional[CellFilter | dict[str, Any]] = None,
     ) -> ActorsList[PatchCell]:
         """Selects cells based on specified criteria.
 
@@ -527,6 +592,7 @@ class PatchModule(BaseModule, RasterLayer):
                 - str: Select by attribute name
                 - numpy.ndarray: Boolean mask array
                 - Shapely.Geometry: Select cells intersecting geometry
+                - dict: Select by attribute-value pairs, e.g., {"state": 3}
 
         Returns:
             ActorsList containing selected cells.
@@ -539,7 +605,15 @@ class PatchModule(BaseModule, RasterLayer):
             >>> high_cells = module.select(module.get_raster("elevation") > 100)
             >>> # Select cells within polygon
             >>> cells = module.select(polygon)
+            >>> # Select cells by attribute dict
+            >>> burned = module.select({"state": 3})
         """
+        # Handle dictionary filters (common use case)
+        if isinstance(where, dict):
+            # Delegate to cells_lst.select which supports dict filters
+            return self.cells_lst.select(where)
+
+        # Handle other filter types
         if isinstance(where, Geometry):
             mask_ = self._select_by_geometry(geometry=where)
         elif isinstance(where, (np.ndarray, str, xr.DataArray)) or where is None:
@@ -770,3 +844,155 @@ class PatchModule(BaseModule, RasterLayer):
 
         row, col = pos
         return row < 0 or row >= self.height or col < 0 or col >= self.width
+
+    def count_agents(
+        self,
+        agent_type: Type[ActorProtocol] | None = None,
+        *,
+        dtype: Literal["numpy", "xarray"] = "xarray",
+    ) -> NDArray[np.int_] | xr.DataArray:
+        """
+        Count the number of agents of a specific type on each cell across the entire module.
+
+        Args:
+            agent_type: The agent class to count (e.g., Sheep, Wolf).
+            dtype: Return type. Options:
+                - "numpy": Returns 2D numpy array
+                - "xarray": Returns xarray DataArray with spatial coordinates (default)
+
+        Returns:
+            Agent counts as numpy array or xarray DataArray with shape (height, width).
+
+        Examples:
+            >>> # Get as xarray with spatial coordinates (default)
+            >>> sheep_map = grassland.count_agents(Sheep)
+            >>> # Now has .rio methods and coordinates
+            >>> sheep_map.rio.crs
+            >>> sheep_map.plot()
+            >>>
+            >>> # Get as numpy array
+            >>> sheep_map = grassland.count_agents(Sheep, dtype="numpy")
+        """
+        data = self.apply(lambda cell: cell.agents.has(agent_type))
+
+        if dtype == "xarray":
+            # Convert to xarray with spatial coordinates
+            xda = xr.DataArray(
+                data=data,
+                coords=self.coords,
+                name=agent_type.__name__.lower() + "_count"
+                if agent_type
+                else "agent_count",
+            )
+            # Add spatial reference information
+            xda = xda.rio.write_crs(self.crs)
+            return xda
+
+        return data
+
+    def apply_agents(
+        self,
+        func: Optional[Callable[[Actor], Any]] = None,
+        *,
+        attr: Optional[str] = None,
+        default: Any = np.nan,
+        aggregator: Optional[Callable[[ActorsList[Actor]], Any]] = None,
+        dtype: Literal["numpy", "xarray"] = "numpy",
+        name: Optional[str] = None,
+    ) -> np.ndarray | xr.DataArray:
+        """Apply a function or attribute access to the agent(s) on each cell.
+
+        This method vectorizes over the raster cells and, for each cell, operates on
+        its linked agents. It supports three usage modes:
+
+        1) Single-agent access (capacity=1 typical):
+           - Provide ``attr`` (str) to fetch an attribute from the only agent.
+           - Or provide ``func(agent)`` to compute a value from the only agent.
+           If the cell is empty, returns ``default``.
+
+        2) Aggregation over multiple agents per cell:
+           - Provide ``aggregator(actors: ActorsList)`` to reduce the cell's
+             agents into a single value (e.g., len(actors), sum(...)).
+
+        3) xarray output:
+           - Set ``dtype='xarray'`` to get an ``xr.DataArray`` with spatial coords
+             and CRS info baked in.
+
+        Args:
+            func: Function to apply to a single agent on each cell.
+            attr: Attribute name to fetch from a single agent on each cell.
+            default: Value to use when a cell has no agent (or attribute missing).
+            aggregator: Function that reduces ``ActorsList`` of a cell to one value.
+            dtype: Output type. ``'numpy'`` or ``'xarray'``.
+            name: Optional name for the xarray DataArray.
+
+        Returns:
+            A 2D numpy array or xarray DataArray of computed values per cell.
+
+        Notes:
+            - If both ``aggregator`` and (``func``/``attr``) are provided, ``aggregator``
+              takes precedence and receives the entire cell ``ActorsList``.
+            - When using ``attr`` or ``func`` and multiple agents exist on a cell,
+              the first agent is used via ``actors.item(default=None)``.
+        """
+
+        if aggregator is None and func is None and attr is None:
+            raise ValueError("One of 'aggregator', 'func', or 'attr' must be provided.")
+
+        def _to_float(val: Any) -> float:
+            """Cast to float, returning NaN on failure."""
+            try:
+                return float(val)
+            except Exception:
+                return float("nan")
+
+        def _cell_compute(cell: PatchCell) -> Any:
+            # Aggregation path over all agents on the cell
+            if aggregator is not None:
+                actors_list = ActorsList(self.model, cell.agents)
+                if len(actors_list) == 0:
+                    return default
+                try:
+                    return _to_float(aggregator(actors_list))
+                except Exception:
+                    logger.warning(
+                        "apply_agents aggregator raised; filling NaN.",
+                    )
+                    return float("nan")
+
+            # Single-agent path (use first/only agent if present)
+            agent = cell.agents.item(default=None)
+            if agent is None:
+                return default
+            if attr is not None:
+                try:
+                    return _to_float(getattr(agent, attr, default))
+                except Exception:
+                    logger.warning(
+                        "apply_agents attr access raised; filling NaN. attr=%r",
+                        attr,
+                    )
+                    return float("nan")
+            # func provided
+            if func is None:
+                return default
+            try:
+                return _to_float(func(agent))
+            except Exception:
+                logger.warning(
+                    "apply_agents func raised; filling NaN. func=%r",
+                    getattr(func, "__name__", repr(func)),
+                )
+                return float("nan")
+
+        # compute and force float dtype for NaN safety
+        data = self.apply(_cell_compute).astype(float)
+
+        if dtype == "xarray":
+            xda = xr.DataArray(
+                data=data, coords=self.coords, name=name or "applied_agents"
+            )
+            xda = xda.rio.write_crs(self.crs)
+            return xda
+
+        return data
