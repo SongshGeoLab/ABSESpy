@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.9.0](https://github.com/SongshGeoLab/ABSESpy/compare/v0.8.5...v0.9.0) (2025-10-29)
+
+
+### Features
+
+* **actor, patch:** :sparkles: Add move_to method in Actor and count_agents method in PatchModule ([11e63b2](https://github.com/SongshGeoLab/ABSESpy/commit/11e63b2a95fc72232a5ab96d840bf9ad66743b30))
+* **actor:** :sparkles: Add evaluate method to Actor for scoring candidates with rollback functionality ([bad83ac](https://github.com/SongshGeoLab/ABSESpy/commit/bad83ac22e769cafa092584414a83a603dda3c9b))
+* **agents, space:** :sparkles: Enhance agent and cell functionality with new properties and methods ([cacf3d0](https://github.com/SongshGeoLab/ABSESpy/commit/cacf3d04957ddf54d949277c86e3bc80af415dad))
+* **core:** Protocol-based architecture refactoring ([12534d8](https://github.com/SongshGeoLab/ABSESpy/commit/12534d8c93517336c57f0d86a57aaab366fb6af7))
+* **examples:** :sparkles: Remove outdated agent and analysis files, add configuration and quick start notebook ([d1fed62](https://github.com/SongshGeoLab/ABSESpy/commit/d1fed623172cdeb8cddcfe3a560f0be94c340c68))
+* **examples:** :white_check_mark: Introduce configuration file and enhance model dynamics ([1fa3e0c](https://github.com/SongshGeoLab/ABSESpy/commit/1fa3e0cc879c4c7e01f19b4040160e410006105e))
+* **patch:** :sparkles: Implement __getitem__ method for PatchModule with numpy-style indexing ([1c66edb](https://github.com/SongshGeoLab/ABSESpy/commit/1c66edb3e833d145295e0ae139e54d89340e2c18))
+
+
+### Bug Fixes
+
+* **sequences:** Fix attribute access in better() method ([2f1089f](https://github.com/SongshGeoLab/ABSESpy/commit/2f1089f40267cb2b7b5967f2d7519fec6fff3a15))
+
+
+### Documentation
+
+* **docs:** :memo: Enhance UML documentation and integrate Mermaid diagrams ([62a9cdd](https://github.com/SongshGeoLab/ABSESpy/commit/62a9cdd62715c6c72439def968a1a8a896b16aae))
+* **tutorials, docs:** :memo: Expand tutorial content and enhance documentation structure ([316c972](https://github.com/SongshGeoLab/ABSESpy/commit/316c97203b21c94c0a797bb9199d2a8ca4818c60))
+
 ## [0.7.5](https://github.com/SongshGeoLab/ABSESpy/compare/v0.7.4...v0.7.5) (2025-02-16)
 
 
