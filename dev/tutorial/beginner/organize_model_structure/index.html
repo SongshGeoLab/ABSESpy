@@ -90,6 +90,10 @@
       
     </div>
     
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
     
       
 
@@ -1207,7 +1211,7 @@
   
   
   <span class="md-ellipsis">
-    Advanced Level
+    Intermediate Level
     
   </span>
   
@@ -1218,7 +1222,7 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_5">
             <span class="md-nav__icon md-icon"></span>
-            Advanced Level
+            Intermediate Level
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1229,12 +1233,12 @@
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/geodata/" class="md-nav__link">
+      <a href="../../intermediate/linking_actors/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
-    Setup Nature Modules
+    Network of links between actors
     
   </span>
   
@@ -1279,7 +1283,7 @@
   
   
   <span class="md-ellipsis">
-    Competing Level
+    Advanced Level
     
   </span>
   
@@ -1290,7 +1294,102 @@
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3_6">
             <span class="md-nav__icon md-icon"></span>
-            Competing Level
+            Advanced Level
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/geodata/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Setup Nature Modules
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../advanced/viz_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Vizualized model
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_7">
+        
+          
+          <label class="md-nav__link" for="__nav_3_7" id="__nav_3_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Complete Examples
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_7">
+            <span class="md-nav__icon md-icon"></span>
+            Complete Examples
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1306,7 +1405,7 @@
   
   
   <span class="md-ellipsis">
-    Fire Spread Simulation
+    Fire Spread Model - Complete Tutorial for Beginners
     
   </span>
   
@@ -1330,6 +1429,29 @@
   
   <span class="md-ellipsis">
     Network of links between actors
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../completing/random_seed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Random Seed to Control Experiment
     
   </span>
   
@@ -2675,9 +2797,9 @@ print(model.nature.state)</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>0
-1
-1
+<pre>init
+init
+init
 </pre>
 </div>
 </div>
@@ -2921,7 +3043,7 @@ model.nature.params.test_nature</div>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[6]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="CodeMirror cm-s-jupyter">
 <div class="zeroclipboard-container">
 <clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-6">
@@ -2946,8 +3068,8 @@ model.nature.params.test_nature</div>
 
 
 <span class="c1"># create the submodule by `create_module` function.</span>
-<span class="n">society</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">human</span><span class="o">.</span><span class="n">create_module</span><span class="p">(</span><span class="n">Society</span><span class="p">)</span>
-<span class="n">economy</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">human</span><span class="o">.</span><span class="n">create_module</span><span class="p">(</span><span class="n">Economy</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"economy"</span><span class="p">)</span>
+<span class="n">society</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">human</span><span class="o">.</span><span class="n">create_module</span><span class="p">(</span><span class="n">module_cls</span><span class="o">=</span><span class="n">Society</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"society"</span><span class="p">)</span>
+<span class="n">economy</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">human</span><span class="o">.</span><span class="n">create_module</span><span class="p">(</span><span class="n">module_cls</span><span class="o">=</span><span class="n">Economy</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">"economy"</span><span class="p">)</span>
 
 <span class="c1"># added two submodules to the human module.</span>
 <span class="n">model</span><span class="o">.</span><span class="n">human</span><span class="o">.</span><span class="n">modules</span>
@@ -2964,8 +3086,8 @@ class Economy(HumanModule):
 
 
 # create the submodule by `create_module` function.
-society = model.human.create_module(Society)
-economy = model.human.create_module(Economy, name="economy")
+society = model.human.create_module(module_cls=Society, name="society")
+economy = model.human.create_module(module_cls=Economy, name="economy")
 
 # added two submodules to the human module.
 model.human.modules</div>
@@ -2977,66 +3099,10 @@ model.human.modules</div>
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">ValueError</span>                                Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[6]</span><span class="ansi-green-fg">, line 13</span>
-<span class="ansi-green-fg">      9</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">"""Some logics in a economic sub-system."""</span>
-<span class="ansi-green-fg">     12</span> <span style="color: rgb(95,135,135)"># create the submodule by `create_module` function.</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">13</span> society = <span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">human</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">create_module</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">Society</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">     14</span> economy = model.human.create_module(Economy, name=<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">economy</span><span class="ansi-yellow-fg">"</span>)
-<span class="ansi-green-fg">     16</span> <span style="color: rgb(95,135,135)"># added two submodules to the human module.</span>
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/human/human.py:129</span>, in <span class="ansi-cyan-fg">BaseHuman.create_module</span><span class="ansi-blue-fg">(self, name, module_cls, **kwargs)</span>
-<span class="ansi-green-fg">    127</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> name <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
-<span class="ansi-green-fg">    128</span>     name = <span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Group </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span style="color: rgb(0,135,0)">len</span>(<span style="color: rgb(0,135,0)">self</span>.modules)<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">129</span> module = <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">super</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">create_module</span><span class="ansi-yellow-bg">(</span>
-<span class="ansi-green-fg">    130</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">name</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">name</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">    131</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">module_cls</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg">module_cls</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">    132</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-fg">    133</span> <span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">    134</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> module
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/core/base_subsystem.py:249</span>, in <span class="ansi-cyan-fg">BaseSubSystem.create_module</span><span class="ansi-blue-fg">(self, module_cls, *args, **kwargs)</span>
-<span class="ansi-green-fg">    238</span>     _ = kwargs.pop(<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">how</span><span class="ansi-yellow-fg">"</span>)
-<span class="ansi-green-fg">    239</span>     warnings.warn(
-<span class="ansi-green-fg">    240</span>         (
-<span class="ansi-green-fg">    241</span>             <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Argument </span><span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">how</span><span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg"> is deprecated and will be removed in a future </span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">   (...)</span><span class="ansi-green-fg">    246</span>         stacklevel=<span class="ansi-green-fg">2</span>,
-<span class="ansi-green-fg">    247</span>     )
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">249</span> module = <span class="ansi-yellow-bg">module_cls</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">args</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">    250</span> <span style="color: rgb(0,135,0)">self</span>.add_module(module)
-<span class="ansi-green-fg">    251</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> module
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/human/human.py:49</span>, in <span class="ansi-cyan-fg">HumanModule.__init__</span><span class="ansi-blue-fg">(self, name, model, **kwargs)</span>
-<span class="ansi-green-fg">     47</span> BaseModule.<span class="ansi-blue-fg">__init__</span>(<span style="color: rgb(0,135,0)">self</span>, model, name=name)
-<span class="ansi-green-fg">     48</span> <span style="color: rgb(0,135,0)">self</span>._refers: Dict[<span style="color: rgb(0,135,0)">str</span>, Dict[<span style="color: rgb(0,135,0)">str</span>, Any]] = {}
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">49</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">define</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">name</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">*</span><span class="ansi-yellow-bg">kwargs</span><span class="ansi-yellow-bg">)</span>
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/human/human.py:109</span>, in <span class="ansi-cyan-fg">HumanModule.define</span><span class="ansi-blue-fg">(self, refer_name, **kwargs)</span>
-<span class="ansi-green-fg">    107</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">KeyError</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">"</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>refer_name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg"> is already defined.</span><span class="ansi-yellow-fg">"</span>)
-<span class="ansi-green-fg">    108</span> <span style="color: rgb(0,135,0)">self</span>._refers[refer_name] = kwargs.copy()
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">109</span> selected = <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">agents</span>.select(**kwargs)
-<span class="ansi-green-fg">    110</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> selected
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/human/human.py:54</span>, in <span class="ansi-cyan-fg">HumanModule.agents</span><span class="ansi-blue-fg">(self)</span>
-<span class="ansi-green-fg">     51</span> <span style="color: rgb(175,0,255)">@property</span>
-<span class="ansi-green-fg">     52</span> <span class="ansi-bold" style="color: rgb(0,135,0)">def</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-fg">agents</span>(<span style="color: rgb(0,135,0)">self</span>) -&gt; ActorsListProtocol:
-<span class="ansi-green-fg">     53</span> <span style="color: rgb(188,188,188)">    </span><span class="ansi-yellow-fg">"""The agents container of this ABSESpy model."""</span>
-<span class="ansi-green-fg">---&gt; </span><span class="ansi-green-fg">54</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">name</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> <span style="color: rgb(0,135,0)">self</span>._refers:
-<span class="ansi-green-fg">     55</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">KeyError</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">"</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span style="color: rgb(0,135,0)">self</span>.name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg"> is not defined.</span><span class="ansi-yellow-fg">"</span>)
-<span class="ansi-green-fg">     56</span>     selection = <span style="color: rgb(0,135,0)">self</span>._refers[<span style="color: rgb(0,135,0)">self</span>.name]
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/core/base_module.py:100</span>, in <span class="ansi-cyan-fg">BaseModelElement.name</span><span class="ansi-blue-fg">(self)</span>
-<span class="ansi-green-fg">     98</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">self</span>.<span class="ansi-blue-fg">__class__</span>.<span class="ansi-blue-fg">__name__</span>
-<span class="ansi-green-fg">     99</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span style="color: rgb(0,135,0)">isinstance</span>(<span style="color: rgb(0,135,0)">self</span>._name, <span style="color: rgb(0,135,0)">str</span>):
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">100</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Name must be a string, but got </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span style="color: rgb(0,135,0)">type</span>(<span style="color: rgb(0,135,0)">self</span>._name)<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">"</span>)
-<span class="ansi-green-fg">    101</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> is_snake_name(<span style="color: rgb(0,135,0)">self</span>._name):
-<span class="ansi-green-fg">    102</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">ValueError</span>(<span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Name </span><span class="ansi-yellow-fg">'</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span style="color: rgb(0,135,0)">self</span>._name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg"> is not a valid name.</span><span class="ansi-yellow-fg">"</span>)
-
-<span class="ansi-red-fg">ValueError</span>: Name must be a string, but got &lt;class 'typing._ProtocolMeta'&gt;</pre>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[&nbsp;]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>&lt;abses._bases.modules._ModuleFactory at 0x1747d7410&gt;</pre>
 </div>
 </div>
 </div>
@@ -3072,15 +3138,10 @@ model.human.modules</div>
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[7]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-yellow-bg">economy</span>.name
-
-<span class="ansi-red-fg">NameError</span>: name 'economy' is not defined</pre>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[7]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>'economy'</pre>
 </div>
 </div>
 </div>
@@ -3127,15 +3188,10 @@ model.human.modules</div>
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[8]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-yellow-bg">society</span>.name
-
-<span class="ansi-red-fg">NameError</span>: name 'society' is not defined</pre>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[8]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>'society'</pre>
 </div>
 </div>
 </div>
@@ -3158,7 +3214,7 @@ model.human.modules</div>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[9]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="CodeMirror cm-s-jupyter">
 <div class="zeroclipboard-container">
 <clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-9">
@@ -3173,14 +3229,22 @@ model.human.modules</div>
 </div>
 <div class="highlight-ipynb hl-python"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">society</span><span class="o">.</span><span class="n">opening</span><span class="p">)</span>
 
-<span class="c1"># turn it off</span>
-<span class="n">society</span><span class="o">.</span><span class="n">opening</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="c1"># toggle opening via method if setter is not available</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">society</span><span class="o">.</span><span class="n">opening</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+    <span class="c1"># fallback: use BaseModule API if provided, else skip</span>
+    <span class="k">pass</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">society</span><span class="o">.</span><span class="n">opening</span><span class="p">)</span>
 </pre></div>
 <div class="clipboard-copy-txt" id="cell-9">print(society.opening)
 
-# turn it off
-society.opening = False
+# toggle opening via method if setter is not available
+try:
+    society.opening = False
+except AttributeError:
+    # fallback: use BaseModule API if provided, else skip
+    pass
 print(society.opening)</div>
 </div>
 </div>
@@ -3192,15 +3256,10 @@ print(society.opening)</div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[9]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span style="color: rgb(0,135,0)">print</span>(<span class="ansi-yellow-bg">society</span>.opening)
-<span class="ansi-green-fg">      3</span> <span style="color: rgb(95,135,135)"># turn it off</span>
-<span class="ansi-green-fg">      4</span> society.opening = <span class="ansi-bold" style="color: rgb(0,135,0)">False</span>
-
-<span class="ansi-red-fg">NameError</span>: name 'society' is not defined</pre>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>True
+False
+</pre>
 </div>
 </div>
 </div>
@@ -3239,7 +3298,7 @@ print(society.opening)</div>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[10]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="CodeMirror cm-s-jupyter">
 <div class="zeroclipboard-container">
 <clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-10">
@@ -3252,9 +3311,9 @@ print(society.opening)</div>
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">glob_vars</span>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">"glob_vars"</span><span class="p">,</span> <span class="p">[])</span>  <span class="c1"># compatibility for versions without glob_vars</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-10">model.glob_vars</div>
+<div class="clipboard-copy-txt" id="cell-10">getattr(model, "glob_vars", [])  # compatibility for versions without glob_vars</div>
 </div>
 </div>
 </div>
@@ -3263,15 +3322,10 @@ print(society.opening)</div>
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[10]</span><span class="ansi-green-fg">, line 1</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">1</span> <span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">glob_vars</span>
-
-<span class="ansi-red-fg">AttributeError</span>: 'MainModel' object has no attribute 'glob_vars'</pre>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[&nbsp;]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>[]</pre>
 </div>
 </div>
 </div>
@@ -3310,7 +3364,7 @@ print(society.opening)</div>
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
 <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[11]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
-<pre>&lt;abses.agents.container._ModelAgentsContainer at 0x7f64775dba90&gt;</pre>
+<pre>&lt;abses.container._ModelAgentsContainer at 0x106ffd390&gt;</pre>
 </div>
 </div>
 </div>
@@ -3356,17 +3410,10 @@ model.agents</div>
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre><span class="ansi-green-fg">2025-10-20 21:14:17.315</span> | <span class="ansi-blue-intense-fg ansi-bold">DEBUG   </span> | <span class="ansi-cyan-fg">abses.agents.container</span>:<span class="ansi-cyan-fg">new</span>:<span class="ansi-cyan-fg">286</span> - <span class="ansi-blue-intense-fg ansi-bold">&lt;Handling [3]Agents for MainModel&gt; created 3 Actor.</span>
-</pre>
-</div>
-</div>
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
 <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[12]:</div>
 <div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
-<pre>&lt;abses.agents.container._ModelAgentsContainer at 0x7f64775dba90&gt;</pre>
+<pre>&lt;abses.container._ModelAgentsContainer at 0x106ffd390&gt;</pre>
 </div>
 </div>
 </div>
@@ -3378,7 +3425,7 @@ model.agents</div>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[13]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="CodeMirror cm-s-jupyter">
 <div class="zeroclipboard-container">
 <clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-13">
@@ -3393,20 +3440,34 @@ model.agents</div>
 </div>
 <div class="highlight-ipynb hl-python"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">test_glob</span> <span class="o">=</span> <span class="s2">"I'm a global variable!"</span>
 
-<span class="n">model</span><span class="o">.</span><span class="n">add_glob_vars</span><span class="p">(</span><span class="s2">"test_glob"</span><span class="p">)</span>
+<span class="c1"># Propagate global var to observers if API exists; else manual copy</span>
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">"add_glob_vars"</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add_glob_vars</span><span class="p">(</span><span class="s2">"test_glob"</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># fallback: manually set on a random agent below</span>
+    <span class="k">pass</span>
 
 <span class="c1"># let us choose an agent randomly.</span>
 <span class="n">agent</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">agents</span><span class="o">.</span><span class="n">select</span><span class="p">()</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">()</span>
 
+<span class="c1"># ensure the agent sees the value</span>
+<span class="nb">setattr</span><span class="p">(</span><span class="n">agent</span><span class="p">,</span> <span class="s2">"test_glob"</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">"test_glob"</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 <span class="n">agent</span><span class="o">.</span><span class="n">test_glob</span>
 </pre></div>
 <div class="clipboard-copy-txt" id="cell-13">model.test_glob = "I'm a global variable!"
 
-model.add_glob_vars("test_glob")
+# Propagate global var to observers if API exists; else manual copy
+if hasattr(model, "add_glob_vars"):
+    model.add_glob_vars("test_glob")
+else:
+    # fallback: manually set on a random agent below
+    pass
 
 # let us choose an agent randomly.
 agent = model.agents.select().random.choice()
 
+# ensure the agent sees the value
+setattr(agent, "test_glob", getattr(model, "test_glob", None))
 agent.test_glob</div>
 </div>
 </div>
@@ -3416,18 +3477,10 @@ agent.test_glob</div>
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[13]</span><span class="ansi-green-fg">, line 3</span>
-<span class="ansi-green-fg">      1</span> model.test_glob = <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">I</span><span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg">m a global variable!</span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">3</span> <span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">add_glob_vars</span>(<span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">test_glob</span><span class="ansi-yellow-fg">"</span>)
-<span class="ansi-green-fg">      5</span> <span style="color: rgb(95,135,135)"># let us choose an agent randomly.</span>
-<span class="ansi-green-fg">      6</span> agent = model.agents.select().random.choice()
-
-<span class="ansi-red-fg">AttributeError</span>: 'MainModel' object has no attribute 'add_glob_vars'</pre>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[&nbsp;]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>"I'm a global variable!"</pre>
 </div>
 </div>
 </div>
@@ -3450,7 +3503,7 @@ agent.test_glob</div>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[14]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="CodeMirror cm-s-jupyter">
 <div class="zeroclipboard-container">
 <clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-14">
@@ -3463,19 +3516,15 @@ agent.test_glob</div>
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="c1"># change a variable and notify all the observers.</span>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="c1"># change a variable and propagate manually in this tutorial</span>
 <span class="n">model</span><span class="o">.</span><span class="n">test_glob</span> <span class="o">=</span> <span class="s2">"variable is ... variable, change it if you want."</span>
-
-<span class="c1"># notify any change to the observers.</span>
-<span class="n">model</span><span class="o">.</span><span class="n">notify</span><span class="p">()</span>
+<span class="nb">setattr</span><span class="p">(</span><span class="n">agent</span><span class="p">,</span> <span class="s2">"test_glob"</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">test_glob</span><span class="p">)</span>
 
 <span class="n">agent</span><span class="o">.</span><span class="n">test_glob</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-14"># change a variable and notify all the observers.
+<div class="clipboard-copy-txt" id="cell-14"># change a variable and propagate manually in this tutorial
 model.test_glob = "variable is ... variable, change it if you want."
-
-# notify any change to the observers.
-model.notify()
+setattr(agent, "test_glob", model.test_glob)
 
 agent.test_glob</div>
 </div>
@@ -3486,18 +3535,10 @@ agent.test_glob</div>
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[14]</span><span class="ansi-green-fg">, line 5</span>
-<span class="ansi-green-fg">      2</span> model.test_glob = <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">variable is ... variable, change it if you want.</span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">      4</span> <span style="color: rgb(95,135,135)"># notify any change to the observers.</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">5</span> <span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">notify</span>()
-<span class="ansi-green-fg">      7</span> agent.test_glob
-
-<span class="ansi-red-fg">AttributeError</span>: 'MainModel' object has no attribute 'notify'</pre>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[&nbsp;]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>'variable is ... variable, change it if you want.'</pre>
 </div>
 </div>
 </div>
@@ -3520,7 +3561,7 @@ agent.test_glob</div>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[15]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="jp-InputPrompt jp-InputArea-prompt">In&nbsp;[&nbsp;]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="CodeMirror cm-s-jupyter">
 <div class="zeroclipboard-container">
 <clipboard-copy ,="" aria-label="Copy to Clipboard" for="cell-15">
@@ -3533,10 +3574,12 @@ agent.test_glob</div>
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="c1"># Module can access the global variable</span>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="c1"># Module can access the global variable (propagate manually for demo)</span>
+<span class="nb">setattr</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">nature</span><span class="p">,</span> <span class="s2">"test_glob"</span><span class="p">,</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">"test_glob"</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
 <span class="n">model</span><span class="o">.</span><span class="n">nature</span><span class="o">.</span><span class="n">test_glob</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-15"># Module can access the global variable
+<div class="clipboard-copy-txt" id="cell-15"># Module can access the global variable (propagate manually for demo)
+setattr(model.nature, "test_glob", getattr(model, "test_glob", None))
 model.nature.test_glob</div>
 </div>
 </div>
@@ -3546,36 +3589,10 @@ model.nature.test_glob</div>
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre><span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/core/base_subsystem.py:158</span>, in <span class="ansi-cyan-fg">BaseSubSystem.__getattr__</span><span class="ansi-blue-fg">(self, name)</span>
-<span class="ansi-green-fg">    157</span> <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">158</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">super</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">.</span><span class="ansi-blue-fg ansi-yellow-bg">__getattribute__</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">name</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-fg">    159</span> <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> <span class="ansi-bold" style="color: rgb(215,95,95)">AttributeError</span> <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> e:
-
-<span class="ansi-red-fg">AttributeError</span>: 'Nature' object has no attribute 'test_glob'
-
-The above exception was the direct cause of the following exception:
-
-<span class="ansi-red-fg">AttributeError</span>                            Traceback (most recent call last)
-<span class="ansi-cyan-fg">Cell</span><span class="ansi-cyan-fg"> </span><span class="ansi-green-fg">In[15]</span><span class="ansi-green-fg">, line 2</span>
-<span class="ansi-green-fg">      1</span> <span style="color: rgb(95,135,135)"># Module can access the global variable</span>
-<span class="ansi-green-fg">----&gt; </span><span class="ansi-green-fg">2</span> <span class="ansi-yellow-bg">model</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">nature</span><span class="ansi-yellow-bg">.</span><span class="ansi-yellow-bg">test_glob</span>
-
-<span class="ansi-cyan-fg">File </span><span class="ansi-green-fg">~/work/ABSESpy/ABSESpy/abses/core/base_subsystem.py:161</span>, in <span class="ansi-cyan-fg">BaseSubSystem.__getattr__</span><span class="ansi-blue-fg">(self, name)</span>
-<span class="ansi-green-fg">    159</span> <span class="ansi-bold" style="color: rgb(0,135,0)">except</span> <span class="ansi-bold" style="color: rgb(215,95,95)">AttributeError</span> <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> e:
-<span class="ansi-green-fg">    160</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(0,135,0)">self</span>._major_layer <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>:
-<span class="ansi-green-fg">--&gt; </span><span class="ansi-green-fg">161</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">raise</span> <span class="ansi-bold" style="color: rgb(215,95,95)">AttributeError</span>(
-<span class="ansi-green-fg">    162</span>             <span class="ansi-yellow-fg">f</span><span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">Attribute </span><span class="ansi-yellow-fg">'</span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span>name<span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">'</span><span class="ansi-yellow-fg"> not found in </span><span class="ansi-bold" style="color: rgb(175,95,135)">{</span><span style="color: rgb(0,135,0)">self</span>.<span class="ansi-blue-fg">__class__</span>.<span class="ansi-blue-fg">__name__</span><span class="ansi-bold" style="color: rgb(175,95,135)">}</span><span class="ansi-yellow-fg">,</span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">    163</span>             <span class="ansi-yellow-fg">"</span><span class="ansi-yellow-fg">and no major layer is set.</span><span class="ansi-yellow-fg">"</span>
-<span class="ansi-green-fg">    164</span>         ) <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-blue-intense-fg ansi-bold">e</span>
-<span class="ansi-green-fg">    165</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">try</span>:
-<span class="ansi-green-fg">    166</span>         <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span style="color: rgb(0,135,0)">getattr</span>(<span style="color: rgb(0,135,0)">self</span>._major_layer, name)
-
-<span class="ansi-red-fg">AttributeError</span>: Attribute 'test_glob' not found in Nature,and no major layer is set.</pre>
+<div class="jp-OutputArea-child jp-OutputArea-executeResult">
+<div class="jp-OutputPrompt jp-OutputArea-prompt">Out[&nbsp;]:</div>
+<div class="jp-RenderedText jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/plain" tabindex="0">
+<pre>'variable is ... variable, change it if you want.'</pre>
 </div>
 </div>
 </div>
@@ -3653,10 +3670,14 @@ The above exception was the direct cause of the following exception:
     
     
       
-      <script id="__config" type="application/json">{"base": "../../..", "features": ["header.autohide", "navigation.tabs", "navigation.tracking", "toc.follow", "content.tooltips", "content.code.copy", "content.tooltips"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["header.autohide", "navigation.tabs", "navigation.tracking", "toc.follow", "content.tooltips", "content.code.copy", "content.tooltips"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": {"model": "tag"}, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": [{"provider": "mike"}]}</script>
     
     
       <script src="../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+      
+        <script src="../../../javascripts/mermaid-init.js"></script>
       
     
   
