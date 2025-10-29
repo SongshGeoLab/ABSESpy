@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.1](https://github.com/SongshGeoLab/ABSESpy/compare/v0.9.0...v0.9.1) (2025-10-29)
+
+
+### Bug Fixes
+
+* **ci:** :wrench: update GitHub Actions workflows to install documentation dependencies ([c9b99fe](https://github.com/SongshGeoLab/ABSESpy/commit/c9b99fe96effdfc373d9c7a960ee32f47915b62e))
+* **dependencies:** :bug: reorganize documentation dependencies in pyproject.toml so that mkdocs-jupyter is not required anymore ([6e1dd9e](https://github.com/SongshGeoLab/ABSESpy/commit/6e1dd9e813e40700ce7a823bd0f8d08276eb1630))
+
 ## [0.9.0](https://github.com/SongshGeoLab/ABSESpy/compare/v0.8.5...v0.9.0) (2025-10-29)
 
 
