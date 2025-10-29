@@ -22,7 +22,8 @@ jobs:
 
       - name: Install deps
         run: |
-          uv sync --dev
+          # Need docs stack to execute notebooks via mkdocs-jupyter/nbmake
+          uv sync --group docs --dev
 
       - name: Run nbmake
         env:

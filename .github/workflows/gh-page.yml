@@ -41,7 +41,8 @@ jobs:
       - name: Install dependencies (uv)
         run: |
           set -e
-          uv sync
+          # Install runtime + docs group (mkdocs, plugins, nb toolchain)
+          uv sync --group docs --dev
           if [ -n "${{ secrets.GH_TOKEN }}" ]; then
             uv pip install git+https://${{ secrets.GH_TOKEN }}@github.com/squidfunk/mkdocs-material-insiders.git
           else
