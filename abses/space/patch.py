@@ -573,12 +573,20 @@ class PatchModule(BaseModule, RasterLayer):
                 Args pass to the function `rasterasterio.mask.mask`.
 
         Returns:
-            A numpy array of clipped cells.
+            A boolean numpy 2D array mask where True indicates selected cells.
         """
-        # TODO 研究一下为什么需要转换为整数，转换bool结果不一样了
-        return self.xda.astype(np.int32, casting="safe").rio.clip(
+        # Use float dtype so rioxarray can represent out-of-geometry as NaN.
+        # Boolean selection must be based on NaN mask, not on underlying cell values
+        # (otherwise cells with value 0 would be incorrectly excluded).
+        clipped = self.xda.astype(np.float32).rio.clip(
             [geometry], all_touched=False, drop=False, **kwargs
         )
+        # Convert to boolean mask: True where data is finite (inside geometry)
+        mask_da = np.isfinite(clipped.to_numpy())
+        # Ensure 2D mask (squeeze potential band dimension)
+        if mask_da.ndim == 3:
+            mask_da = np.squeeze(mask_da, axis=0)
+        return mask_da
 
     def select(
         self,
@@ -620,8 +628,9 @@ class PatchModule(BaseModule, RasterLayer):
             mask_ = self._attr_or_array(where).reshape(self.shape2d)
         else:
             raise TypeError(f"{type(where)} is not supported for selecting cells.")
-        mask_ = np.nan_to_num(mask_, nan=0.0).astype(bool)
-        return ActorsList(self.model, self.array_cells[mask_])
+        # mask_ is expected to be boolean here
+        mask_bool = mask_.astype(bool)
+        return ActorsList(self.model, self.array_cells[mask_bool])
 
     sel = select
 
