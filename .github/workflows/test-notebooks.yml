@@ -18,8 +18,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install uv
-        run: |
-          pip install uv
+        uses: astral-sh/setup-uv@v4
 
       - name: Install deps
         run: |
@@ -29,5 +28,11 @@ jobs:
         env:
           ABSESPY_PROJECT_ROOT: ${{ github.workspace }}
         run: |
-          pytest
-
+          set -e
+          NB_LIST=$(git ls-files 'docs/**/*.ipynb' | grep -v '^site/' || true)
+          if [ -z "$NB_LIST" ]; then
+            echo "No notebooks found under docs/. Skipping nbmake."
+            exit 0
+          fi
+          echo "Notebooks to test:" && echo "$NB_LIST"
+          uv run pytest --nbmake $NB_LIST -v --tb=short --ignore=site

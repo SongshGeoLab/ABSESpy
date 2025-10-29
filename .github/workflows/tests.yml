@@ -10,8 +10,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  foundation-tests:
-    name: Foundation Tests
+  lint:
+    name: Lint and Type Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -24,70 +24,20 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v4
 
-      - name: Cache uv
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/uv
-          key: ${{ runner.os }}-py3.11-uv-${{ hashFiles('**/pyproject.toml', '**/uv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-py3.11-uv-
-
       - name: Install dependencies
         run: |
           uv sync --dev
 
-      - name: Run foundation tests
+      - name: Run ruff
         run: |
-          uv run pytest tests/foundation/ -v --tb=short --cov=abses --cov-report=xml
+          uv run ruff check abses/ --output-format=github
 
-      - name: Upload foundation test coverage
-        uses: codecov/codecov-action@v4
-        with:
-          fail_ci_if_error: false
-          file: ./coverage.xml
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-  scenario-tests:
-    name: Scenario Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v4
-
-      - name: Cache uv
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/uv
-          key: ${{ runner.os }}-py3.11-uv-${{ hashFiles('**/pyproject.toml', '**/uv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-py3.11-uv-
-
-      - name: Install dependencies
+      - name: Run mypy
         run: |
-          uv sync --dev
+          uv run mypy abses/
 
-      - name: Run scenario tests
-        run: |
-          uv run pytest tests/scenarios/ -v --tb=short --cov=abses --cov-report=xml
-
-      - name: Upload scenario test coverage
-        uses: codecov/codecov-action@v4
-        with:
-          fail_ci_if_error: false
-          file: ./coverage.xml
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-  test:
-    name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
+  tests:
+    name: Tests ${{ matrix.python-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -118,177 +68,16 @@ jobs:
         run: |
           uv sync --dev
 
-      - name: Run tests
+      - name: Run Make test-all (unit + notebooks + tox)
         run: |
-          uv run pytest tests/ -v --tb=short
+          uv run make test-all
 
-      - name: Upload coverage reports
+      - name: Upload coverage (3.11 on ubuntu)
         if: matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest'
         uses: codecov/codecov-action@v4
         with:
           fail_ci_if_error: false
+          file: ./coverage.xml
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-  performance-tests:
-    name: Performance Benchmark Tests
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v4
-
-      - name: Cache uv
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/uv
-          key: ${{ runner.os }}-py3.11-uv-${{ hashFiles('**/pyproject.toml', '**/uv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-py3.11-uv-
-
-      - name: Install dependencies
-        run: |
-          uv sync --dev
-
-      - name: Install pytest-benchmark
-        run: |
-          uv add pytest-benchmark
-
-      - name: Run performance benchmarks
-        run: |
-          uv run pytest tests/performance/ -v --benchmark-only --benchmark-save=baseline
-
-      - name: Compare with baseline
-        run: |
-          uv run pytest tests/performance/ -v --benchmark-compare=baseline --benchmark-compare-fail=mean:20%
-
-      - name: Upload benchmark results
-        uses: actions/upload-artifact@v4
-        with:
-          name: benchmark-results
-          path: .benchmarks/
-
-  lint:
-    name: Lint and Type Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v4
-
-      - name: Install dependencies
-        run: |
-          uv sync --dev
-
-      - name: Run ruff
-        run: |
-          uv run ruff check abses/ --output-format=github
-
-      - name: Run mypy
-        run: |
-          uv run mypy abses/
-
-  integration-tests:
-    name: Integration Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v4
-
-      - name: Cache uv
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/uv
-          key: ${{ runner.os }}-py3.11-uv-${{ hashFiles('**/pyproject.toml', '**/uv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-py3.11-uv-
-
-      - name: Install dependencies
-        run: |
-          uv sync --dev
-
-      - name: Run integration tests
-        run: |
-          uv run pytest tests/integration/ -v --tb=short
-
-  regression-tests:
-    name: Regression Tests
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v4
-
-      - name: Cache uv
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/uv
-          key: ${{ runner.os }}-py3.11-uv-${{ hashFiles('**/pyproject.toml', '**/uv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-py3.11-uv-
-
-      - name: Install dependencies
-        run: |
-          uv sync --dev
-
-      - name: Run regression tests
-        run: |
-          uv run pytest tests/regression/ -v --tb=short
-
-      - name: Run backward compatibility tests
-        run: |
-          uv run pytest tests/test_backward_compatibility.py -v --tb=short
-
-  test-matrix-summary:
-    name: Test Matrix Summary
-    runs-on: ubuntu-latest
-    needs: [foundation-tests, test, lint, scenario-tests]
-    if: always()
-    steps:
-      - name: Check test results
-        run: |
-          if [ "${{ needs.foundation-tests.result }}" != "success" ]; then
-            echo "❌ Foundation tests failed"
-            exit 1
-          fi
-          if [ "${{ needs.test.result }}" != "success" ]; then
-            echo "❌ Tests failed on one or more Python versions"
-            exit 1
-          fi
-          if [ "${{ needs.lint.result }}" != "success" ]; then
-            echo "⚠️ Linting or type checking issues detected (continuing)"
-          fi
-          if [ "${{ needs.scenario-tests.result }}" != "success" ]; then
-            echo "❌ Scenario tests failed"
-            exit 1
-          fi
-          echo "✅ All tests passed across Python 3.11, 3.12, and 3.13!"
-          echo "✅ Foundation tests passed!"
-          echo "✅ Scenario tests passed!"
 
