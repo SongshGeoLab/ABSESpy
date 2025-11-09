@@ -181,9 +181,12 @@ class MainModel(Model, BaseStateManager):
         Parameters:
             steps: Number of steps. If > 0, automatically advances time.
         """
-        self._steps = steps
+        if not isinstance(steps, int):
+            raise TypeError(f"steps must be an integer, got {type(steps)}")
+        delta = steps - getattr(self, "_steps", 0)
         if steps > 0:
-            self.time.go(steps)
+            self.time.go(delta)
+        self._steps = steps
 
     def __deepcopy__(self, memo: dict) -> "MainModel":
         """Prevent deep copying of model.
@@ -437,7 +440,6 @@ class MainModel(Model, BaseStateManager):
         run_times = 0
         self.do_each("setup", order=order)
         while self.running is True:
-            self.time.go()
             self.do_each("step", order=order)
             run_times += 1
             if steps is not None and run_times >= steps:
