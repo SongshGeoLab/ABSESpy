@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.9.2](https://github.com/SongshGeoLab/ABSESpy/compare/v0.9.1...v0.9.2) (2025-11-09)
+
+
+### Bug Fixes
+
+* **core:** :bug: Update type annotations and docstrings for Experiment and TimeDriver classes ([cf1ffec](https://github.com/SongshGeoLab/ABSESpy/commit/cf1ffec6778d02eea8d1aeaa5b02f3361dd0823f))
+* **model:** :bug: Improve type checking in MainModel class ([ae46993](https://github.com/SongshGeoLab/ABSESpy/commit/ae469938e70c5c2bccb21cf58a884cc21de3a3dd))
+* **model:** :bug: Remove unnecessary time.go() call in MainModel class. ([b4cbbe6](https://github.com/SongshGeoLab/ABSESpy/commit/b4cbbe6868294edfe42938f322ef21ff4471e3cd))
+* **nature:** :bug: Prevent duplicate layers from being added in BaseNature class ([0d85c4e](https://github.com/SongshGeoLab/ABSESpy/commit/0d85c4e7f9f6f1b4c0894ee541346f606068e98c))
+
 ## [0.9.1](https://github.com/SongshGeoLab/ABSESpy/compare/v0.9.0...v0.9.1) (2025-10-29)
 
 
