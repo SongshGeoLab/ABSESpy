@@ -181,10 +181,10 @@ class MainModel(Model, BaseStateManager):
         Parameters:
             steps: Number of steps. If > 0, automatically advances time.
         """
-        if not isinstance(steps, int):
-            raise TypeError(f"steps must be an integer, got {type(steps)}")
         delta = steps - getattr(self, "_steps", 0)
-        if steps > 0:
+        if not isinstance(delta, int):
+            raise TypeError(f"Steps must be an integer, got {type(steps)}")
+        if delta > 0:
             self.time.go(delta)
         self._steps = steps
 
