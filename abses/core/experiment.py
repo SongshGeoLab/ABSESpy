@@ -42,7 +42,7 @@ except ImportError:
 import numpy as np
 from hydra import compose, initialize
 from hydra.core.global_hydra import GlobalHydra
-from hydra.core.hydra_config import HydraConfig
+from hydra.core.hydra_config import HydraConf, HydraConfig
 from joblib import Parallel, delayed
 from omegaconf import DictConfig, OmegaConf
 from tqdm.auto import tqdm
@@ -208,8 +208,8 @@ class Experiment:
         return cls(model_cls, cfg, **kwargs)
 
     @property
-    def hydra_config(self) -> DictConfig:
-        """Hydra config."""
+    def hydra_config(self) -> HydraConf:
+        """Hydra runtime configuration object (HydraConf)."""
         if self.is_hydra_job():
             return HydraConfig.get()
         raise RuntimeError("Experiment is not running in Hydra.")

@@ -53,7 +53,6 @@ if TYPE_CHECKING:
         MainModelProtocol,
         Number,
         Raster,
-        T,
     )
 
 
@@ -370,8 +369,11 @@ class PatchModule(BaseModule, RasterLayer):
         return self._cells
 
     @functools.cached_property
-    def array_cells(self) -> NDArray[T]:
-        """Array type of the `PatchCell` stored in this module."""
+    def array_cells(self) -> np.ndarray:
+        """Array of cells stored in this module.
+
+        Returns a 2D numpy array with dtype ``object`` containing ``PatchCell``.
+        """
         return np.flipud(np.array(self._cells, dtype=object).T)
 
     @property
@@ -439,7 +441,7 @@ class PatchModule(BaseModule, RasterLayer):
         self,
         attr_name: str,
         dtype: Literal["numpy", "xarray"] = "numpy",
-    ) -> np.ndarray:
+    ) -> np.ndarray | xr.DataArray:
         """Update and get dynamic variable.
 
         Parameters:
@@ -652,10 +654,12 @@ class PatchModule(BaseModule, RasterLayer):
         return np.vectorize(func)(self.array_cells)
 
     def coord_iter(self) -> Iterator[tuple[Coordinate, PatchCell]]:
-        """
-        An iterator that returns coordinates as well as cell contents.
-        """
-        return np.ndenumerate(self.array_cells)
+        """Iterate over coordinates and cells with precise typing."""
+        arr = self.array_cells
+        height, width = arr.shape
+        for i in range(height):
+            for j in range(width):
+                yield (i, j), arr[i, j]
 
     def _add_attribute(
         self,

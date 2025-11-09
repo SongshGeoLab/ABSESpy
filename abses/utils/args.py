@@ -5,7 +5,7 @@
 # GitHub   : https://github.com/SongshGeo
 # Website: https://cv.songshgeo.com/
 
-from typing import Any, Dict
+from typing import Any, Dict, cast
 
 from omegaconf import DictConfig, OmegaConf
 
@@ -45,4 +45,4 @@ def merge_parameters(parameters: DictConfig, **kwargs: Dict[str, Any]) -> DictCo
     if isinstance(merged, DictConfig):
         OmegaConf.set_struct(merged, False)
 
-    return merged
+    return cast(DictConfig, merged)

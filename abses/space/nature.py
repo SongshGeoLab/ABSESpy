@@ -82,7 +82,8 @@ class BaseNature(BaseSubSystem, GeoSpace, NatureSystemProtocol):
         if major_layer is True:
             self.major_layer = module
         self.convert_crs(module, write_crs=write_crs)
-        self.add_layer(module)
+        if module not in self.layers:
+            self.add_layer(module)
         return module
 
     def convert_crs(self, module: PatchModule, write_crs: bool = True):
