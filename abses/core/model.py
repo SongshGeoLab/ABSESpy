@@ -181,7 +181,8 @@ class MainModel(Model, BaseStateManager):
         Parameters:
             steps: Number of steps. If > 0, automatically advances time.
         """
-        delta = steps - getattr(self, "_steps", 0)
+        old_steps = self.__dict__.get("_steps", 0)
+        delta = steps - old_steps
         if not isinstance(delta, int):
             raise TypeError(f"Steps must be an integer, got {type(steps)}")
         if delta > 0:
