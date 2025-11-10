@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.3](https://github.com/SongshGeoLab/ABSESpy/compare/v0.9.2...v0.9.3) (2025-11-10)
+
+
+### Bug Fixes
+
+* **model:** :bug: Enhance steps calculation in MainModel class ([9d688e4](https://github.com/SongshGeoLab/ABSESpy/commit/9d688e4a9662823baaff4cb1a1f2d684d0588be0))
+
 ## [0.9.2](https://github.com/SongshGeoLab/ABSESpy/compare/v0.9.1...v0.9.2) (2025-11-09)
 
 
