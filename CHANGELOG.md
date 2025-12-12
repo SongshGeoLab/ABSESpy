@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.4](https://github.com/SongshGeoLab/ABSESpy/compare/v0.9.3...v0.9.4) (2025-12-12)
+
+
+### Bug Fixes
+
+* **dependencies:** :bug: update numpy version constraint in pyproject.toml and uv.lock ([157af45](https://github.com/SongshGeoLab/ABSESpy/commit/157af45f9ca3c6fbbb13b8ce6dff3ffd06d2e263))
+
 ## [0.9.3](https://github.com/SongshGeoLab/ABSESpy/compare/v0.9.2...v0.9.3) (2025-11-10)
 
 
