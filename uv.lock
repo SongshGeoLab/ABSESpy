@@ -135,7 +135,7 @@ requires-dist = [
     { name = "nbconvert", marker = "extra == 'docs'", specifier = ">=7.16.6" },
     { name = "nbmake", marker = "extra == 'docs'", specifier = ">=1.5.5" },
     { name = "netcdf4", specifier = ">=1.6" },
-    { name = "numpy", specifier = "<2" },
+    { name = "numpy", specifier = ">=1.26" },
     { name = "pendulum", specifier = ">=3.0.0" },
     { name = "pymdown-extensions", marker = "extra == 'docs'", specifier = ">=10.7" },
     { name = "rioxarray", specifier = ">=0.13" },
