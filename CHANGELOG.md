@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.10.0](https://github.com/SongshGeoLab/ABSESpy/compare/v0.9.4...v0.10.0) (2026-01-01)
+
+
+### Features
+
+* **tracking:** :sparkles: Integrate Aim and MLflow tracking backends with configuration updates ([27a7606](https://github.com/SongshGeoLab/ABSESpy/commit/27a7606342dd7fe19926c85fde0b9376ff4c59d2))
+
+
+### Bug Fixes
+
+* **config:** :bug: Improve error handling in tracker configuration validation ([1bb75b0](https://github.com/SongshGeoLab/ABSESpy/commit/1bb75b0d7ed0583a2186280ffba5d4bffabcf101))
+* **dependencies:** :bug: Update Aim version constraint and improve compatibility with Mesa 3.4.0 ([5b10768](https://github.com/SongshGeoLab/ABSESpy/commit/5b10768a56e632c9680c8592d2e4f65c5f6fa74b))
+* **dependencies:** :bug: Update MLflow version constraint and improve configuration handling ([7259e53](https://github.com/SongshGeoLab/ABSESpy/commit/7259e53d250207a27673e82ffd81a8b63d8d93d4))
+
 ## [0.9.4](https://github.com/SongshGeoLab/ABSESpy/compare/v0.9.3...v0.9.4) (2025-12-12)
 
 
