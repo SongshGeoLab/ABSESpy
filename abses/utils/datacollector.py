@@ -31,6 +31,8 @@ if TYPE_CHECKING:
     from abses.main import MainModel
     from abses.time import TimeDriver
 
+from abses.utils.tracker import TrackerProtocol
+
 try:
     from typing import TypeAlias
 except ImportError:
@@ -108,7 +110,19 @@ def clean_to_reporter(
 class ABSESpyDataCollector:
     """ABSESpyDataCollector, adapted from DataCollector of `mesa`."""
 
-    def __init__(self, reports: Dict[ReportType, Dict[str, Reporter]]):
+    def __init__(
+        self,
+        reports: Dict[ReportType, Dict[str, Reporter]] | None = None,
+        tracker: Optional[TrackerProtocol] = None,
+    ):
+        """Initialize data collector.
+
+        Args:
+            reports: Reporters configuration.
+            tracker: Optional tracker backend.
+        """
+        reports = reports or {}
+        self.tracker = tracker
         self.model_reporters: Dict[str, Reporter] = {}
         self.final_reporters: Dict[str, Reporter] = {}
         self.agent_reporters: Dict[str, Dict[str, Reporter]] = {}
@@ -227,14 +241,33 @@ class ABSESpyDataCollector:
                 "No final reporters have been defined, returning empty dict."
             )
             return {}
-        return {var: func(model) for var, func in self.final_reporters.items()}
+        results = {var: func(model) for var, func in self.final_reporters.items()}
+        if self.tracker is not None:
+            self.tracker.log_final_metrics(results)
+        return results
 
     def collect(self, model: MainModel):
         """Collect all the data for the given model object."""
 
         if self.model_reporters:
+            model_snapshot = {}
             for var, func in self.model_reporters.items():
-                self.model_vars[var].append(func(model))
+                value = func(model)
+                self.model_vars[var].append(value)
+                model_snapshot[var] = value
+            if self.tracker is not None:
+                self.tracker.log_model_vars(model_snapshot, step=model.time.tick)
 
         if self.agent_reporters:
             self._record_agents(model)
+            if self.tracker is not None:
+                for breed, records in self._agent_records.items():
+                    if not records:
+                        continue
+                    latest_df = pd.DataFrame(records[-1])
+                    agent_vars = {
+                        col: latest_df[col].tolist()
+                        for col in latest_df.columns
+                        if col not in ("AgentID", "Step", "Time")
+                    }
+                    self.tracker.log_agent_vars(breed, agent_vars, step=model.time.tick)

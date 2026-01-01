@@ -13,6 +13,7 @@ from datetime import datetime
 from functools import cached_property, total_ordering, wraps
 from typing import (
     TYPE_CHECKING,
+    Any,
     Callable,
     Deque,
     Dict,
@@ -148,6 +149,36 @@ class TimeDriver(BaseModelElement, TimeDriverProtocol):
             other_dt = other.dt if isinstance(other, TimeDriver) else other
             return self.dt < other_dt
         raise TypeError(f"Cannot compare {type(self)} with {type(other)}.")
+
+    def __add__(self, other: Any) -> "TimeDriver":
+        """Support addition with numbers (for Mesa 3.4.0+ compatibility).
+
+        Mesa 3.4.0+ tries to execute self.time += 1 in its step() wrapper.
+        We ignore this and return self, as our time management is independent.
+
+        Args:
+            other: Value to add (ignored).
+
+        Returns:
+            Self, unchanged.
+        """
+        # Ignore Mesa's automatic time increment - we manage time ourselves
+        return self
+
+    def __iadd__(self, other: Any) -> "TimeDriver":
+        """Support in-place addition with numbers (for Mesa 3.4.0+ compatibility).
+
+        Mesa 3.4.0+ tries to execute self.time += 1 in its step() wrapper.
+        We ignore this and return self, as our time management is independent.
+
+        Args:
+            other: Value to add (ignored).
+
+        Returns:
+            Self, unchanged.
+        """
+        # Ignore Mesa's automatic time increment - we manage time ourselves
+        return self
 
     def __deepcopy__(self, memo):
         return self

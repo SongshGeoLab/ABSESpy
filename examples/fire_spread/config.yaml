@@ -7,10 +7,28 @@ exp:
   outdir: out
   repeats: 11
 
-reports:
-  final:
+# Tracker configuration for experiment tracking
+# Use Aim for advanced experiment tracking (requires: pip install abses[aim])
+tracker:
+  backend: aim
+  # Customize run name (supports template variables: {model_name}, {run_id}, {version})
+  run_name: "{model_name}_experiment_run_{run_id}"
+  # Customize tags (supports template variables in values)
+  tags:
+    experiment: "fire_spread"
+    model_type: "{model_name}"
+    version: "{version}"
+  # Backend-specific configuration
+  aim:
+    experiment: "fire_spread_experiment"
+    repo: null  # Use default Aim repo (~/.aim)
+  # Data collection configuration
+  model:
     burned_rate: "burned_rate"
-
+  final:
+    burned_rate_final: "burned_rate"
+  # Log model parameters as hyperparameters (default: true)
+  log_params: true
 
 model:
   density: 0.7

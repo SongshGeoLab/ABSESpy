@@ -49,6 +49,16 @@ Documentation = "https://absespy.github.io/ABSESpy/"
 Repository = "https://github.com/SongshGeoLab/ABSESpy"
 
 [project.optional-dependencies]
+# Optional tracker dependencies for experiment tracking.
+# Note: aim>=3.30.0 does not exist. Version 3.29.1 has CVE-2025-5321.
+# Consider upgrading to a patched version when available (>3.29.1).
+# See: https://github.com/aimhubio/aim for security updates.
+aim = [
+    "aim>=3.29.1",
+]
+mlflow = [
+    "mlflow>=2.3.1",
+]
 # Optional docs-related dependencies. Not required at runtime.
 docs = [
     "mkdocs>=1.6.1",
