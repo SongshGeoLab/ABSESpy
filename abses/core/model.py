@@ -41,12 +41,17 @@ from abses.core.time_driver import TimeDriver
 from abses.human.human import BaseHuman
 from abses.space.nature import BaseNature
 from abses.utils.args import merge_parameters
+from abses.utils.config import apply_validation, normalize_config
 from abses.utils.datacollector import ABSESpyDataCollector
 from abses.utils.logging import (
     log_session,
     logger,
     setup_logger_info,
     setup_model_logger,
+)
+from abses.utils.tracker.factory import (
+    create_tracker,
+    prepare_collector_config,
 )
 
 if TYPE_CHECKING:
@@ -113,14 +118,21 @@ class MainModel(Model, BaseStateManager):
         self._run_id: Optional[int] = run_id
         # Filter out None values from kwargs for type safety
         clean_kwargs = {k: v for k, v in kwargs.items() if v is not None}
-        self._settings = merge_parameters(parameters, **clean_kwargs)
+        normalized_params = normalize_config(parameters)
+        apply_validation(normalized_params)
+
+        self._settings = merge_parameters(normalized_params, **clean_kwargs)
         self._time = TimeDriver(model=self)
         self._setup_subsystems(human_class, nature_class)
         self._agents_handler = _ModelAgentsContainer(
             model=self, max_len=kwargs.get("max_agents", None)
         )
+
+        tracker_cfg = self._settings.get("tracker", {})
+        tracker_backend = create_tracker(tracker_cfg, model=self)
+        collector_cfg = prepare_collector_config(tracker_cfg)
         self.datacollector: ABSESpyDataCollector = ABSESpyDataCollector(
-            parameters.get("reports", {})
+            reports=collector_cfg, tracker=tracker_backend
         )
 
         # Call initialize on model first
@@ -458,6 +470,9 @@ class MainModel(Model, BaseStateManager):
 
     def end(self) -> None:
         """Users can custom what to do when the model is end."""
+        # End tracker run if available
+        if self.datacollector.tracker is not None:
+            self.datacollector.tracker.end_run()
 
     # def summary(self, verbose: bool = False) -> pd.DataFrame:
     #     """Generates a summary report of the model's current state.

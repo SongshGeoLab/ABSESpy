@@ -6,6 +6,7 @@ nav:
         - Installation: home/Installation.md
         - Guide Checklist: home/guide_checklist.md
         - Getting started: home/get_started.md
+        - Configuration Schema: home/configuration_schema.md
         - Dependencies: home/dependencies.md
         - License: home/license.md
         - Contributions: home/contribution.md

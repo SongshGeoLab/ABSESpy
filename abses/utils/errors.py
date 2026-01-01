@@ -8,3 +8,15 @@
 
 class ABSESpyError(Exception):
     """Raised when Agent-based modeling logic is not satisfied."""
+
+
+class ConfigurationError(ABSESpyError):
+    """Raised when configuration validation fails."""
+
+    def __init__(self, message: str) -> None:
+        """Initialize configuration error.
+
+        Args:
+            message: Description of the configuration issue.
+        """
+        super().__init__(message)

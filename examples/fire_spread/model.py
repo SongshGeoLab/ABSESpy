@@ -134,6 +134,7 @@ class Forest(MainModel):
         Executes step method on all cells using batch operation.
         """
         self.nature.cells_lst.shuffle_do("step")
+        self.datacollector.collect(self)
 
     @property
     def burned_rate(self) -> float:
