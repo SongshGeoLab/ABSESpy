@@ -20,7 +20,12 @@ def _to_plain(cfg: DictConfig) -> Dict:
     """Convert DictConfig to plain dict safely."""
     from omegaconf import OmegaConf
 
-    return OmegaConf.to_container(cfg, resolve=True)
+    result = OmegaConf.to_container(cfg, resolve=True)
+    # Type narrowing: ensure we return a dict
+    if isinstance(result, dict):
+        return result
+    # Fallback for non-dict results (shouldn't happen in practice)
+    return {}
 
 
 def prepare_tracker_run_name(
@@ -243,7 +248,9 @@ def prepare_collector_config(tracker_cfg: DictConfig | Dict | None) -> Dict:
         return {}
 
     if isinstance(tracker_cfg, DictConfig):
-        collector_cfg = OmegaConf.to_container(tracker_cfg, resolve=True)
+        container_result = OmegaConf.to_container(tracker_cfg, resolve=True)
+        # Type narrowing: ensure we have a dict
+        collector_cfg = container_result if isinstance(container_result, dict) else {}
     elif isinstance(tracker_cfg, dict):
         collector_cfg = tracker_cfg.copy()
     else:

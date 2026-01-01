@@ -23,7 +23,9 @@ repos:
     rev: 'v1.15.0'  # Use the sha / tag you want to point at
     hooks:
     -   id: mypy
-        args: [--ignore-missing-imports, --follow-imports=skip]
+        # Use same config as CI - read from pyproject.toml
+        # CI uses: uv run mypy abses/
+        # This ensures local and CI use identical mypy settings
 -   repo: https://github.com/econchick/interrogate
     rev: '1.7.0'  # Check for the latest version
     hooks:

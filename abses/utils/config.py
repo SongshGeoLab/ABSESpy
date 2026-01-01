@@ -198,15 +198,24 @@ def _validate_tracker(tracker_cfg: Any) -> List[str]:
         if section == "agents":
             for breed, reporters in sub.items():
                 if not isinstance(reporters, (dict, DictConfig)):
-                    errs.append(f"tracker.agents.{breed}: must be a mapping.")
+                    # Convert breed to string to avoid bytes formatting issue
+                    breed_str = breed if isinstance(breed, str) else str(breed)
+                    errs.append(f"tracker.agents.{breed_str}: must be a mapping.")
                     continue
                 for name, reporter in reporters.items():
+                    # Convert keys to strings to avoid bytes formatting issue
+                    breed_str = breed if isinstance(breed, str) else str(breed)
+                    name_str = name if isinstance(name, str) else str(name)
                     errs.extend(
-                        _validate_tracker_entry(f"agents.{breed}.{name}", reporter)
+                        _validate_tracker_entry(
+                            f"agents.{breed_str}.{name_str}", reporter
+                        )
                     )
         else:
             for name, reporter in sub.items():
-                errs.extend(_validate_tracker_entry(f"{section}.{name}", reporter))
+                # Convert name to string to avoid bytes formatting issue
+                name_str = name if isinstance(name, str) else str(name)
+                errs.extend(_validate_tracker_entry(f"{section}.{name_str}", reporter))
     return errs
 
 
