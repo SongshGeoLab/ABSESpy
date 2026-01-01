@@ -11,7 +11,6 @@ name = "abses"
 version = "0.9.0"
 source = { editable = "." }
 dependencies = [
-    { name = "aim" },
     { name = "fiona" },
     { name = "fontawesome" },
     { name = "geocube" },
@@ -113,8 +112,7 @@ docs = [
 
 [package.metadata]
 requires-dist = [
-    { name = "aim", specifier = ">=3.29.1" },
-    { name = "aim", marker = "extra == 'aim'", specifier = ">=3.0.0" },
+    { name = "aim", marker = "extra == 'aim'", specifier = ">=3.29.1" },
     { name = "fiona", specifier = ">1.8" },
     { name = "fontawesome", specifier = ">=5" },
     { name = "geocube", specifier = ">=0.5.0" },

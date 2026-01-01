@@ -41,7 +41,6 @@ dependencies = [
     "numpy>=1.26",
     "urllib3",
     "icons",
-    "aim>=3.29.1",
 ]
 
 [project.urls]
@@ -52,7 +51,7 @@ Repository = "https://github.com/SongshGeoLab/ABSESpy"
 [project.optional-dependencies]
 # Optional tracker dependencies for experiment tracking.
 aim = [
-    "aim>=3.0.0",
+    "aim>=3.29.1",
 ]
 mlflow = [
     "mlflow>=2.0.0",

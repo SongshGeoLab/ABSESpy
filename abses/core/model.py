@@ -123,6 +123,7 @@ class MainModel(Model, BaseStateManager):
 
         self._settings = merge_parameters(normalized_params, **clean_kwargs)
         self._time = TimeDriver(model=self)
+        self._steps: int = 0  # Initialize steps counter for type checking
         self._setup_subsystems(human_class, nature_class)
         self._agents_handler = _ModelAgentsContainer(
             model=self, max_len=kwargs.get("max_agents", None)
@@ -414,6 +415,19 @@ class MainModel(Model, BaseStateManager):
     def time(self) -> TimeDriver:
         """The time driver & controller"""
         return self._time
+
+    @time.setter
+    def time(self, value: Any) -> None:
+        """Set the time driver (no-op for safety, prevents Mesa from overwriting).
+
+        Mesa 3.4.0+ tries to set self.time = 0.0 in __init__ and self.time += 1 in step().
+        This setter ignores those attempts to preserve our TimeDriver.
+
+        Args:
+            value: Value to set (ignored, can be TimeDriver, float, or any type).
+        """
+        # Ignore all attempts to set time - we manage it ourselves via _time
+        pass
 
     @property
     def params(self) -> DictConfig:
