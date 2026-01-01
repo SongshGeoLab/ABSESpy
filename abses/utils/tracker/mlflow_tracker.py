@@ -72,7 +72,11 @@ class MLflowTracker(TrackerProtocol):
         self, metrics: Dict[str, Any], step: int | None = None
     ) -> None:
         """Log final metrics."""
-        self.log_metrics({f"final.{k}": v for k, v in metrics.items()})
+        numeric_metrics = {
+            f"final.{k}": v for k, v in metrics.items() if isinstance(v, (int, float))
+        }
+        if numeric_metrics:
+            self.log_metrics(numeric_metrics, step=step)
 
     def end_run(self) -> None:
         """End MLflow run."""

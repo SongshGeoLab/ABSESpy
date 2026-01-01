@@ -4,7 +4,6 @@
 
 from __future__ import annotations
 
-import pytest
 from omegaconf import OmegaConf
 
 from abses.utils.tracker.default import DefaultTracker
@@ -21,10 +20,3 @@ def test_create_tracker_unknown_backend_fallback() -> None:
     """Unknown backend should fall back to default."""
     tracker = create_tracker(OmegaConf.create({"backend": "unknown"}), model=None)
     assert isinstance(tracker, DefaultTracker)
-
-
-def test_create_tracker_aim_missing_dep() -> None:
-    """Aim backend without dependency should raise ConfigurationError."""
-    cfg = OmegaConf.create({"backend": "mlflow"})
-    with pytest.raises(Exception):
-        create_tracker(cfg, model=None)

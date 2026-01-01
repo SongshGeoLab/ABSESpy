@@ -29,8 +29,15 @@ class DefaultTracker(TrackerProtocol):
     ) -> None:
         """Log agent variables (no-op)."""
 
-    def log_final_metrics(self, metrics: Dict[str, Any]) -> None:
-        """Log final metrics (no-op)."""
+    def log_final_metrics(
+        self, metrics: Dict[str, Any], step: int | None = None
+    ) -> None:
+        """Log final metrics (no-op).
+
+        Args:
+            metrics: Dictionary of final metric names to values.
+            step: Step number (optional, ignored).
+        """
 
     def end_run(self) -> None:
         """End run (no-op)."""

@@ -12,14 +12,14 @@ from abses.utils.errors import ConfigurationError
 from abses.utils.logging import logger
 
 
-def normalize_config(config: DictConfig) -> DictConfig:
+def normalize_config(config: DictConfig | Dict | None) -> DictConfig:
     """Normalize configuration for backward compatibility.
 
     This function converts deprecated keys to the new schema while
     preserving original data.
 
     Args:
-        config: Raw configuration.
+        config: Raw configuration (DictConfig, dict, or None).
 
     Returns:
         Normalized configuration.

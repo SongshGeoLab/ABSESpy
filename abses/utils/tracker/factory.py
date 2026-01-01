@@ -3,7 +3,7 @@
 # @Author  : ABSESpy Team
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from omegaconf import DictConfig
 
@@ -182,7 +182,7 @@ def create_tracker(
         ConfigurationError: If backend is unknown or missing dependencies.
     """
     backend = None
-    cfg_dict: Dict[str, Dict] = {}
+    cfg_dict: Dict[str, Any] = {}
     if config is not None and config:  # Check for both None and empty
         if isinstance(config, DictConfig):
             backend = config.get("backend", None)
