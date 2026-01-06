@@ -65,7 +65,7 @@ log:
       datefmt: '%H:%M:%S'
     file:
       enabled: true
-      level: INFO
+      level: DEBUG
       format: '[%(asctime)s][%(name)s][%(levelname)s] - %(message)s'
       datefmt: '%H:%M:%S'
       name: model  # Log file name (without extension)

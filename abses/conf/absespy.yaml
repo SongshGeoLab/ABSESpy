@@ -24,8 +24,8 @@ hydra:
         level: WARNING
         formatter: simple
         stream: ext://sys.stderr
-      # Disable Hydra's default file handler to avoid creating empty log files
-      # ABSESpy manages experiment and model logs separately
+      # Disable Hydra's default file handler
+      # ABSESpy configures root logger to write user module logs to model log files
       file: null
     root:
       level: INFO

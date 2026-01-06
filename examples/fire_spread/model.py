@@ -15,6 +15,7 @@ This example showcases:
 - Batch operations with ActorsList
 """
 
+import logging
 from enum import IntEnum
 from typing import Optional
 
@@ -22,6 +23,8 @@ import hydra
 from omegaconf import DictConfig
 
 from abses import Experiment, MainModel, PatchCell, raster_attribute
+
+logger = logging.getLogger(__name__)
 
 
 class Tree(PatchCell):
@@ -70,6 +73,7 @@ class Tree(PatchCell):
         """Ignite this tree if intact (tree_state transitions from INTACT to BURNING)."""
         if self._state == self.State.INTACT:
             self._state = self.State.BURNING
+            logger.debug(f"Tree at {self.pos} ignited")
 
     @property
     def state(self) -> int:
@@ -116,6 +120,7 @@ class Forest(MainModel):
         )
         # Grow trees on selected patches
         chosen_patches.shuffle_do("grow")
+        logger.info(f"Grown {len(chosen_patches)} trees")
 
     def setup(self) -> None:
         """
@@ -174,6 +179,7 @@ def main(cfg: Optional[DictConfig] = None) -> None:
     """
     exp = Experiment(Forest, cfg=cfg)
     exp.batch_run()
+    exp.logger.info(f"Experiment {exp.name} started")
 
 
 if __name__ == "__main__":

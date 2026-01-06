@@ -575,3 +575,43 @@ class TestLoggingIntegration:
                     log.removeHandler(handler)
             # Restore the original instance
             ExperimentManager._instance = original_instance
+
+    def test_user_module_logger_writes_to_model_log(self, temp_dir: Path) -> None:
+        """测试用户模块的 logger 是否写入模型日志文件"""
+        # Setup model logger
+        logger, mesa_logger, mesa_upper_logger = setup_model_logger(
+            name="model",
+            level="INFO",
+            outpath=temp_dir,
+            console=False,
+            logging_mode="once",
+            repeat_id=1,
+        )
+
+        try:
+            # Create a user module logger (simulating logging.getLogger(__name__))
+            user_logger = logging.getLogger("my_custom_module")
+            user_logger.info("User module log message")
+
+            # Read the log file and verify the message is present
+            log_file = temp_dir / "model.log"
+            assert log_file.exists(), f"Log file not found at {log_file}"
+
+            log_content = log_file.read_text()
+            assert "User module log message" in log_content, (
+                f"User module log not found in model.log. Content: {log_content}"
+            )
+            assert "my_custom_module" in log_content, (
+                f"Logger name not found in model.log. Content: {log_content}"
+            )
+        finally:
+            # Close all handlers to release file handles (required on Windows)
+            for log in [logger, mesa_logger, mesa_upper_logger]:
+                for handler in log.handlers[:]:
+                    handler.close()
+                    log.removeHandler(handler)
+            # Also clean root logger handlers
+            root_logger = logging.getLogger()
+            for handler in root_logger.handlers[:]:
+                handler.close()
+                root_logger.removeHandler(handler)

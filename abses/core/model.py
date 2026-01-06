@@ -143,17 +143,16 @@ class MainModel(Model, BaseStateManager):
             reports=collector_cfg, tracker=tracker_backend
         )
 
+        # Setup logging BEFORE initialize() so user logs in initialize() are captured
+        log_cfg = self.settings.get("log", {})
+        if log_cfg:
+            self._setup_logger(log_cfg)
+
         # Call initialize on model first
         self.initialize()
         # Then initialize subsystems
         self.do_each("_initialize", order=DEFAULT_INIT_ORDER)
         self.set_state(State.INIT)
-
-        # Setup logging if configured
-        # Check if new log structure exists
-        log_cfg = self.settings.get("log", {})
-        if log_cfg:
-            self._setup_logger(log_cfg)
 
     @functools.cached_property
     def name(self) -> str:
