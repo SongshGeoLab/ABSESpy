@@ -49,12 +49,12 @@ from abses.utils.logging import setup_model_logger
 class TestLogParser:
     """测试配置解析功能"""
 
-    def test_get_log_mode_default(self):
+    def test_get_log_mode_default(self) -> None:
         """测试获取默认日志模式"""
         cfg = {}
         assert get_log_mode(cfg) == "once"
 
-    def test_get_log_mode_from_config(self):
+    def test_get_log_mode_from_config(self) -> None:
         """测试从配置中获取日志模式"""
         cfg = {"log": {"mode": "separate"}}
         assert get_log_mode(cfg) == "separate"
@@ -62,7 +62,7 @@ class TestLogParser:
         cfg = {"log": {"mode": "merge"}}
         assert get_log_mode(cfg) == "merge"
 
-    def test_get_stdout_config_enabled(self):
+    def test_get_stdout_config_enabled(self) -> None:
         """测试获取启用的 stdout 配置"""
         cfg = {
             "log": {
@@ -82,13 +82,13 @@ class TestLogParser:
         assert stdout_cfg["format"] == "[%(levelname)s] %(message)s"
         assert stdout_cfg["datefmt"] == "%Y-%m-%d"
 
-    def test_get_stdout_config_disabled(self):
+    def test_get_stdout_config_disabled(self) -> None:
         """测试获取禁用的 stdout 配置"""
         cfg = {"log": {"run": {"stdout": {"enabled": False}}}}
         stdout_cfg = get_stdout_config(cfg, "run")
         assert stdout_cfg == {}
 
-    def test_get_file_config_enabled(self):
+    def test_get_file_config_enabled(self) -> None:
         """测试获取启用的文件配置"""
         cfg = {
             "log": {
@@ -111,7 +111,7 @@ class TestLogParser:
         assert file_cfg["rotation"] == "1 day"
         assert file_cfg["retention"] == "10 days"
 
-    def test_get_file_config_defaults(self):
+    def test_get_file_config_defaults(self) -> None:
         """测试文件配置的默认值"""
         cfg = {"log": {"run": {"file": {"enabled": True}}}}
         file_cfg = get_file_config(cfg, "run")
@@ -120,14 +120,14 @@ class TestLogParser:
         assert file_cfg["format"] == DEFAULT_FORMAT
         assert file_cfg["datefmt"] == DEFAULT_DATEFMT
 
-    def test_get_mesa_config(self):
+    def test_get_mesa_config(self) -> None:
         """测试获取 Mesa 配置"""
         cfg = {"log": {"run": {"mesa": {"level": "DEBUG", "format": "%(message)s"}}}}
         mesa_cfg = get_mesa_config(cfg, "run")
         assert mesa_cfg["level"] == "DEBUG"
         assert mesa_cfg["format"] == "%(message)s"
 
-    def test_get_mesa_config_defaults(self):
+    def test_get_mesa_config_defaults(self) -> None:
         """测试 Mesa 配置的默认值"""
         cfg = {"log": {"run": {}}}
         mesa_cfg = get_mesa_config(cfg, "run")
@@ -138,13 +138,13 @@ class TestLogParser:
 class TestLogConfig:
     """测试日志配置功能"""
 
-    def test_create_console_handler_defaults(self):
+    def test_create_console_handler_defaults(self) -> None:
         """测试创建控制台处理器（使用默认值）"""
         handler = create_console_handler()
         assert handler.level == logging.getLevelName(DEFAULT_LEVEL)
         assert isinstance(handler, logging.StreamHandler)
 
-    def test_create_console_handler_custom(self):
+    def test_create_console_handler_custom(self) -> None:
         """测试创建自定义控制台处理器"""
         handler = create_console_handler(
             level="DEBUG", fmt="%(message)s", datefmt="%Y-%m-%d"
@@ -154,14 +154,14 @@ class TestLogConfig:
         assert formatter._fmt == "%(message)s"
         assert formatter.datefmt == "%Y-%m-%d"
 
-    def test_create_file_handler_defaults(self, tmp_path):
+    def test_create_file_handler_defaults(self, tmp_path: Path) -> None:
         """测试创建文件处理器（使用默认值）"""
         log_file = tmp_path / "test.log"
         handler = create_file_handler(log_file)
         assert handler.level == logging.getLevelName(DEFAULT_LEVEL)
         assert isinstance(handler, logging.FileHandler)
 
-    def test_create_file_handler_custom(self, tmp_path):
+    def test_create_file_handler_custom(self, tmp_path: Path) -> None:
         """测试创建自定义文件处理器"""
         log_file = tmp_path / "test.log"
         handler = create_file_handler(
@@ -172,7 +172,7 @@ class TestLogConfig:
         assert formatter._fmt == "%(message)s"
         assert formatter.datefmt == "%Y-%m-%d"
 
-    def test_determine_log_file_path_once_mode(self, tmp_path):
+    def test_determine_log_file_path_once_mode(self, tmp_path: Path) -> None:
         """测试确定日志文件路径（once 模式）"""
         # First repeat should create file
         path = determine_log_file_path(
@@ -186,7 +186,7 @@ class TestLogConfig:
         )
         assert path is None
 
-    def test_determine_log_file_path_separate_mode(self, tmp_path):
+    def test_determine_log_file_path_separate_mode(self, tmp_path: Path) -> None:
         """测试确定日志文件路径（separate 模式）"""
         path1 = determine_log_file_path(
             outpath=tmp_path, log_name="test", logging_mode="separate", repeat_id=1
@@ -198,7 +198,7 @@ class TestLogConfig:
         )
         assert path2 == tmp_path / "test_2.log"
 
-    def test_determine_log_file_path_merge_mode(self, tmp_path):
+    def test_determine_log_file_path_merge_mode(self, tmp_path: Path) -> None:
         """测试确定日志文件路径（merge 模式）"""
         path1 = determine_log_file_path(
             outpath=tmp_path, log_name="test", logging_mode="merge", repeat_id=1
@@ -210,7 +210,7 @@ class TestLogConfig:
         )
         assert path2 == tmp_path / "test.log"  # Same file
 
-    def test_setup_abses_logger_console_only(self):
+    def test_setup_abses_logger_console_only(self) -> None:
         """测试设置 ABSESpy 日志器（仅控制台）"""
         logger = setup_abses_logger(
             name="test_logger", console=True, console_level="DEBUG"
@@ -219,7 +219,7 @@ class TestLogConfig:
         assert len(logger.handlers) == 1
         assert isinstance(logger.handlers[0], logging.StreamHandler)
 
-    def test_setup_abses_logger_file_only(self, tmp_path):
+    def test_setup_abses_logger_file_only(self, tmp_path: Path) -> None:
         """测试设置 ABSESpy 日志器（仅文件）"""
         log_file = tmp_path / "test.log"
         logger = setup_abses_logger(
@@ -234,7 +234,7 @@ class TestLogConfig:
 class TestExpLogging:
     """测试实验日志功能"""
 
-    def test_setup_exp_logger_stdout_only(self, tmp_path):
+    def test_setup_exp_logger_stdout_only(self, tmp_path: Path) -> None:
         """测试设置实验日志器（仅控制台）"""
         cfg = OmegaConf.create(
             {
@@ -252,7 +252,7 @@ class TestExpLogging:
         assert len(logger.handlers) == 1
         assert isinstance(logger.handlers[0], logging.StreamHandler)
 
-    def test_setup_exp_logger_file_only(self, tmp_path):
+    def test_setup_exp_logger_file_only(self, tmp_path: Path) -> None:
         """测试设置实验日志器（仅文件）"""
         cfg = OmegaConf.create(
             {
@@ -280,7 +280,7 @@ class TestExpLogging:
         assert len(file_handlers) == 1
         assert (tmp_path / "experiment.log").exists()
 
-    def test_setup_exp_logger_both(self, tmp_path):
+    def test_setup_exp_logger_both(self, tmp_path: Path) -> None:
         """测试设置实验日志器（控制台和文件）"""
         cfg = OmegaConf.create(
             {
@@ -301,11 +301,12 @@ class TestExpLogging:
         assert logger.name == EXP_LOGGER_NAME
         assert len(logger.handlers) == 2
 
-    def test_setup_exp_logger_separate_mode(self, tmp_path):
+    def test_setup_exp_logger_separate_mode(self, tmp_path: Path) -> None:
         """测试 separate 模式下的实验日志器"""
         cfg = OmegaConf.create(
             {
                 "outpath": str(tmp_path),
+                "exp": {"name": "test_experiment"},
                 "log": {
                     "mode": "separate",
                     "run": {"file": {"name": "model"}},
@@ -314,14 +315,14 @@ class TestExpLogging:
             }
         )
         _ = setup_exp_logger(cfg)  # Setup logger
-        # In separate mode, exp log should use run.file.name if not explicitly set
-        assert (tmp_path / "model.log").exists()
+        # In separate mode, exp log should use exp.name if not explicitly set
+        assert (tmp_path / "test_experiment.log").exists()
 
 
 class TestModelLogging:
     """测试模型日志功能"""
 
-    def test_setup_model_logger_console_only(self, tmp_path):
+    def test_setup_model_logger_console_only(self, tmp_path: Path) -> None:
         """测试设置模型日志器（仅控制台）"""
         logger, mesa_logger, mesa_upper_logger = setup_model_logger(
             name="test_model",
@@ -335,7 +336,7 @@ class TestModelLogging:
         assert len(logger.handlers) == 1
         assert isinstance(logger.handlers[0], logging.StreamHandler)
 
-    def test_setup_model_logger_file_only(self, tmp_path):
+    def test_setup_model_logger_file_only(self, tmp_path: Path) -> None:
         """测试设置模型日志器（仅文件）"""
         logger, mesa_logger, mesa_upper_logger = setup_model_logger(
             name="test_model",
@@ -350,7 +351,7 @@ class TestModelLogging:
         assert isinstance(logger.handlers[0], logging.FileHandler)
         assert (tmp_path / "test_model.log").exists()
 
-    def test_setup_model_logger_custom_format(self, tmp_path):
+    def test_setup_model_logger_custom_format(self, tmp_path: Path) -> None:
         """测试设置模型日志器（自定义格式）"""
         logger, mesa_logger, mesa_upper_logger = setup_model_logger(
             name="test_model",
@@ -386,12 +387,12 @@ class TestLoggingIntegration:
     """测试日志功能的集成测试"""
 
     @pytest.fixture
-    def temp_dir(self):
+    def temp_dir(self) -> Path:
         """创建临时目录"""
         with tempfile.TemporaryDirectory() as tmpdir:
             yield Path(tmpdir)
 
-    def test_experiment_logging_integration(self, temp_dir):
+    def test_experiment_logging_integration(self, temp_dir: Path) -> None:
         """测试实验日志的完整流程"""
         cfg = OmegaConf.create(
             {
@@ -442,7 +443,7 @@ class TestLoggingIntegration:
                 handler.close()
                 exp_logger.removeHandler(handler)
 
-    def test_model_logging_integration(self, temp_dir):
+    def test_model_logging_integration(self, temp_dir: Path) -> None:
         """测试模型日志的完整流程"""
         _ = {
             "outpath": str(temp_dir),
@@ -480,7 +481,7 @@ class TestLoggingIntegration:
                     handler.close()
                     log.removeHandler(handler)
 
-    def test_logging_modes(self, temp_dir):
+    def test_logging_modes(self, temp_dir: Path) -> None:
         """测试不同的日志模式"""
         # Test once mode
         path1 = determine_log_file_path(
@@ -512,7 +513,7 @@ class TestLoggingIntegration:
         assert path1 == temp_dir / "model.log"
         assert path2 == temp_dir / "model.log"
 
-    def test_experiment_with_logging(self, temp_dir):
+    def test_experiment_with_logging(self, temp_dir: Path) -> None:
         """测试实验运行时的日志功能"""
         # Clean ExperimentManager singleton to avoid conflicts with other tests
         from abses.core.job_manager import ExperimentManager
@@ -574,3 +575,43 @@ class TestLoggingIntegration:
                     log.removeHandler(handler)
             # Restore the original instance
             ExperimentManager._instance = original_instance
+
+    def test_user_module_logger_writes_to_model_log(self, temp_dir: Path) -> None:
+        """测试用户模块的 logger 是否写入模型日志文件"""
+        # Setup model logger
+        logger, mesa_logger, mesa_upper_logger = setup_model_logger(
+            name="model",
+            level="INFO",
+            outpath=temp_dir,
+            console=False,
+            logging_mode="once",
+            repeat_id=1,
+        )
+
+        try:
+            # Create a user module logger (simulating logging.getLogger(__name__))
+            user_logger = logging.getLogger("my_custom_module")
+            user_logger.info("User module log message")
+
+            # Read the log file and verify the message is present
+            log_file = temp_dir / "model.log"
+            assert log_file.exists(), f"Log file not found at {log_file}"
+
+            log_content = log_file.read_text()
+            assert "User module log message" in log_content, (
+                f"User module log not found in model.log. Content: {log_content}"
+            )
+            assert "my_custom_module" in log_content, (
+                f"Logger name not found in model.log. Content: {log_content}"
+            )
+        finally:
+            # Close all handlers to release file handles (required on Windows)
+            for log in [logger, mesa_logger, mesa_upper_logger]:
+                for handler in log.handlers[:]:
+                    handler.close()
+                    log.removeHandler(handler)
+            # Also clean root logger handlers
+            root_logger = logging.getLogger()
+            for handler in root_logger.handlers[:]:
+                handler.close()
+                root_logger.removeHandler(handler)

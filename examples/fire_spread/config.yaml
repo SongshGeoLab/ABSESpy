@@ -40,6 +40,38 @@ time:
   end: 100
 
 log:
-  name: fire_spread
-  level: INFO
-  console: false
+  # Logging mode for repeated runs: once | separate | merge
+  mode: separate
+
+  # Experiment-level logging (progress, summary, etc.)
+  exp:
+    stdout:
+      enabled: true
+      level: INFO
+      format: '[%(asctime)s][%(name)s][%(levelname)s] - %(message)s'
+      datefmt: '%H:%M:%S'
+    file:
+      enabled: true
+      level: INFO
+      format: '[%(asctime)s][%(name)s][%(levelname)s] - %(message)s'
+      datefmt: '%H:%M:%S'
+
+  # Model run-level logging (each model execution)
+  run:
+    stdout:
+      enabled: false
+      level: INFO
+      format: '[%(asctime)s][%(name)s][%(levelname)s] - %(message)s'
+      datefmt: '%H:%M:%S'
+    file:
+      enabled: true
+      level: DEBUG
+      format: '[%(asctime)s][%(name)s][%(levelname)s] - %(message)s'
+      datefmt: '%H:%M:%S'
+      name: model  # Log file name (without extension)
+      rotation: null  # e.g., "1 day", "100 MB"
+      retention: null  # e.g., "10 days"
+    # MESA-specific logging configuration
+    mesa:
+      level: null  # If null, uses run.file.level
+      format: null  # If null, uses run.file.format

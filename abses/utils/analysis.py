@@ -188,6 +188,10 @@ class ResultAnalyzer(_BaseAnalyzer):
         Raises:
             AttributeError: If data has not been loaded yet.
         """
+        if not hasattr(self, "_data"):
+            raise AttributeError(
+                "Data has not been loaded yet. Call read_data() first."
+            )
         return self._data
 
     @data.setter

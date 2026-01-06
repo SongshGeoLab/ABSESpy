@@ -121,6 +121,8 @@ def setup_model_logger(
     """Setup logging for a model run.
 
     Configures ABSESpy and Mesa loggers (both 'mesa' and 'MESA') with integrated handlers.
+    Also configures the root logger so that user module logs (e.g., logging.getLogger(__name__))
+    are written to the same model log file.
 
     Args:
         name: Log file name.
@@ -175,6 +177,27 @@ def setup_model_logger(
         mesa_format=mesa_format,
         mesa_level=mesa_level,
     )
+
+    # Configure root logger to use the same handlers as abses_logger
+    # This ensures user module logs (e.g., logging.getLogger(__name__)) are also captured
+    root_logger = logging.getLogger()
+    root_logger.setLevel(level)
+
+    # Remove existing handlers from root logger to avoid duplicates
+    # But keep Hydra's handlers if any (they handle other logs)
+    for handler in root_logger.handlers[:]:
+        # Only remove handlers that are not Hydra's
+        # Hydra handlers typically have 'hydra' in their name or are configured differently
+        handler_name = getattr(handler, "name", "") or ""
+        if "hydra" not in handler_name.lower():
+            root_logger.removeHandler(handler)
+
+    # Add the same handlers from abses_logger to root logger
+    for handler in abses_logger.handlers:
+        # Create a copy of the handler to avoid sharing state
+        # For FileHandler, we can share the same file
+        if handler not in root_logger.handlers:
+            root_logger.addHandler(handler)
 
     return abses_logger, mesa_logger, mesa_upper_logger
 

@@ -160,23 +160,55 @@ class Experiment:
         # Setup experiment-level logger (separate from model run loggers)
         # This ensures experiment-level messages don't mix with model run logs
         # Pass DictConfig directly, don't convert to dict (log_parser needs DictConfig)
+        self._logger: Optional[logging.Logger] = None
         if isinstance(cfg, DictConfig):
             # Create a copy to avoid modifying original
             cfg_dict = OmegaConf.to_container(cfg, resolve=True)
             if isinstance(cfg_dict, dict):
                 cfg_dict["outpath"] = str(self.outpath)  # Convert Path to string
                 cfg_copy = OmegaConf.create(cfg_dict)
-                setup_exp_logger(cfg_copy)
+                self._logger = setup_exp_logger(cfg_copy)
         elif isinstance(cfg, dict):
             # Create a copy to avoid modifying original input
             cfg_copy = cfg.copy()
             cfg_copy["outpath"] = str(self.outpath)  # Convert Path to string
-            setup_exp_logger(cfg_copy)
+            self._logger = setup_exp_logger(cfg_copy)
 
     @property
     def model_cls(self) -> Type[MainModelProtocol]:
         """Model class."""
         return self._manager.model_cls
+
+    @property
+    def name(self) -> str:
+        """Experiment name from configuration.
+
+        Returns:
+            Experiment name from exp.name config, or 'experiment' if not set.
+        """
+        exp_cfg = self._cfg.get("exp", {})
+        if isinstance(exp_cfg, (dict, DictConfig)):
+            return exp_cfg.get("name", "experiment")
+        return "experiment"
+
+    @property
+    def logger(self) -> logging.Logger:
+        """Experiment-level logger for recording experiment logs.
+
+        Use this logger to write messages to the experiment log file
+        (e.g., fire_spread.log) rather than model run logs.
+
+        Example:
+            exp.logger.info("Experiment started")
+            exp.logger.debug("Processing parameters...")
+
+        Returns:
+            The experiment-level logger instance.
+        """
+        if self._logger is None:
+            # Fallback to getting the logger by name
+            self._logger = logging.getLogger(EXP_LOGGER_NAME)
+        return self._logger
 
     @property
     def cfg(self) -> DictConfig:
@@ -448,7 +480,6 @@ class Experiment:
         logger.info(f"Output directory: {self.outpath}")
         logger.info(f"Logging mode: {logging_mode}")
         logger.info("=" * 60)
-        logger.info("")
 
     def _batch_run_repeats(
         self,
