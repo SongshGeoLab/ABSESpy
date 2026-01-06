@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING, Optional
 from abses.utils.log_config import (
     ABSES_LOGGER_NAME,
     LoggerAdapter,
+    determine_log_file_path,
     get_abses_logger,
     setup_integrated_logging,
 )
@@ -85,13 +86,37 @@ def setup_logger_info(
     logger.bind(no_format=True).info(f"Exp environment: {is_exp_env}\n")
 
 
+def log_repeat_separator(repeat_id: int, total_repeats: int) -> None:
+    """Log a separator for a new repeat run in merge mode.
+
+    Args:
+        repeat_id: Current repeat ID (1-indexed).
+        total_repeats: Total number of repeats.
+    """
+    separator = "\n" + "=" * 60 + "\n"
+    header = f"Repeat {repeat_id}/{total_repeats}".center(60) + "\n"
+    footer = "=" * 60 + "\n"
+    logger.bind(no_format=True).info(separator + header + footer)
+
+
 def setup_model_logger(
     name: str = "model",
     level: str = "INFO",
     outpath: Optional[Path] = None,
     console: bool = True,
+    console_level: Optional[str] = None,
+    console_format: Optional[str] = None,
+    console_datefmt: Optional[str] = None,
     rotation: Optional[str] = None,
     retention: Optional[str] = None,
+    log_file_path: Optional[Path] = None,
+    logging_mode: str = "once",
+    repeat_id: Optional[int] = None,
+    file_level: Optional[str] = None,
+    file_format: Optional[str] = None,
+    file_datefmt: Optional[str] = None,
+    mesa_format: Optional[str] = None,
+    mesa_level: Optional[str] = None,
 ) -> tuple[logging.Logger, logging.Logger, logging.Logger]:
     """Setup logging for a model run.
 
@@ -99,11 +124,22 @@ def setup_model_logger(
 
     Args:
         name: Log file name.
-        level: Logging level.
+        level: Logging level (used if console_level/file_level not specified).
         outpath: Output directory for log files.
         console: Whether to log to console.
+        console_level: Console handler level (defaults to level).
+        console_format: Console format string.
+        console_datefmt: Console date format string.
         rotation: Rotation interval (e.g., "1 day", "100 MB").
         retention: Retention period (e.g., "10 days").
+        log_file_path: Explicit log file path (overrides automatic path determination).
+        logging_mode: Logging mode - 'once', 'separate', or 'merge'.
+        repeat_id: Repeat ID for the current run (1-indexed).
+        file_level: File handler level (defaults to level).
+        file_format: File format string.
+        file_datefmt: File date format string.
+        mesa_format: Custom format string for Mesa loggers. If None, uses ABSESpy format.
+        mesa_level: Logging level for Mesa loggers. If None, uses the main level.
 
     Returns:
         Tuple of (abses_logger, mesa_logger, mesa_upper_logger).
@@ -112,14 +148,32 @@ def setup_model_logger(
     if outpath and not isinstance(outpath, Path):
         outpath = Path(outpath)
 
+    # Determine log file path if not explicitly provided
+    if log_file_path is None:
+        log_file_path = determine_log_file_path(
+            outpath=outpath,
+            log_name=name,
+            logging_mode=logging_mode,
+            repeat_id=repeat_id,
+        )
+
     # Setup integrated logging
     abses_logger, mesa_logger, mesa_upper_logger = setup_integrated_logging(
         level=level,
         outpath=outpath,
         log_name=name,
         console=console,
+        console_level=console_level,
+        console_format=console_format,
+        console_datefmt=console_datefmt,
         rotation=rotation,
         retention=retention,
+        log_file_path=log_file_path,
+        file_level=file_level,
+        file_format=file_format,
+        file_datefmt=file_datefmt,
+        mesa_format=mesa_format,
+        mesa_level=mesa_level,
     )
 
     return abses_logger, mesa_logger, mesa_upper_logger
@@ -130,6 +184,7 @@ __all__ = [
     "logger",
     "formatter",
     "log_session",
+    "log_repeat_separator",
     "setup_logger_info",
     "setup_model_logger",
     "FORMAT",

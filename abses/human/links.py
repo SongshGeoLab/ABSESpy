@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import contextlib
+import logging
 from abc import abstractmethod
 from functools import cached_property
 from typing import (
@@ -27,7 +28,6 @@ from typing import (
 
 import numpy as np
 import pandas as pd
-from loguru import logger
 
 with contextlib.suppress(ImportError):
     import networkx as nx
@@ -41,6 +41,8 @@ if TYPE_CHECKING:
     from abses.agents.actor import Actor
     from abses.core.protocols import LinkContainerProtocol
     from abses.core.types import Direction, LinkingNode, TargetName, UniqueID
+
+logger = logging.getLogger(__name__)
 
 
 def get_node_unique_id(node: Any) -> UniqueID:

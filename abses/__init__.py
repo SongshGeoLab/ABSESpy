@@ -32,19 +32,14 @@ __all__ = [
     "raster_attribute",
 ]
 
-import os
-
-# Disable loguru default output by setting environment variable BEFORE any imports
-# This prevents loguru from adding default handlers automatically
-os.environ["LOGURU_AUTOINIT"] = "0"
-
+import warnings
 from importlib.metadata import PackageNotFoundError, version
 
 try:
     __version__ = f"v{version('abses')}"
 except PackageNotFoundError:
-    # Fallback for development mode when package metadata is not available
-    __version__ = "v0.7.5-dev"
+    __version__ = "v0.10.0-dev"
+    warnings.warn(f"Package metadata not found, using fallback version {__version__}")
 
 from .agents.actor import Actor, alive_required, perception
 from .agents.sequences import ActorsList
@@ -56,7 +51,3 @@ from .space.cells import PatchCell, raster_attribute
 from .space.nature import BaseNature, PatchModule
 from .utils.data import load_data
 from .utils.errors import ABSESpyError
-
-# Configure loguru to be silent by default
-# The LOGURU_AUTOINIT environment variable set above prevents automatic handler creation
-# Users can explicitly enable logging via model configuration (log.console: true)

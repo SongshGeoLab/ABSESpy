@@ -1,0 +1,79 @@
+defaults:
+  - _self_
+
+hydra:
+  job:
+    name: ${oc.select:exp.name,ABSESpy}
+  run:
+    dir: '${oc.select:exp.outdir,out}/${oc.select:exp.name,ABSESpy}/${now:%Y-%m-%d}/${now:%H-%M-%S}'
+  sweep:
+    dir: ${oc.select:exp.outdir,out}/${oc.select:exp.name,ABSESpy}/${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${hydra.job.id}_${hydra:job.override_dirname}
+
+  # Hydra logging configuration (auto-generated from log.hydra)
+  # This will be populated from log.hydra configuration at runtime
+  job_logging:
+    version: 1
+    formatters:
+      simple:
+        format: '[%(asctime)s][%(name)s][%(levelname)s] - %(message)s'
+        datefmt: '%H:%M:%S'
+    handlers:
+      console:
+        class: logging.StreamHandler
+        level: WARNING
+        formatter: simple
+        stream: ext://sys.stderr
+    root:
+      level: INFO
+      handlers: [console]
+    disable_existing_loggers: false
+
+  # Verbosity settings
+  verbose: false
+
+exp:
+  outdir: out
+  name: ABSESpy
+  repeats: 1
+
+# Unified logging configuration
+log:
+  # Logging mode for repeated runs: once | separate | merge
+  mode: once
+
+  # Experiment-level logging (progress, summary, etc.)
+  exp:
+    stdout:
+      enabled: true
+      level: INFO
+      format: '[%(asctime)s][%(name)s][%(levelname)s] - %(message)s'
+      datefmt: '%H:%M:%S'
+    file:
+      enabled: false
+      level: INFO
+      format: '[%(asctime)s][%(name)s][%(levelname)s] - %(message)s'
+      datefmt: '%H:%M:%S'
+
+  # Model run-level logging (each model execution)
+  run:
+    stdout:
+      enabled: false
+      level: INFO
+      format: '[%(asctime)s][%(name)s][%(levelname)s] - %(message)s'
+      datefmt: '%H:%M:%S'
+    file:
+      enabled: true
+      level: INFO
+      format: '[%(asctime)s][%(name)s][%(levelname)s] - %(message)s'
+      datefmt: '%H:%M:%S'
+      name: model  # Log file name (without extension)
+      rotation: null  # e.g., "1 day", "100 MB"
+      retention: null  # e.g., "10 days"
+    # MESA-specific logging configuration
+    mesa:
+      level: null  # If null, uses run.file.level
+      format: null  # If null, uses run.file.format
+
+# Note: outpath is dynamically set by Experiment at runtime
+outpath: null

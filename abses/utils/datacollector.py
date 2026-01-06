@@ -9,6 +9,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -23,7 +24,6 @@ from typing import (
 
 import numpy as np
 import pandas as pd
-from loguru import logger
 
 if TYPE_CHECKING:
     from abses.agents.actor import Actor
@@ -41,6 +41,8 @@ except ImportError:
 Reporter: TypeAlias = Callable[..., Any]
 ReporterDict: TypeAlias = Dict[str, Reporter]
 ReportType: TypeAlias = Literal["model", "agents", "final"] | str
+
+logger = logging.getLogger(__name__)
 
 
 def _getattr_to_reporter(

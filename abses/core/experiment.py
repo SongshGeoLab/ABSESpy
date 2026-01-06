@@ -12,6 +12,7 @@ from __future__ import annotations
 import copy
 import inspect
 import itertools
+import logging
 import os
 import random
 from copy import deepcopy
@@ -31,15 +32,13 @@ from typing import (
     TypeVar,
 )
 
-import pandas as pd
-from loguru import logger
-
 try:
     from typing import TypeAlias
 except ImportError:
     from typing_extensions import TypeAlias
 
 import numpy as np
+import pandas as pd
 from hydra import compose, initialize
 from hydra.core.global_hydra import GlobalHydra
 from hydra.core.hydra_config import HydraConf, HydraConfig
@@ -49,6 +48,11 @@ from tqdm.auto import tqdm
 
 from abses.core.job_manager import ExperimentManager
 from abses.core.model import MainModel
+from abses.utils.exp_logging import EXP_LOGGER_NAME, setup_exp_logger
+from abses.utils.log_parser import get_file_config, get_log_mode
+
+# Use experiment-level logger, separate from model run loggers
+logger = logging.getLogger(EXP_LOGGER_NAME)
 
 Configurations: TypeAlias = DictConfig | str | Dict[str, Any]
 T = TypeVar("T")
@@ -152,6 +156,22 @@ class Experiment:
         self._base_seed = seed
         self._manager = ExperimentManager(model_cls)
         self.cfg = cfg
+
+        # Setup experiment-level logger (separate from model run loggers)
+        # This ensures experiment-level messages don't mix with model run logs
+        # Pass DictConfig directly, don't convert to dict (log_parser needs DictConfig)
+        if isinstance(cfg, DictConfig):
+            # Create a copy to avoid modifying original
+            cfg_dict = OmegaConf.to_container(cfg, resolve=True)
+            if isinstance(cfg_dict, dict):
+                cfg_dict["outpath"] = str(self.outpath)  # Convert Path to string
+                cfg_copy = OmegaConf.create(cfg_dict)
+                setup_exp_logger(cfg_copy)
+        elif isinstance(cfg, dict):
+            # Create a copy to avoid modifying original input
+            cfg_copy = cfg.copy()
+            cfg_copy["outpath"] = str(self.outpath)  # Convert Path to string
+            setup_exp_logger(cfg_copy)
 
     @property
     def model_cls(self) -> Type[MainModelProtocol]:
@@ -370,6 +390,66 @@ class Experiment:
         r = random.Random(self._base_seed + job_id * 1000 + repeat_id)
         return r.randrange(2**32)
 
+    def _get_logging_mode(self) -> str:
+        """Get logging mode from experiment configuration.
+
+        Returns:
+            Logging mode: 'once', 'separate', or 'merge'. Defaults to 'once'.
+        """
+        return get_log_mode(self._cfg)
+
+    def _get_log_file_path(
+        self, log_name: str, repeat_id: int, logging_mode: str
+    ) -> Optional[Path]:
+        """Get log file path for a specific repeat.
+
+        Args:
+            log_name: Base log file name.
+            repeat_id: Repeat ID (1-indexed).
+            logging_mode: Logging mode.
+
+        Returns:
+            Path to log file, or None if logging should be disabled.
+        """
+        from abses.utils.log_config import determine_log_file_path
+
+        return determine_log_file_path(
+            outpath=self.outpath,
+            log_name=log_name,
+            logging_mode=logging_mode,
+            repeat_id=repeat_id,
+        )
+
+    def _log_experiment_info(
+        self, cfg: DictConfig, repeats: int, logging_mode: str = "once"
+    ) -> None:
+        """Log experiment-level information to experiment log file.
+
+        Args:
+            cfg: Configuration dictionary.
+            repeats: Number of repeats.
+            logging_mode: The logging mode being used.
+        """
+        try:
+            from abses import __version__
+        except ImportError:
+            __version__ = "unknown"
+
+        # Get model class name
+        model_name = self.model_cls.__name__
+
+        # Log experiment information
+        logger.info("=" * 60)
+        logger.info("Experiment Information".center(60))
+        logger.info("=" * 60)
+        logger.info(f"Model: {model_name}")
+        logger.info(f"ABSESpy version: {__version__}")
+        logger.info(f"Total repeats: {repeats}")
+        logger.info(f"Output directory: {self.outpath}")
+        logger.info(f"Logging mode: {logging_mode}")
+        logger.info("=" * 60)
+        logger.info("")
+
     def _batch_run_repeats(
         self,
         cfg: DictConfig,
@@ -378,6 +458,32 @@ class Experiment:
         display_progress: bool = True,
     ) -> None:
         """运行重复实验"""
+        logging_mode = self._get_logging_mode()
+        run_file_cfg = get_file_config(cfg, "run")
+        log_name = str(run_file_cfg.get("name", "model")).replace(".log", "")
+
+        # Log experiment-level information to experiment log file
+        # Check if exp.file is enabled - if so, log experiment info for all modes
+        exp_file_cfg = get_file_config(cfg, "exp")
+        if exp_file_cfg:
+            # exp.file is enabled, log experiment info
+            self._log_experiment_info(cfg, repeats, logging_mode)
+            # Also log framework banner to experiment log
+            from abses.utils.logging import setup_logger_info
+
+            setup_logger_info(self)
+        elif logging_mode == "separate":
+            # In separate mode, even if exp.file is disabled, log to experiment log
+            self._log_experiment_info(cfg, repeats, logging_mode)
+            from abses.utils.logging import setup_logger_info
+
+            setup_logger_info(self)
+
+        # For merge mode, log separator before first repeat
+        if logging_mode == "merge" and repeats > 1:
+            # Note: This will be logged in the model's logger setup
+            pass
+
         if self._is_hydra_parallel() or number_process == 1:
             # Hydra 并行或指定单进程时，顺序执行
             disable = repeats == 1 or not display_progress
@@ -386,6 +492,24 @@ class Experiment:
                 disable=disable,
                 desc=f"Job {self.job_id} repeats {repeats} times.",
             ):
+                # Log separator for merge mode
+                if logging_mode == "merge" and repeat_id > 1:
+                    # Note: Separator will be logged in model setup
+                    pass
+
+                # Get log file path for this repeat
+                log_path = self._get_log_file_path(log_name, repeat_id, logging_mode)
+
+                # Display log file location for separate mode
+                # This should only go to stdout, not to model run log files
+                if (
+                    display_progress
+                    and logging_mode == "separate"
+                    and log_path is not None
+                ):
+                    # Use print instead of logger to avoid writing to model run log files
+                    print(f"Repeat {repeat_id}: Logging to {log_path}")
+
                 run_single(
                     model_cls=self.model_cls,
                     cfg=cfg,
