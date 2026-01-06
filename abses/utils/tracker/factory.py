@@ -225,7 +225,7 @@ def create_tracker(
             model_name=model.name,
             version=model.version,
             run_id=model._run_id,
-            model_params=model.params,
+            model_params=model.settings,
         )
 
     return tracker

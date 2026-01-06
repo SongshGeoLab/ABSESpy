@@ -14,13 +14,13 @@ data files, and performing data aggregation.
 
 from __future__ import annotations
 
+import logging
 from functools import cached_property, lru_cache
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Dict, Generator, List
 
 import pandas as pd
 import yaml  # type: ignore[import-untyped]
-from loguru import logger
 from omegaconf import DictConfig, OmegaConf
 
 try:
@@ -32,6 +32,8 @@ if TYPE_CHECKING:
     pass
 
 PathLike: TypeAlias = str | Path
+
+logger = logging.getLogger(__name__)
 
 
 class _BaseAnalyzer:

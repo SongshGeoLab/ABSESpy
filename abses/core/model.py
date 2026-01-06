@@ -43,7 +43,14 @@ from abses.space.nature import BaseNature
 from abses.utils.args import merge_parameters
 from abses.utils.config import apply_validation, normalize_config
 from abses.utils.datacollector import ABSESpyDataCollector
+from abses.utils.log_parser import (
+    get_file_config,
+    get_log_mode,
+    get_mesa_config,
+    get_stdout_config,
+)
 from abses.utils.logging import (
+    log_repeat_separator,
     log_session,
     logger,
     setup_logger_info,
@@ -143,6 +150,7 @@ class MainModel(Model, BaseStateManager):
         self.set_state(State.INIT)
 
         # Setup logging if configured
+        # Check if new log structure exists
         log_cfg = self.settings.get("log", {})
         if log_cfg:
             self._setup_logger(log_cfg)
@@ -286,25 +294,47 @@ class MainModel(Model, BaseStateManager):
         """Setup logging for the model.
 
         Args:
-            log_cfg: Logging configuration dictionary.
+            log_cfg: Logging configuration dictionary (legacy, kept for compatibility).
         """
-        if not log_cfg:
+        # Get logging configuration from new structure
+        run_stdout = get_stdout_config(self.settings, "run")
+        run_file = get_file_config(self.settings, "run")
+        mesa_cfg = get_mesa_config(self.settings, "run")
+        logging_mode = get_log_mode(self.settings)
+
+        # Check if logging is enabled
+        stdout_enabled = bool(run_stdout)
+        file_enabled = bool(run_file) and self.outpath is not None
+
+        if not (stdout_enabled or file_enabled):
             return
 
-        # Parse logging configuration
-        # Only setup logging if console or file logging is explicitly enabled
-        name = str(log_cfg.get("name", "model")).replace(".log", "")
-        level = log_cfg.get("level", "INFO")
-        rotation = log_cfg.get("rotation", None)  # e.g., "1 day"
-        retention = log_cfg.get("retention", None)  # e.g., "10 days"
+        # Extract configuration values
+        name = (
+            str(run_file.get("name", "model")).replace(".log", "")
+            if run_file
+            else "model"
+        )
+        level = (
+            run_file.get("level", "INFO")
+            if file_enabled
+            else run_stdout.get("level", "INFO")
+        )
+        rotation = run_file.get("rotation", None) if run_file else None
+        retention = run_file.get("retention", None) if run_file else None
+        console = stdout_enabled
 
-        # Default: no output unless explicitly configured
-        console = log_cfg.get("console", False)
-        file_logging = self.outpath is not None
+        # Extract format and datefmt from config
+        console_format = run_stdout.get("format", None) if run_stdout else None
+        console_datefmt = run_stdout.get("datefmt", None) if run_stdout else None
+        file_format = run_file.get("format", None) if run_file else None
+        file_datefmt = run_file.get("datefmt", None) if run_file else None
+        console_level = run_stdout.get("level", None) if run_stdout else None
+        file_level = run_file.get("level", None) if run_file else None
 
-        # Only setup logger if at least one output is enabled
-        if not (console or file_logging):
-            return
+        # MESA configuration
+        mesa_format = mesa_cfg.get("format", None) if mesa_cfg else None
+        mesa_level = mesa_cfg.get("level", None) if mesa_cfg else None
 
         # Setup integrated logging for ABSESpy and Mesa
         setup_model_logger(
@@ -312,12 +342,40 @@ class MainModel(Model, BaseStateManager):
             level=level,
             outpath=self.outpath,
             console=console,
+            console_level=console_level,
+            console_format=console_format,
+            console_datefmt=console_datefmt,
             rotation=rotation,
             retention=retention,
+            logging_mode=logging_mode,
+            repeat_id=self.run_id,
+            file_level=file_level,
+            file_format=file_format,
+            file_datefmt=file_datefmt,
+            mesa_format=mesa_format,
+            mesa_level=mesa_level,
         )
 
+        # For merge mode, add separator for repeats after the first one
+        if logging_mode == "merge" and self.run_id is not None and self.run_id > 1:
+            # Get total repeats from exp config if available
+            total_repeats = 1
+            exp_cfg = self.settings.get("exp", {})
+            if isinstance(exp_cfg, dict):
+                total_repeats = exp_cfg.get("repeats", 1)
+            log_repeat_separator(self.run_id, total_repeats)
+
         # Display startup info
-        setup_logger_info(self.exp)
+        # In separate mode, setup_logger_info should only go to experiment log
+        # For model run logs, only log model-specific info
+        if logging_mode == "separate":
+            # In separate mode, don't log framework banner to model run log
+            # It will be logged to experiment log file instead
+            pass
+        else:
+            # In once/merge mode, log to model run log
+            setup_logger_info(self.exp)
+        # Always log model-specific info to model run log
         self._logging_begin()
 
     def add_name(self, name: str, check: Optional[HowCheckName] = None) -> None:

@@ -32,12 +32,6 @@ __all__ = [
     "raster_attribute",
 ]
 
-import os
-
-# Disable loguru default output by setting environment variable BEFORE any imports
-# This prevents loguru from adding default handlers automatically
-os.environ["LOGURU_AUTOINIT"] = "0"
-
 from importlib.metadata import PackageNotFoundError, version
 
 try:
@@ -56,7 +50,3 @@ from .space.cells import PatchCell, raster_attribute
 from .space.nature import BaseNature, PatchModule
 from .utils.data import load_data
 from .utils.errors import ABSESpyError
-
-# Configure loguru to be silent by default
-# The LOGURU_AUTOINIT environment variable set above prevents automatic handler creation
-# Users can explicitly enable logging via model configuration (log.console: true)

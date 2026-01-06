@@ -28,10 +28,18 @@ ABSES_FORMAT = "[%(asctime)s][%(name)s][%(levelname)s] - %(message)s"
 SIMPLE_FORMAT = "%(message)s"
 DATE_FORMAT = "%H:%M:%S"
 
+# Default values (matching log_parser.py)
+DEFAULT_FORMAT = ABSES_FORMAT
+DEFAULT_DATEFMT = DATE_FORMAT
+DEFAULT_LEVEL = "INFO"
+
 # Logger names
 ABSES_LOGGER_NAME = "abses"
 MESA_LOGGER_NAME = "mesa"
 MESA_FULL_LOGGER_NAME = "MESA"  # Mesa 3.3.0 uses uppercase MESA prefix
+
+# Sentinel for log_file_path to indicate "use default"
+_LOG_FILE_PATH_DEFAULT = object()
 
 
 def get_abses_logger(name: str = ABSES_LOGGER_NAME) -> logging.Logger:
@@ -69,29 +77,34 @@ def configure_root_logger(level: str = "INFO") -> None:
 
 
 def create_console_handler(
-    level: str = "WARNING",
-    fmt: str = ABSES_FORMAT,
+    level: str = DEFAULT_LEVEL,
+    fmt: Optional[str] = None,
+    datefmt: Optional[str] = None,
 ) -> logging.StreamHandler:
     """Create console handler for logging.
 
     Args:
         level: Logging level.
-        fmt: Format string.
+        fmt: Format string (defaults to DEFAULT_FORMAT).
+        datefmt: Date format string (defaults to DEFAULT_DATEFMT).
 
     Returns:
         Configured console handler.
     """
     handler = logging.StreamHandler(sys.stderr)
     handler.setLevel(level)
-    formatter = logging.Formatter(fmt, datefmt=DATE_FORMAT)
+    formatter = logging.Formatter(
+        fmt or DEFAULT_FORMAT, datefmt=datefmt or DEFAULT_DATEFMT
+    )
     handler.setFormatter(formatter)
     return handler
 
 
 def create_file_handler(
     filepath: Path,
-    level: str = "INFO",
-    fmt: str = ABSES_FORMAT,
+    level: str = DEFAULT_LEVEL,
+    fmt: Optional[str] = None,
+    datefmt: Optional[str] = None,
     rotation: Optional[str] = None,
     retention: Optional[str] = None,
 ) -> logging.Handler:
@@ -100,7 +113,8 @@ def create_file_handler(
     Args:
         filepath: Path to log file.
         level: Logging level.
-        fmt: Format string.
+        fmt: Format string (defaults to DEFAULT_FORMAT).
+        datefmt: Date format string (defaults to DEFAULT_DATEFMT).
         rotation: Rotation interval (e.g., "1 day", "100 MB").
         retention: Retention period (e.g., "10 days").
 
@@ -141,18 +155,24 @@ def create_file_handler(
         handler = logging.FileHandler(filepath)
 
     handler.setLevel(level)
-    formatter = logging.Formatter(fmt, datefmt=DATE_FORMAT)
+    formatter = logging.Formatter(
+        fmt or DEFAULT_FORMAT, datefmt=datefmt or DEFAULT_DATEFMT
+    )
     handler.setFormatter(formatter)
     return handler
 
 
 def setup_abses_logger(
     name: str = ABSES_LOGGER_NAME,
-    level: str = "INFO",
+    level: str = DEFAULT_LEVEL,
     console: bool = True,
-    console_level: str = "WARNING",
+    console_level: Optional[str] = None,
+    console_format: Optional[str] = None,
+    console_datefmt: Optional[str] = None,
     file_path: Optional[Path] = None,
-    file_level: str = "INFO",
+    file_level: Optional[str] = None,
+    file_format: Optional[str] = None,
+    file_datefmt: Optional[str] = None,
     rotation: Optional[str] = None,
     retention: Optional[str] = None,
 ) -> logging.Logger:
@@ -160,11 +180,15 @@ def setup_abses_logger(
 
     Args:
         name: Logger name.
-        level: Logger level.
+        level: Logger level (used if console_level/file_level not specified).
         console: Whether to add console handler.
-        console_level: Console handler level.
+        console_level: Console handler level (defaults to level).
+        console_format: Console format string (defaults to DEFAULT_FORMAT).
+        console_datefmt: Console date format (defaults to DEFAULT_DATEFMT).
         file_path: Path to log file (if None, no file handler).
-        file_level: File handler level.
+        file_level: File handler level (defaults to level).
+        file_format: File format string (defaults to DEFAULT_FORMAT).
+        file_datefmt: File date format (defaults to DEFAULT_DATEFMT).
         rotation: Rotation interval for file handler.
         retention: Retention period for file handler.
 
@@ -180,14 +204,18 @@ def setup_abses_logger(
 
     # Add console handler
     if console:
-        handler = create_console_handler(console_level)
+        handler = create_console_handler(
+            level=console_level or level,
+            fmt=console_format or DEFAULT_FORMAT,
+        )
         logger.addHandler(handler)
 
     # Add file handler
     if file_path:
         handler = create_file_handler(
-            file_path,
-            level=file_level,
+            filepath=file_path,
+            level=file_level or level,
+            fmt=file_format or DEFAULT_FORMAT,
             rotation=rotation,
             retention=retention,
         )
@@ -196,17 +224,61 @@ def setup_abses_logger(
     return logger
 
 
-def setup_mesa_logger(
+def determine_log_file_path(
+    outpath: Optional[Path],
+    log_name: str,
+    logging_mode: str = "once",
+    repeat_id: Optional[int] = None,
+) -> Optional[Path]:
+    """Determine log file path based on logging mode.
+
+    Args:
+        outpath: Output directory for log files.
+        log_name: Base log file name (without extension).
+        logging_mode: Logging mode - 'once', 'separate', or 'merge'.
+        repeat_id: Repeat ID for the current run (1-indexed).
+
+    Returns:
+        Path to log file, or None if logging should be disabled.
+    """
+    if not outpath:
+        return None
+
+    # Clean log name (remove .log extension if present)
+    log_name = str(log_name).replace(".log", "")
+
+    if logging_mode == "once":
+        # Only log the first repeat
+        if repeat_id is None or repeat_id == 1:
+            return outpath / f"{log_name}.log"
+        return None
+    elif logging_mode == "separate":
+        # Each repeat gets its own file
+        # In separate mode, repeat_id must be provided
+        if repeat_id is None:
+            return None  # Don't create default file in separate mode
+        return outpath / f"{log_name}_{repeat_id}.log"
+    elif logging_mode == "merge":
+        # All repeats go to the same file
+        return outpath / f"{log_name}.log"
+    else:
+        # Unknown mode, default to once behavior
+        if repeat_id is None or repeat_id == 1:
+            return outpath / f"{log_name}.log"
+        return None
+
+
+def configure_mesa_logger_with_format(
     level: str = "INFO",
     handlers: Optional[list[logging.Handler]] = None,
+    mesa_format: Optional[str] = None,
 ) -> tuple[logging.Logger, logging.Logger]:
-    """Setup Mesa loggers to integrate with ABSESpy logging.
-
-    Mesa 3.3.0 uses both 'mesa' and 'MESA' logger names.
+    """Configure Mesa loggers with custom format.
 
     Args:
         level: Logging level for Mesa.
-        handlers: Handlers to attach (if None, inherits from parent).
+        handlers: Handlers to attach (if None, creates new handlers with format).
+        mesa_format: Custom format string for Mesa loggers. If None, uses ABSES_FORMAT.
 
     Returns:
         Tuple of (mesa_logger, MESA_logger).
@@ -219,7 +291,15 @@ def setup_mesa_logger(
     mesa_upper_logger = logging.getLogger(MESA_FULL_LOGGER_NAME)
     mesa_upper_logger.setLevel(level)
 
+    # Use custom format if provided, otherwise use ABSES format
+    format_str = mesa_format if mesa_format is not None else ABSES_FORMAT
+
     if handlers:
+        # Apply format to existing handlers
+        formatter = logging.Formatter(format_str, datefmt=DATE_FORMAT)
+        for handler in handlers:
+            handler.setFormatter(formatter)
+
         # Configure both loggers
         for logger_obj in [mesa_logger, mesa_upper_logger]:
             logger_obj.propagate = False
@@ -234,48 +314,113 @@ def setup_mesa_logger(
     return mesa_logger, mesa_upper_logger
 
 
+def setup_mesa_logger(
+    level: str = "INFO",
+    handlers: Optional[list[logging.Handler]] = None,
+    mesa_format: Optional[str] = None,
+) -> tuple[logging.Logger, logging.Logger]:
+    """Setup Mesa loggers to integrate with ABSESpy logging.
+
+    Mesa 3.3.0 uses both 'mesa' and 'MESA' logger names.
+
+    Args:
+        level: Logging level for Mesa.
+        handlers: Handlers to attach (if None, inherits from parent).
+        mesa_format: Custom format string for Mesa loggers. If None, uses ABSES_FORMAT.
+
+    Returns:
+        Tuple of (mesa_logger, MESA_logger).
+    """
+    return configure_mesa_logger_with_format(
+        level=level, handlers=handlers, mesa_format=mesa_format
+    )
+
+
 def setup_integrated_logging(
     abses_logger_name: str = ABSES_LOGGER_NAME,
-    level: str = "INFO",
+    level: str = DEFAULT_LEVEL,
     outpath: Optional[Path] = None,
     log_name: str = "abses",
     console: bool = True,
+    console_level: Optional[str] = None,
+    console_format: Optional[str] = None,
+    console_datefmt: Optional[str] = None,
     rotation: Optional[str] = None,
     retention: Optional[str] = None,
+    log_file_path: Optional[Path] = _LOG_FILE_PATH_DEFAULT,  # type: ignore
+    file_level: Optional[str] = None,
+    file_format: Optional[str] = None,
+    file_datefmt: Optional[str] = None,
+    mesa_format: Optional[str] = None,
+    mesa_level: Optional[str] = None,
 ) -> tuple[logging.Logger, logging.Logger, logging.Logger]:
     """Setup integrated logging for ABSESpy and Mesa.
 
     Args:
         abses_logger_name: ABSESpy logger name.
-        level: Logging level.
+        level: Logging level (used if console_level/file_level not specified).
         outpath: Output directory for log files.
         log_name: Log file name (without extension).
         console: Whether to log to console.
+        console_level: Console handler level (defaults to level).
+        console_format: Console format string.
+        console_datefmt: Console date format string.
         rotation: Rotation interval.
         retention: Retention period.
+        log_file_path: Explicit log file path. If _LOG_FILE_PATH_DEFAULT, uses default from outpath/log_name.
+                      If None, disables file logging.
+        file_level: File handler level (defaults to level).
+        file_format: File format string.
+        file_datefmt: File date format string.
+        mesa_format: Custom format string for Mesa loggers. If None, uses DEFAULT_FORMAT.
+        mesa_level: Logging level for Mesa loggers. If None, uses the main level.
 
     Returns:
         Tuple of (abses_logger, mesa_logger, mesa_upper_logger).
     """
     # Determine file path
-    file_path = outpath / f"{log_name}.log" if outpath else None
+    if log_file_path is _LOG_FILE_PATH_DEFAULT:
+        # log_file_path was not provided, use default
+        file_path = outpath / f"{log_name}.log" if outpath else None
+    elif log_file_path is None:
+        # log_file_path was explicitly set to None, don't create file
+        file_path = None
+    else:
+        # log_file_path was explicitly provided
+        file_path = log_file_path
 
     # Setup ABSESpy logger
+    # Clear any existing handlers from parent loggers to prevent mixing
+    # This ensures experiment-level loggers don't inherit model run log handlers
     abses_logger = setup_abses_logger(
         name=abses_logger_name,
         level=level,
         console=console,
-        console_level="WARNING",
+        console_level=console_level,
+        console_format=console_format,
+        console_datefmt=console_datefmt,
         file_path=file_path,
-        file_level=level,
+        file_level=file_level,
+        file_format=file_format,
+        file_datefmt=file_datefmt,
         rotation=rotation,
         retention=retention,
     )
 
-    # Setup Mesa loggers (both 'mesa' and 'MESA') to use same handlers
+    # Ensure child loggers (like abses.core.experiment) don't inherit handlers
+    # by setting propagate=False on parent loggers
+    for parent_name in ["abses.core", "abses.core.experiment"]:
+        parent_logger = logging.getLogger(parent_name)
+        parent_logger.propagate = False
+        # Don't clear handlers here, as they may be configured separately
+
+    # Setup Mesa loggers (both 'mesa' and 'MESA') to use same handlers with format
+    # Use mesa_level if provided, otherwise use main level
+    mesa_log_level = mesa_level if mesa_level is not None else level
     mesa_logger, mesa_upper_logger = setup_mesa_logger(
-        level=level,
+        level=mesa_log_level,
         handlers=list(abses_logger.handlers) if abses_logger.handlers else None,
+        mesa_format=mesa_format,
     )
 
     return abses_logger, mesa_logger, mesa_upper_logger

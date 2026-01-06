@@ -11,6 +11,7 @@ Container for actors.
 
 from __future__ import annotations
 
+import logging
 from functools import partial
 from typing import (
     TYPE_CHECKING,
@@ -26,7 +27,6 @@ from typing import (
 
 import geopandas as gpd
 import pyproj
-from loguru import logger
 from mesa import Model
 from mesa.agent import AgentSet
 from shapely.geometry.base import BaseGeometry
@@ -41,6 +41,9 @@ from abses.utils.random import ListRandom
 if TYPE_CHECKING:
     from abses.core.types import Breeds, Number
     from abses.space.cells import PatchCell
+
+
+logger = logging.getLogger(__name__)
 
 
 class _AgentsContainer:

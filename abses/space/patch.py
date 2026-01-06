@@ -10,6 +10,7 @@
 from __future__ import annotations
 
 import functools
+import logging
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -30,7 +31,6 @@ import pyproj
 import rioxarray
 import xarray as xr
 from geocube.api.core import make_geocube
-from loguru import logger
 from mesa.space import Coordinate
 from mesa_geo.raster_layers import RasterLayer
 from numpy.typing import NDArray
@@ -54,6 +54,8 @@ if TYPE_CHECKING:
         Number,
         Raster,
     )
+
+logger = logging.getLogger(__name__)
 
 
 class PatchModule(BaseModule, RasterLayer):

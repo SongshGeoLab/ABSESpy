@@ -30,7 +30,6 @@ dependencies = [
     "mesa-geo>=0.9.1",
     "xarray>=2023",
     "fiona>1.8",
-    "loguru>=0.7",
     "rioxarray>=0.13",
     "pendulum>=3.0.0",
     "geopandas>=0,<1",
