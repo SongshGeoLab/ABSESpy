@@ -179,7 +179,7 @@ def main(cfg: Optional[DictConfig] = None) -> None:
     """
     exp = Experiment(Forest, cfg=cfg)
     exp.batch_run()
-    exp.logger.info(f"Experiment {exp.name} started")
+    exp.logger.info(f"Experiment {exp.name} finished!")
 
 
 if __name__ == "__main__":

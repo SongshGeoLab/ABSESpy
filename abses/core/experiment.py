@@ -593,6 +593,9 @@ class Experiment:
         overrides: Optional[Dict[str, str | Iterable[Number]]] = None,
     ) -> None:
         """Run the experiment multiple times."""
+        self.logger.info(
+            f"Running experiment with {repeats} repeats and {parallels} parallels."
+        )
         cfg = deepcopy(self._cfg)
 
         if not overrides:
