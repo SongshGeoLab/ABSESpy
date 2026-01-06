@@ -2458,6 +2458,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#abses.core.experiment.Experiment.name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        name
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#abses.core.experiment.Experiment.logger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        logger
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#abses.core.experiment.Experiment.cfg" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2685,6 +2707,28 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#abses.core.experiment.Experiment.name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        name
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#abses.core.experiment.Experiment.logger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        logger
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#abses.core.experiment.Experiment.cfg" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2886,7 +2930,8 @@
 <span class="normal"><a href="#__codelineno-0-171">171</a></span>
 <span class="normal"><a href="#__codelineno-0-172">172</a></span>
 <span class="normal"><a href="#__codelineno-0-173">173</a></span>
-<span class="normal"><a href="#__codelineno-0-174">174</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-146"><a id="__codelineno-0-146" name="__codelineno-0-146"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+<span class="normal"><a href="#__codelineno-0-174">174</a></span>
+<span class="normal"><a href="#__codelineno-0-175">175</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-146"><a id="__codelineno-0-146" name="__codelineno-0-146"></a><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
 </span><span id="__span-0-147"><a id="__codelineno-0-147" name="__codelineno-0-147"></a>    <span class="bp">self</span><span class="p">,</span>
 </span><span id="__span-0-148"><a id="__codelineno-0-148" name="__codelineno-0-148"></a>    <span class="n">model_cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">MainModelProtocol</span><span class="p">],</span>
 </span><span id="__span-0-149"><a id="__codelineno-0-149" name="__codelineno-0-149"></a>    <span class="n">cfg</span><span class="p">:</span> <span class="n">Configurations</span><span class="p">,</span>
@@ -2903,18 +2948,19 @@
 </span><span id="__span-0-160"><a id="__codelineno-0-160" name="__codelineno-0-160"></a>    <span class="c1"># Setup experiment-level logger (separate from model run loggers)</span>
 </span><span id="__span-0-161"><a id="__codelineno-0-161" name="__codelineno-0-161"></a>    <span class="c1"># This ensures experiment-level messages don't mix with model run logs</span>
 </span><span id="__span-0-162"><a id="__codelineno-0-162" name="__codelineno-0-162"></a>    <span class="c1"># Pass DictConfig directly, don't convert to dict (log_parser needs DictConfig)</span>
-</span><span id="__span-0-163"><a id="__codelineno-0-163" name="__codelineno-0-163"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">):</span>
-</span><span id="__span-0-164"><a id="__codelineno-0-164" name="__codelineno-0-164"></a>        <span class="c1"># Create a copy to avoid modifying original</span>
-</span><span id="__span-0-165"><a id="__codelineno-0-165" name="__codelineno-0-165"></a>        <span class="n">cfg_dict</span> <span class="o">=</span> <span class="n">OmegaConf</span><span class="o">.</span><span class="n">to_container</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">resolve</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-</span><span id="__span-0-166"><a id="__codelineno-0-166" name="__codelineno-0-166"></a>        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg_dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-</span><span id="__span-0-167"><a id="__codelineno-0-167" name="__codelineno-0-167"></a>            <span class="n">cfg_dict</span><span class="p">[</span><span class="s2">"outpath"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outpath</span><span class="p">)</span>  <span class="c1"># Convert Path to string</span>
-</span><span id="__span-0-168"><a id="__codelineno-0-168" name="__codelineno-0-168"></a>            <span class="n">cfg_copy</span> <span class="o">=</span> <span class="n">OmegaConf</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">cfg_dict</span><span class="p">)</span>
-</span><span id="__span-0-169"><a id="__codelineno-0-169" name="__codelineno-0-169"></a>            <span class="n">setup_exp_logger</span><span class="p">(</span><span class="n">cfg_copy</span><span class="p">)</span>
-</span><span id="__span-0-170"><a id="__codelineno-0-170" name="__codelineno-0-170"></a>    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-</span><span id="__span-0-171"><a id="__codelineno-0-171" name="__codelineno-0-171"></a>        <span class="c1"># Create a copy to avoid modifying original input</span>
-</span><span id="__span-0-172"><a id="__codelineno-0-172" name="__codelineno-0-172"></a>        <span class="n">cfg_copy</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-</span><span id="__span-0-173"><a id="__codelineno-0-173" name="__codelineno-0-173"></a>        <span class="n">cfg_copy</span><span class="p">[</span><span class="s2">"outpath"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outpath</span><span class="p">)</span>  <span class="c1"># Convert Path to string</span>
-</span><span id="__span-0-174"><a id="__codelineno-0-174" name="__codelineno-0-174"></a>        <span class="n">setup_exp_logger</span><span class="p">(</span><span class="n">cfg_copy</span><span class="p">)</span>
+</span><span id="__span-0-163"><a id="__codelineno-0-163" name="__codelineno-0-163"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+</span><span id="__span-0-164"><a id="__codelineno-0-164" name="__codelineno-0-164"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">DictConfig</span><span class="p">):</span>
+</span><span id="__span-0-165"><a id="__codelineno-0-165" name="__codelineno-0-165"></a>        <span class="c1"># Create a copy to avoid modifying original</span>
+</span><span id="__span-0-166"><a id="__codelineno-0-166" name="__codelineno-0-166"></a>        <span class="n">cfg_dict</span> <span class="o">=</span> <span class="n">OmegaConf</span><span class="o">.</span><span class="n">to_container</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">resolve</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-0-167"><a id="__codelineno-0-167" name="__codelineno-0-167"></a>        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg_dict</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+</span><span id="__span-0-168"><a id="__codelineno-0-168" name="__codelineno-0-168"></a>            <span class="n">cfg_dict</span><span class="p">[</span><span class="s2">"outpath"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outpath</span><span class="p">)</span>  <span class="c1"># Convert Path to string</span>
+</span><span id="__span-0-169"><a id="__codelineno-0-169" name="__codelineno-0-169"></a>            <span class="n">cfg_copy</span> <span class="o">=</span> <span class="n">OmegaConf</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">cfg_dict</span><span class="p">)</span>
+</span><span id="__span-0-170"><a id="__codelineno-0-170" name="__codelineno-0-170"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">setup_exp_logger</span><span class="p">(</span><span class="n">cfg_copy</span><span class="p">)</span>
+</span><span id="__span-0-171"><a id="__codelineno-0-171" name="__codelineno-0-171"></a>    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+</span><span id="__span-0-172"><a id="__codelineno-0-172" name="__codelineno-0-172"></a>        <span class="c1"># Create a copy to avoid modifying original input</span>
+</span><span id="__span-0-173"><a id="__codelineno-0-173" name="__codelineno-0-173"></a>        <span class="n">cfg_copy</span> <span class="o">=</span> <span class="n">cfg</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+</span><span id="__span-0-174"><a id="__codelineno-0-174" name="__codelineno-0-174"></a>        <span class="n">cfg_copy</span><span class="p">[</span><span class="s2">"outpath"</span><span class="p">]</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outpath</span><span class="p">)</span>  <span class="c1"># Convert Path to string</span>
+</span><span id="__span-0-175"><a id="__codelineno-0-175" name="__codelineno-0-175"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_logger</span> <span class="o">=</span> <span class="n">setup_exp_logger</span><span class="p">(</span><span class="n">cfg_copy</span><span class="p">)</span>
 </span></code></pre></div></td></tr></tbody></table></div>
                   </details>
 
@@ -2947,6 +2993,108 @@
     <div class="doc doc-contents ">
 
         <p>Model class.</p>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="abses.core.experiment.Experiment.name" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">name</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#abses.core.experiment.Experiment.name" class="headerlink" title="Permanent link">¶</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">name</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Experiment name from configuration.</p>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-external" href="https://docs.python.org/3/library/stdtypes.html#str">str</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Experiment name from exp.name config, or 'experiment' if not set.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-attribute">
+
+
+
+<h3 id="abses.core.experiment.Experiment.logger" class="doc doc-heading">
+            <span class="doc doc-object-name doc-attribute-name">logger</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-property"><code>property</code></small>
+  </span>
+
+<a href="#abses.core.experiment.Experiment.logger" class="headerlink" title="Permanent link">¶</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">logger</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Experiment-level logger for recording experiment logs.</p>
+<p>Use this logger to write messages to the experiment log file
+(e.g., fire_spread.log) rather than model run logs.</p>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <p>exp.logger.info("Experiment started")
+exp.logger.debug("Processing parameters...")</p>
+</details>
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><a class="autorefs autorefs-external" title="<code>logging.Logger</code>" href="https://docs.python.org/3/library/logging.html#logging.Logger">Logger</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The experiment-level logger instance.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
     </div>
 
@@ -3204,47 +3352,47 @@ Then, it initialize a new instance of experiment.</p>
 
             <details class="quote">
               <summary>Source code in <code>abses/core/experiment.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-208">208</a></span>
-<span class="normal"><a href="#__codelineno-0-209">209</a></span>
-<span class="normal"><a href="#__codelineno-0-210">210</a></span>
-<span class="normal"><a href="#__codelineno-0-211">211</a></span>
-<span class="normal"><a href="#__codelineno-0-212">212</a></span>
-<span class="normal"><a href="#__codelineno-0-213">213</a></span>
-<span class="normal"><a href="#__codelineno-0-214">214</a></span>
-<span class="normal"><a href="#__codelineno-0-215">215</a></span>
-<span class="normal"><a href="#__codelineno-0-216">216</a></span>
-<span class="normal"><a href="#__codelineno-0-217">217</a></span>
-<span class="normal"><a href="#__codelineno-0-218">218</a></span>
-<span class="normal"><a href="#__codelineno-0-219">219</a></span>
-<span class="normal"><a href="#__codelineno-0-220">220</a></span>
-<span class="normal"><a href="#__codelineno-0-221">221</a></span>
-<span class="normal"><a href="#__codelineno-0-222">222</a></span>
-<span class="normal"><a href="#__codelineno-0-223">223</a></span>
-<span class="normal"><a href="#__codelineno-0-224">224</a></span>
-<span class="normal"><a href="#__codelineno-0-225">225</a></span>
-<span class="normal"><a href="#__codelineno-0-226">226</a></span>
-<span class="normal"><a href="#__codelineno-0-227">227</a></span>
-<span class="normal"><a href="#__codelineno-0-228">228</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-208"><a id="__codelineno-0-208" name="__codelineno-0-208"></a><span class="nd">@classmethod</span>
-</span><span id="__span-0-209"><a id="__codelineno-0-209" name="__codelineno-0-209"></a><span class="k">def</span><span class="w"> </span><span class="nf">new</span><span class="p">(</span>
-</span><span id="__span-0-210"><a id="__codelineno-0-210" name="__codelineno-0-210"></a>    <span class="bp">cls</span><span class="p">,</span> <span class="n">model_cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">MainModelProtocol</span><span class="p">],</span> <span class="n">cfg</span><span class="p">:</span> <span class="n">Configurations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-</span><span id="__span-0-211"><a id="__codelineno-0-211" name="__codelineno-0-211"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Experiment"</span><span class="p">:</span>
-</span><span id="__span-0-212"><a id="__codelineno-0-212" name="__codelineno-0-212"></a><span class="w">    </span><span class="sd">"""Create a new experiment for the singleton class `Experiment`.</span>
-</span><span id="__span-0-213"><a id="__codelineno-0-213" name="__codelineno-0-213"></a><span class="sd">    This method will delete all currently available exp results and settings.</span>
-</span><span id="__span-0-214"><a id="__codelineno-0-214" name="__codelineno-0-214"></a><span class="sd">    Then, it initialize a new instance of experiment.</span>
-</span><span id="__span-0-215"><a id="__codelineno-0-215" name="__codelineno-0-215"></a>
-</span><span id="__span-0-216"><a id="__codelineno-0-216" name="__codelineno-0-216"></a><span class="sd">    Parameters:</span>
-</span><span id="__span-0-217"><a id="__codelineno-0-217" name="__codelineno-0-217"></a><span class="sd">        model_cls:</span>
-</span><span id="__span-0-218"><a id="__codelineno-0-218" name="__codelineno-0-218"></a><span class="sd">            Using which model class to initialize the experiment.</span>
-</span><span id="__span-0-219"><a id="__codelineno-0-219" name="__codelineno-0-219"></a>
-</span><span id="__span-0-220"><a id="__codelineno-0-220" name="__codelineno-0-220"></a><span class="sd">    Raises:</span>
-</span><span id="__span-0-221"><a id="__codelineno-0-221" name="__codelineno-0-221"></a><span class="sd">        TypeError:</span>
-</span><span id="__span-0-222"><a id="__codelineno-0-222" name="__codelineno-0-222"></a><span class="sd">            If the model class `model_cls` is not a valid `ABSESpy` model.</span>
-</span><span id="__span-0-223"><a id="__codelineno-0-223" name="__codelineno-0-223"></a>
-</span><span id="__span-0-224"><a id="__codelineno-0-224" name="__codelineno-0-224"></a><span class="sd">    Returns:</span>
-</span><span id="__span-0-225"><a id="__codelineno-0-225" name="__codelineno-0-225"></a><span class="sd">        An experiment.</span>
-</span><span id="__span-0-226"><a id="__codelineno-0-226" name="__codelineno-0-226"></a><span class="sd">    """</span>
-</span><span id="__span-0-227"><a id="__codelineno-0-227" name="__codelineno-0-227"></a>    <span class="n">ExperimentManager</span><span class="p">(</span><span class="n">model_cls</span><span class="p">)</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
-</span><span id="__span-0-228"><a id="__codelineno-0-228" name="__codelineno-0-228"></a>    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">model_cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+              <div class="language-python highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-240">240</a></span>
+<span class="normal"><a href="#__codelineno-0-241">241</a></span>
+<span class="normal"><a href="#__codelineno-0-242">242</a></span>
+<span class="normal"><a href="#__codelineno-0-243">243</a></span>
+<span class="normal"><a href="#__codelineno-0-244">244</a></span>
+<span class="normal"><a href="#__codelineno-0-245">245</a></span>
+<span class="normal"><a href="#__codelineno-0-246">246</a></span>
+<span class="normal"><a href="#__codelineno-0-247">247</a></span>
+<span class="normal"><a href="#__codelineno-0-248">248</a></span>
+<span class="normal"><a href="#__codelineno-0-249">249</a></span>
+<span class="normal"><a href="#__codelineno-0-250">250</a></span>
+<span class="normal"><a href="#__codelineno-0-251">251</a></span>
+<span class="normal"><a href="#__codelineno-0-252">252</a></span>
+<span class="normal"><a href="#__codelineno-0-253">253</a></span>
+<span class="normal"><a href="#__codelineno-0-254">254</a></span>
+<span class="normal"><a href="#__codelineno-0-255">255</a></span>
+<span class="normal"><a href="#__codelineno-0-256">256</a></span>
+<span class="normal"><a href="#__codelineno-0-257">257</a></span>
+<span class="normal"><a href="#__codelineno-0-258">258</a></span>
+<span class="normal"><a href="#__codelineno-0-259">259</a></span>
+<span class="normal"><a href="#__codelineno-0-260">260</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-240"><a id="__codelineno-0-240" name="__codelineno-0-240"></a><span class="nd">@classmethod</span>
+</span><span id="__span-0-241"><a id="__codelineno-0-241" name="__codelineno-0-241"></a><span class="k">def</span><span class="w"> </span><span class="nf">new</span><span class="p">(</span>
+</span><span id="__span-0-242"><a id="__codelineno-0-242" name="__codelineno-0-242"></a>    <span class="bp">cls</span><span class="p">,</span> <span class="n">model_cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">MainModelProtocol</span><span class="p">],</span> <span class="n">cfg</span><span class="p">:</span> <span class="n">Configurations</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+</span><span id="__span-0-243"><a id="__codelineno-0-243" name="__codelineno-0-243"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Experiment"</span><span class="p">:</span>
+</span><span id="__span-0-244"><a id="__codelineno-0-244" name="__codelineno-0-244"></a><span class="w">    </span><span class="sd">"""Create a new experiment for the singleton class `Experiment`.</span>
+</span><span id="__span-0-245"><a id="__codelineno-0-245" name="__codelineno-0-245"></a><span class="sd">    This method will delete all currently available exp results and settings.</span>
+</span><span id="__span-0-246"><a id="__codelineno-0-246" name="__codelineno-0-246"></a><span class="sd">    Then, it initialize a new instance of experiment.</span>
+</span><span id="__span-0-247"><a id="__codelineno-0-247" name="__codelineno-0-247"></a>
+</span><span id="__span-0-248"><a id="__codelineno-0-248" name="__codelineno-0-248"></a><span class="sd">    Parameters:</span>
+</span><span id="__span-0-249"><a id="__codelineno-0-249" name="__codelineno-0-249"></a><span class="sd">        model_cls:</span>
+</span><span id="__span-0-250"><a id="__codelineno-0-250" name="__codelineno-0-250"></a><span class="sd">            Using which model class to initialize the experiment.</span>
+</span><span id="__span-0-251"><a id="__codelineno-0-251" name="__codelineno-0-251"></a>
+</span><span id="__span-0-252"><a id="__codelineno-0-252" name="__codelineno-0-252"></a><span class="sd">    Raises:</span>
+</span><span id="__span-0-253"><a id="__codelineno-0-253" name="__codelineno-0-253"></a><span class="sd">        TypeError:</span>
+</span><span id="__span-0-254"><a id="__codelineno-0-254" name="__codelineno-0-254"></a><span class="sd">            If the model class `model_cls` is not a valid `ABSESpy` model.</span>
+</span><span id="__span-0-255"><a id="__codelineno-0-255" name="__codelineno-0-255"></a>
+</span><span id="__span-0-256"><a id="__codelineno-0-256" name="__codelineno-0-256"></a><span class="sd">    Returns:</span>
+</span><span id="__span-0-257"><a id="__codelineno-0-257" name="__codelineno-0-257"></a><span class="sd">        An experiment.</span>
+</span><span id="__span-0-258"><a id="__codelineno-0-258" name="__codelineno-0-258"></a><span class="sd">    """</span>
+</span><span id="__span-0-259"><a id="__codelineno-0-259" name="__codelineno-0-259"></a>    <span class="n">ExperimentManager</span><span class="p">(</span><span class="n">model_cls</span><span class="p">)</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
+</span><span id="__span-0-260"><a id="__codelineno-0-260" name="__codelineno-0-260"></a>    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">model_cls</span><span class="p">,</span> <span class="n">cfg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </span></code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
@@ -3273,13 +3421,13 @@ Then, it initialize a new instance of experiment.</p>
 
             <details class="quote">
               <summary>Source code in <code>abses/core/experiment.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-280">280</a></span>
-<span class="normal"><a href="#__codelineno-0-281">281</a></span>
-<span class="normal"><a href="#__codelineno-0-282">282</a></span>
-<span class="normal"><a href="#__codelineno-0-283">283</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-280"><a id="__codelineno-0-280" name="__codelineno-0-280"></a><span class="nd">@staticmethod</span>
-</span><span id="__span-0-281"><a id="__codelineno-0-281" name="__codelineno-0-281"></a><span class="k">def</span><span class="w"> </span><span class="nf">is_hydra_job</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-</span><span id="__span-0-282"><a id="__codelineno-0-282" name="__codelineno-0-282"></a><span class="w">    </span><span class="sd">"""Returns True if the experiment is running in Hydra."""</span>
-</span><span id="__span-0-283"><a id="__codelineno-0-283" name="__codelineno-0-283"></a>    <span class="k">return</span> <span class="n">GlobalHydra</span><span class="p">()</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">()</span>
+              <div class="language-python highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-312">312</a></span>
+<span class="normal"><a href="#__codelineno-0-313">313</a></span>
+<span class="normal"><a href="#__codelineno-0-314">314</a></span>
+<span class="normal"><a href="#__codelineno-0-315">315</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-312"><a id="__codelineno-0-312" name="__codelineno-0-312"></a><span class="nd">@staticmethod</span>
+</span><span id="__span-0-313"><a id="__codelineno-0-313" name="__codelineno-0-313"></a><span class="k">def</span><span class="w"> </span><span class="nf">is_hydra_job</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+</span><span id="__span-0-314"><a id="__codelineno-0-314" name="__codelineno-0-314"></a><span class="w">    </span><span class="sd">"""Returns True if the experiment is running in Hydra."""</span>
+</span><span id="__span-0-315"><a id="__codelineno-0-315" name="__codelineno-0-315"></a>    <span class="k">return</span> <span class="n">GlobalHydra</span><span class="p">()</span><span class="o">.</span><span class="n">is_initialized</span><span class="p">()</span>
 </span></code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
@@ -3304,11 +3452,11 @@ Then, it initialize a new instance of experiment.</p>
 
             <details class="quote">
               <summary>Source code in <code>abses/core/experiment.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-285">285</a></span>
-<span class="normal"><a href="#__codelineno-0-286">286</a></span>
-<span class="normal"><a href="#__codelineno-0-287">287</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-285"><a id="__codelineno-0-285" name="__codelineno-0-285"></a><span class="k">def</span><span class="w"> </span><span class="nf">summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
-</span><span id="__span-0-286"><a id="__codelineno-0-286" name="__codelineno-0-286"></a><span class="w">    </span><span class="sd">"""Summary of the experiment."""</span>
-</span><span id="__span-0-287"><a id="__codelineno-0-287" name="__codelineno-0-287"></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="o">.</span><span class="n">get_datasets</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_seed</span><span class="p">))</span>
+              <div class="language-python highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-317">317</a></span>
+<span class="normal"><a href="#__codelineno-0-318">318</a></span>
+<span class="normal"><a href="#__codelineno-0-319">319</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-317"><a id="__codelineno-0-317" name="__codelineno-0-317"></a><span class="k">def</span><span class="w"> </span><span class="nf">summary</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+</span><span id="__span-0-318"><a id="__codelineno-0-318" name="__codelineno-0-318"></a><span class="w">    </span><span class="sd">"""Summary of the experiment."""</span>
+</span><span id="__span-0-319"><a id="__codelineno-0-319" name="__codelineno-0-319"></a>    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="o">.</span><span class="n">get_datasets</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_base_seed</span><span class="p">))</span>
 </span></code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
@@ -3338,73 +3486,73 @@ Then, it initialize a new instance of experiment.</p>
 
             <details class="quote">
               <summary>Source code in <code>abses/core/experiment.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-557">557</a></span>
-<span class="normal"><a href="#__codelineno-0-558">558</a></span>
-<span class="normal"><a href="#__codelineno-0-559">559</a></span>
-<span class="normal"><a href="#__codelineno-0-560">560</a></span>
-<span class="normal"><a href="#__codelineno-0-561">561</a></span>
-<span class="normal"><a href="#__codelineno-0-562">562</a></span>
-<span class="normal"><a href="#__codelineno-0-563">563</a></span>
-<span class="normal"><a href="#__codelineno-0-564">564</a></span>
-<span class="normal"><a href="#__codelineno-0-565">565</a></span>
-<span class="normal"><a href="#__codelineno-0-566">566</a></span>
-<span class="normal"><a href="#__codelineno-0-567">567</a></span>
-<span class="normal"><a href="#__codelineno-0-568">568</a></span>
-<span class="normal"><a href="#__codelineno-0-569">569</a></span>
-<span class="normal"><a href="#__codelineno-0-570">570</a></span>
-<span class="normal"><a href="#__codelineno-0-571">571</a></span>
-<span class="normal"><a href="#__codelineno-0-572">572</a></span>
-<span class="normal"><a href="#__codelineno-0-573">573</a></span>
-<span class="normal"><a href="#__codelineno-0-574">574</a></span>
-<span class="normal"><a href="#__codelineno-0-575">575</a></span>
-<span class="normal"><a href="#__codelineno-0-576">576</a></span>
-<span class="normal"><a href="#__codelineno-0-577">577</a></span>
-<span class="normal"><a href="#__codelineno-0-578">578</a></span>
-<span class="normal"><a href="#__codelineno-0-579">579</a></span>
-<span class="normal"><a href="#__codelineno-0-580">580</a></span>
-<span class="normal"><a href="#__codelineno-0-581">581</a></span>
-<span class="normal"><a href="#__codelineno-0-582">582</a></span>
-<span class="normal"><a href="#__codelineno-0-583">583</a></span>
-<span class="normal"><a href="#__codelineno-0-584">584</a></span>
-<span class="normal"><a href="#__codelineno-0-585">585</a></span>
-<span class="normal"><a href="#__codelineno-0-586">586</a></span>
-<span class="normal"><a href="#__codelineno-0-587">587</a></span>
-<span class="normal"><a href="#__codelineno-0-588">588</a></span>
+              <div class="language-python highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-588">588</a></span>
 <span class="normal"><a href="#__codelineno-0-589">589</a></span>
-<span class="normal"><a href="#__codelineno-0-590">590</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-557"><a id="__codelineno-0-557" name="__codelineno-0-557"></a><span class="k">def</span><span class="w"> </span><span class="nf">batch_run</span><span class="p">(</span>
-</span><span id="__span-0-558"><a id="__codelineno-0-558" name="__codelineno-0-558"></a>    <span class="bp">self</span><span class="p">,</span>
-</span><span id="__span-0-559"><a id="__codelineno-0-559" name="__codelineno-0-559"></a>    <span class="n">repeats</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-</span><span id="__span-0-560"><a id="__codelineno-0-560" name="__codelineno-0-560"></a>    <span class="n">parallels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-561"><a id="__codelineno-0-561" name="__codelineno-0-561"></a>    <span class="n">display_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-</span><span id="__span-0-562"><a id="__codelineno-0-562" name="__codelineno-0-562"></a>    <span class="n">overrides</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Number</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-</span><span id="__span-0-563"><a id="__codelineno-0-563" name="__codelineno-0-563"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-564"><a id="__codelineno-0-564" name="__codelineno-0-564"></a><span class="w">    </span><span class="sd">"""Run the experiment multiple times."""</span>
-</span><span id="__span-0-565"><a id="__codelineno-0-565" name="__codelineno-0-565"></a>    <span class="n">cfg</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">)</span>
-</span><span id="__span-0-566"><a id="__codelineno-0-566" name="__codelineno-0-566"></a>
-</span><span id="__span-0-567"><a id="__codelineno-0-567" name="__codelineno-0-567"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">overrides</span><span class="p">:</span>
-</span><span id="__span-0-568"><a id="__codelineno-0-568" name="__codelineno-0-568"></a>        <span class="c1"># 如果没有覆写，直接运行</span>
-</span><span id="__span-0-569"><a id="__codelineno-0-569" name="__codelineno-0-569"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_batch_run_repeats</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">repeats</span><span class="p">,</span> <span class="n">parallels</span><span class="p">,</span> <span class="n">display_progress</span><span class="p">)</span>
-</span><span id="__span-0-570"><a id="__codelineno-0-570" name="__codelineno-0-570"></a>        <span class="k">return</span>
-</span><span id="__span-0-571"><a id="__codelineno-0-571" name="__codelineno-0-571"></a>
-</span><span id="__span-0-572"><a id="__codelineno-0-572" name="__codelineno-0-572"></a>    <span class="c1"># 获取所有配置组合</span>
-</span><span id="__span-0-573"><a id="__codelineno-0-573" name="__codelineno-0-573"></a>    <span class="n">all_configs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_overriding</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">overrides</span><span class="p">))</span>
-</span><span id="__span-0-574"><a id="__codelineno-0-574" name="__codelineno-0-574"></a>    <span class="c1"># 使用一个总进度条</span>
-</span><span id="__span-0-575"><a id="__codelineno-0-575" name="__codelineno-0-575"></a>    <span class="k">for</span> <span class="n">config</span><span class="p">,</span> <span class="n">overrides_</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span>
-</span><span id="__span-0-576"><a id="__codelineno-0-576" name="__codelineno-0-576"></a>        <span class="n">all_configs</span><span class="p">,</span>
-</span><span id="__span-0-577"><a id="__codelineno-0-577" name="__codelineno-0-577"></a>        <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">display_progress</span><span class="p">,</span>
-</span><span id="__span-0-578"><a id="__codelineno-0-578" name="__codelineno-0-578"></a>        <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">all_configs</span><span class="p">)</span><span class="si">}</span><span class="s2"> jobs (repeats </span><span class="si">{</span><span class="n">repeats</span><span class="si">}</span><span class="s2"> times each)."</span><span class="p">,</span>
-</span><span id="__span-0-579"><a id="__codelineno-0-579" name="__codelineno-0-579"></a>        <span class="n">position</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-</span><span id="__span-0-580"><a id="__codelineno-0-580" name="__codelineno-0-580"></a>    <span class="p">):</span>
-</span><span id="__span-0-581"><a id="__codelineno-0-581" name="__codelineno-0-581"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">overrides</span> <span class="o">=</span> <span class="n">overrides_</span>
-</span><span id="__span-0-582"><a id="__codelineno-0-582" name="__codelineno-0-582"></a>        <span class="c1"># 内层任务只显示简单信息，不显示进度条</span>
-</span><span id="__span-0-583"><a id="__codelineno-0-583" name="__codelineno-0-583"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_batch_run_repeats</span><span class="p">(</span>
-</span><span id="__span-0-584"><a id="__codelineno-0-584" name="__codelineno-0-584"></a>            <span class="n">config</span><span class="p">,</span>
-</span><span id="__span-0-585"><a id="__codelineno-0-585" name="__codelineno-0-585"></a>            <span class="n">repeats</span><span class="p">,</span>
-</span><span id="__span-0-586"><a id="__codelineno-0-586" name="__codelineno-0-586"></a>            <span class="n">parallels</span><span class="p">,</span>
-</span><span id="__span-0-587"><a id="__codelineno-0-587" name="__codelineno-0-587"></a>            <span class="n">display_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># 关闭内层进度条</span>
-</span><span id="__span-0-588"><a id="__codelineno-0-588" name="__codelineno-0-588"></a>        <span class="p">)</span>
-</span><span id="__span-0-589"><a id="__codelineno-0-589" name="__codelineno-0-589"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_job_id</span> <span class="o">+=</span> <span class="mi">1</span>
-</span><span id="__span-0-590"><a id="__codelineno-0-590" name="__codelineno-0-590"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">overrides</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="normal"><a href="#__codelineno-0-590">590</a></span>
+<span class="normal"><a href="#__codelineno-0-591">591</a></span>
+<span class="normal"><a href="#__codelineno-0-592">592</a></span>
+<span class="normal"><a href="#__codelineno-0-593">593</a></span>
+<span class="normal"><a href="#__codelineno-0-594">594</a></span>
+<span class="normal"><a href="#__codelineno-0-595">595</a></span>
+<span class="normal"><a href="#__codelineno-0-596">596</a></span>
+<span class="normal"><a href="#__codelineno-0-597">597</a></span>
+<span class="normal"><a href="#__codelineno-0-598">598</a></span>
+<span class="normal"><a href="#__codelineno-0-599">599</a></span>
+<span class="normal"><a href="#__codelineno-0-600">600</a></span>
+<span class="normal"><a href="#__codelineno-0-601">601</a></span>
+<span class="normal"><a href="#__codelineno-0-602">602</a></span>
+<span class="normal"><a href="#__codelineno-0-603">603</a></span>
+<span class="normal"><a href="#__codelineno-0-604">604</a></span>
+<span class="normal"><a href="#__codelineno-0-605">605</a></span>
+<span class="normal"><a href="#__codelineno-0-606">606</a></span>
+<span class="normal"><a href="#__codelineno-0-607">607</a></span>
+<span class="normal"><a href="#__codelineno-0-608">608</a></span>
+<span class="normal"><a href="#__codelineno-0-609">609</a></span>
+<span class="normal"><a href="#__codelineno-0-610">610</a></span>
+<span class="normal"><a href="#__codelineno-0-611">611</a></span>
+<span class="normal"><a href="#__codelineno-0-612">612</a></span>
+<span class="normal"><a href="#__codelineno-0-613">613</a></span>
+<span class="normal"><a href="#__codelineno-0-614">614</a></span>
+<span class="normal"><a href="#__codelineno-0-615">615</a></span>
+<span class="normal"><a href="#__codelineno-0-616">616</a></span>
+<span class="normal"><a href="#__codelineno-0-617">617</a></span>
+<span class="normal"><a href="#__codelineno-0-618">618</a></span>
+<span class="normal"><a href="#__codelineno-0-619">619</a></span>
+<span class="normal"><a href="#__codelineno-0-620">620</a></span>
+<span class="normal"><a href="#__codelineno-0-621">621</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-588"><a id="__codelineno-0-588" name="__codelineno-0-588"></a><span class="k">def</span><span class="w"> </span><span class="nf">batch_run</span><span class="p">(</span>
+</span><span id="__span-0-589"><a id="__codelineno-0-589" name="__codelineno-0-589"></a>    <span class="bp">self</span><span class="p">,</span>
+</span><span id="__span-0-590"><a id="__codelineno-0-590" name="__codelineno-0-590"></a>    <span class="n">repeats</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-0-591"><a id="__codelineno-0-591" name="__codelineno-0-591"></a>    <span class="n">parallels</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-592"><a id="__codelineno-0-592" name="__codelineno-0-592"></a>    <span class="n">display_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+</span><span id="__span-0-593"><a id="__codelineno-0-593" name="__codelineno-0-593"></a>    <span class="n">overrides</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Number</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-0-594"><a id="__codelineno-0-594" name="__codelineno-0-594"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-595"><a id="__codelineno-0-595" name="__codelineno-0-595"></a><span class="w">    </span><span class="sd">"""Run the experiment multiple times."""</span>
+</span><span id="__span-0-596"><a id="__codelineno-0-596" name="__codelineno-0-596"></a>    <span class="n">cfg</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_cfg</span><span class="p">)</span>
+</span><span id="__span-0-597"><a id="__codelineno-0-597" name="__codelineno-0-597"></a>
+</span><span id="__span-0-598"><a id="__codelineno-0-598" name="__codelineno-0-598"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">overrides</span><span class="p">:</span>
+</span><span id="__span-0-599"><a id="__codelineno-0-599" name="__codelineno-0-599"></a>        <span class="c1"># 如果没有覆写，直接运行</span>
+</span><span id="__span-0-600"><a id="__codelineno-0-600" name="__codelineno-0-600"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_batch_run_repeats</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">repeats</span><span class="p">,</span> <span class="n">parallels</span><span class="p">,</span> <span class="n">display_progress</span><span class="p">)</span>
+</span><span id="__span-0-601"><a id="__codelineno-0-601" name="__codelineno-0-601"></a>        <span class="k">return</span>
+</span><span id="__span-0-602"><a id="__codelineno-0-602" name="__codelineno-0-602"></a>
+</span><span id="__span-0-603"><a id="__codelineno-0-603" name="__codelineno-0-603"></a>    <span class="c1"># 获取所有配置组合</span>
+</span><span id="__span-0-604"><a id="__codelineno-0-604" name="__codelineno-0-604"></a>    <span class="n">all_configs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_overriding</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">overrides</span><span class="p">))</span>
+</span><span id="__span-0-605"><a id="__codelineno-0-605" name="__codelineno-0-605"></a>    <span class="c1"># 使用一个总进度条</span>
+</span><span id="__span-0-606"><a id="__codelineno-0-606" name="__codelineno-0-606"></a>    <span class="k">for</span> <span class="n">config</span><span class="p">,</span> <span class="n">overrides_</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span>
+</span><span id="__span-0-607"><a id="__codelineno-0-607" name="__codelineno-0-607"></a>        <span class="n">all_configs</span><span class="p">,</span>
+</span><span id="__span-0-608"><a id="__codelineno-0-608" name="__codelineno-0-608"></a>        <span class="n">disable</span><span class="o">=</span><span class="ow">not</span> <span class="n">display_progress</span><span class="p">,</span>
+</span><span id="__span-0-609"><a id="__codelineno-0-609" name="__codelineno-0-609"></a>        <span class="n">desc</span><span class="o">=</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">all_configs</span><span class="p">)</span><span class="si">}</span><span class="s2"> jobs (repeats </span><span class="si">{</span><span class="n">repeats</span><span class="si">}</span><span class="s2"> times each)."</span><span class="p">,</span>
+</span><span id="__span-0-610"><a id="__codelineno-0-610" name="__codelineno-0-610"></a>        <span class="n">position</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+</span><span id="__span-0-611"><a id="__codelineno-0-611" name="__codelineno-0-611"></a>    <span class="p">):</span>
+</span><span id="__span-0-612"><a id="__codelineno-0-612" name="__codelineno-0-612"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">overrides</span> <span class="o">=</span> <span class="n">overrides_</span>
+</span><span id="__span-0-613"><a id="__codelineno-0-613" name="__codelineno-0-613"></a>        <span class="c1"># 内层任务只显示简单信息，不显示进度条</span>
+</span><span id="__span-0-614"><a id="__codelineno-0-614" name="__codelineno-0-614"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_batch_run_repeats</span><span class="p">(</span>
+</span><span id="__span-0-615"><a id="__codelineno-0-615" name="__codelineno-0-615"></a>            <span class="n">config</span><span class="p">,</span>
+</span><span id="__span-0-616"><a id="__codelineno-0-616" name="__codelineno-0-616"></a>            <span class="n">repeats</span><span class="p">,</span>
+</span><span id="__span-0-617"><a id="__codelineno-0-617" name="__codelineno-0-617"></a>            <span class="n">parallels</span><span class="p">,</span>
+</span><span id="__span-0-618"><a id="__codelineno-0-618" name="__codelineno-0-618"></a>            <span class="n">display_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># 关闭内层进度条</span>
+</span><span id="__span-0-619"><a id="__codelineno-0-619" name="__codelineno-0-619"></a>        <span class="p">)</span>
+</span><span id="__span-0-620"><a id="__codelineno-0-620" name="__codelineno-0-620"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">_job_id</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span id="__span-0-621"><a id="__codelineno-0-621" name="__codelineno-0-621"></a>    <span class="bp">self</span><span class="o">.</span><span class="n">overrides</span> <span class="o">=</span> <span class="p">{}</span>
 </span></code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
@@ -3429,35 +3577,35 @@ Then, it initialize a new instance of experiment.</p>
 
             <details class="quote">
               <summary>Source code in <code>abses/core/experiment.py</code></summary>
-              <div class="language-python highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-592">592</a></span>
-<span class="normal"><a href="#__codelineno-0-593">593</a></span>
-<span class="normal"><a href="#__codelineno-0-594">594</a></span>
-<span class="normal"><a href="#__codelineno-0-595">595</a></span>
-<span class="normal"><a href="#__codelineno-0-596">596</a></span>
-<span class="normal"><a href="#__codelineno-0-597">597</a></span>
-<span class="normal"><a href="#__codelineno-0-598">598</a></span>
-<span class="normal"><a href="#__codelineno-0-599">599</a></span>
-<span class="normal"><a href="#__codelineno-0-600">600</a></span>
-<span class="normal"><a href="#__codelineno-0-601">601</a></span>
-<span class="normal"><a href="#__codelineno-0-602">602</a></span>
-<span class="normal"><a href="#__codelineno-0-603">603</a></span>
-<span class="normal"><a href="#__codelineno-0-604">604</a></span>
-<span class="normal"><a href="#__codelineno-0-605">605</a></span>
-<span class="normal"><a href="#__codelineno-0-606">606</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-592"><a id="__codelineno-0-592" name="__codelineno-0-592"></a><span class="k">def</span><span class="w"> </span><span class="nf">add_hooks</span><span class="p">(</span>
-</span><span id="__span-0-593"><a id="__codelineno-0-593" name="__codelineno-0-593"></a>    <span class="bp">self</span><span class="p">,</span>
-</span><span id="__span-0-594"><a id="__codelineno-0-594" name="__codelineno-0-594"></a>    <span class="n">hooks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">HookFunc</span><span class="p">]</span> <span class="o">|</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HookFunc</span><span class="p">]</span> <span class="o">|</span> <span class="n">HookFunc</span><span class="p">,</span>
-</span><span id="__span-0-595"><a id="__codelineno-0-595" name="__codelineno-0-595"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="__span-0-596"><a id="__codelineno-0-596" name="__codelineno-0-596"></a><span class="w">    </span><span class="sd">"""Add hooks to the experiment."""</span>
-</span><span id="__span-0-597"><a id="__codelineno-0-597" name="__codelineno-0-597"></a>    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">hooks</span><span class="p">,</span> <span class="s2">"__call__"</span><span class="p">):</span>
-</span><span id="__span-0-598"><a id="__codelineno-0-598" name="__codelineno-0-598"></a>        <span class="n">hooks</span> <span class="o">=</span> <span class="p">[</span><span class="n">hooks</span><span class="p">]</span>
-</span><span id="__span-0-599"><a id="__codelineno-0-599" name="__codelineno-0-599"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hooks</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
-</span><span id="__span-0-600"><a id="__codelineno-0-600" name="__codelineno-0-600"></a>        <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="n">hooks</span><span class="p">:</span>
-</span><span id="__span-0-601"><a id="__codelineno-0-601" name="__codelineno-0-601"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="o">.</span><span class="n">add_a_hook</span><span class="p">(</span><span class="n">hook_func</span><span class="o">=</span><span class="n">hook</span><span class="p">)</span>
-</span><span id="__span-0-602"><a id="__codelineno-0-602" name="__codelineno-0-602"></a>    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hooks</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-</span><span id="__span-0-603"><a id="__codelineno-0-603" name="__codelineno-0-603"></a>        <span class="k">for</span> <span class="n">hook_name</span><span class="p">,</span> <span class="n">hook_func</span> <span class="ow">in</span> <span class="n">hooks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-</span><span id="__span-0-604"><a id="__codelineno-0-604" name="__codelineno-0-604"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="o">.</span><span class="n">add_a_hook</span><span class="p">(</span><span class="n">hook_func</span><span class="o">=</span><span class="n">hook_func</span><span class="p">,</span> <span class="n">hook_name</span><span class="o">=</span><span class="n">hook_name</span><span class="p">)</span>
-</span><span id="__span-0-605"><a id="__codelineno-0-605" name="__codelineno-0-605"></a>    <span class="k">else</span><span class="p">:</span>
-</span><span id="__span-0-606"><a id="__codelineno-0-606" name="__codelineno-0-606"></a>        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid hooks type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hooks</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
+              <div class="language-python highlight"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-623">623</a></span>
+<span class="normal"><a href="#__codelineno-0-624">624</a></span>
+<span class="normal"><a href="#__codelineno-0-625">625</a></span>
+<span class="normal"><a href="#__codelineno-0-626">626</a></span>
+<span class="normal"><a href="#__codelineno-0-627">627</a></span>
+<span class="normal"><a href="#__codelineno-0-628">628</a></span>
+<span class="normal"><a href="#__codelineno-0-629">629</a></span>
+<span class="normal"><a href="#__codelineno-0-630">630</a></span>
+<span class="normal"><a href="#__codelineno-0-631">631</a></span>
+<span class="normal"><a href="#__codelineno-0-632">632</a></span>
+<span class="normal"><a href="#__codelineno-0-633">633</a></span>
+<span class="normal"><a href="#__codelineno-0-634">634</a></span>
+<span class="normal"><a href="#__codelineno-0-635">635</a></span>
+<span class="normal"><a href="#__codelineno-0-636">636</a></span>
+<span class="normal"><a href="#__codelineno-0-637">637</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-623"><a id="__codelineno-0-623" name="__codelineno-0-623"></a><span class="k">def</span><span class="w"> </span><span class="nf">add_hooks</span><span class="p">(</span>
+</span><span id="__span-0-624"><a id="__codelineno-0-624" name="__codelineno-0-624"></a>    <span class="bp">self</span><span class="p">,</span>
+</span><span id="__span-0-625"><a id="__codelineno-0-625" name="__codelineno-0-625"></a>    <span class="n">hooks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">HookFunc</span><span class="p">]</span> <span class="o">|</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HookFunc</span><span class="p">]</span> <span class="o">|</span> <span class="n">HookFunc</span><span class="p">,</span>
+</span><span id="__span-0-626"><a id="__codelineno-0-626" name="__codelineno-0-626"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-0-627"><a id="__codelineno-0-627" name="__codelineno-0-627"></a><span class="w">    </span><span class="sd">"""Add hooks to the experiment."""</span>
+</span><span id="__span-0-628"><a id="__codelineno-0-628" name="__codelineno-0-628"></a>    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">hooks</span><span class="p">,</span> <span class="s2">"__call__"</span><span class="p">):</span>
+</span><span id="__span-0-629"><a id="__codelineno-0-629" name="__codelineno-0-629"></a>        <span class="n">hooks</span> <span class="o">=</span> <span class="p">[</span><span class="n">hooks</span><span class="p">]</span>
+</span><span id="__span-0-630"><a id="__codelineno-0-630" name="__codelineno-0-630"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hooks</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+</span><span id="__span-0-631"><a id="__codelineno-0-631" name="__codelineno-0-631"></a>        <span class="k">for</span> <span class="n">hook</span> <span class="ow">in</span> <span class="n">hooks</span><span class="p">:</span>
+</span><span id="__span-0-632"><a id="__codelineno-0-632" name="__codelineno-0-632"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="o">.</span><span class="n">add_a_hook</span><span class="p">(</span><span class="n">hook_func</span><span class="o">=</span><span class="n">hook</span><span class="p">)</span>
+</span><span id="__span-0-633"><a id="__codelineno-0-633" name="__codelineno-0-633"></a>    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hooks</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+</span><span id="__span-0-634"><a id="__codelineno-0-634" name="__codelineno-0-634"></a>        <span class="k">for</span> <span class="n">hook_name</span><span class="p">,</span> <span class="n">hook_func</span> <span class="ow">in</span> <span class="n">hooks</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+</span><span id="__span-0-635"><a id="__codelineno-0-635" name="__codelineno-0-635"></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_manager</span><span class="o">.</span><span class="n">add_a_hook</span><span class="p">(</span><span class="n">hook_func</span><span class="o">=</span><span class="n">hook_func</span><span class="p">,</span> <span class="n">hook_name</span><span class="o">=</span><span class="n">hook_name</span><span class="p">)</span>
+</span><span id="__span-0-636"><a id="__codelineno-0-636" name="__codelineno-0-636"></a>    <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-0-637"><a id="__codelineno-0-637" name="__codelineno-0-637"></a>        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Invalid hooks type: </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">hooks</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
 </span></code></pre></div></td></tr></tbody></table></div>
             </details>
     </div>
