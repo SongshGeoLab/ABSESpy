@@ -306,6 +306,7 @@ class TestExpLogging:
         cfg = OmegaConf.create(
             {
                 "outpath": str(tmp_path),
+                "exp": {"name": "test_experiment"},
                 "log": {
                     "mode": "separate",
                     "run": {"file": {"name": "model"}},
@@ -314,8 +315,8 @@ class TestExpLogging:
             }
         )
         _ = setup_exp_logger(cfg)  # Setup logger
-        # In separate mode, exp log should use run.file.name if not explicitly set
-        assert (tmp_path / "model.log").exists()
+        # In separate mode, exp log should use exp.name if not explicitly set
+        assert (tmp_path / "test_experiment.log").exists()
 
 
 class TestModelLogging:

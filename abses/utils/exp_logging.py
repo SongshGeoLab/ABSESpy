@@ -103,16 +103,18 @@ def setup_exp_logger(
         ) or (isinstance(exp_file_cfg_raw, DictConfig) and "name" in exp_file_cfg_raw)
 
         exp_file_name = exp_file.get("name", "experiment.log")
-        if (
-            logging_mode == "separate"
-            and not name_explicitly_set
-            and exp_file_name == "experiment.log"
-        ):
-            # In separate mode, if name not explicitly set, use run.file.name
-            run_file_cfg = get_file_config(cfg, "run")
-            if run_file_cfg:
-                log_name = str(run_file_cfg.get("name", "model")).replace(".log", "")
-                exp_file_name = f"{log_name}.log"
+        if not name_explicitly_set and exp_file_name == "experiment.log":
+            # If name not explicitly set, use exp.name as experiment log file name
+            if isinstance(cfg, dict):
+                exp_name = cfg.get("exp", {}).get("name")
+            else:
+                try:
+                    exp_name = OmegaConf.select(cfg, "exp.name", default=None)
+                except Exception:
+                    exp_name = None
+
+            if exp_name:
+                exp_file_name = f"{exp_name}.log"
 
         # Get output path
         if isinstance(cfg, dict):
@@ -143,13 +145,17 @@ def setup_exp_logger(
         )
         logger.addHandler(file_handler)
     elif logging_mode == "separate":
-        # In separate mode, if exp.file is not enabled, create experiment log file using run.file.name
-        run_file_cfg = get_file_config(cfg, "run")
-        log_name = (
-            str(run_file_cfg.get("name", "model")).replace(".log", "")
-            if run_file_cfg
-            else "model"
-        )
+        # In separate mode, if exp.file is not enabled, create experiment log file using exp.name
+        # Get exp.name from config
+        if isinstance(cfg, dict):
+            exp_name = cfg.get("exp", {}).get("name")
+        else:
+            try:
+                exp_name = OmegaConf.select(cfg, "exp.name", default=None)
+            except Exception:
+                exp_name = None
+
+        log_name = exp_name if exp_name else "experiment"
 
         # Get output path
         if isinstance(cfg, dict):
