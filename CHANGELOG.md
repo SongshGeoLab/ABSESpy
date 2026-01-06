@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.11.0](https://github.com/SongshGeoLab/ABSESpy/compare/v0.10.0...v0.11.0) (2026-01-06)
+
+
+### Features
+
+* **analysis:** :sparkles: Add analysis utilities and documentation for experiment results ([d6267d8](https://github.com/SongshGeoLab/ABSESpy/commit/d6267d87295291c64f724f9aeef7c636a353b6cd))
+
+
+### Bug Fixes
+
+* **project:** :construction_worker: Update pre-commit configuration and tox settings ([8e115f6](https://github.com/SongshGeoLab/ABSESpy/commit/8e115f642d80423ec47e298fdf4fc93fe71c48a2))
+
 ## [0.10.0](https://github.com/SongshGeoLab/ABSESpy/compare/v0.9.4...v0.10.0) (2026-01-01)
 
 
