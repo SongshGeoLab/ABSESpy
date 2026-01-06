@@ -188,16 +188,20 @@ test-all:
 	@echo "🧪 Running Complete Test Suite (Including Notebooks and Multi-version)..."
 	@echo "Running standard tests..."
 	uv run pytest tests/ -vs --clean-alluredir --alluredir tmp/allure_results --cov=abses --no-cov-on-fail
+	@echo "Installing docs dependencies for notebook tests..."
+	@uv sync --group docs || echo "⚠️ Failed to install docs dependencies"
 	@echo "Running notebook tests..."
 	uv run pytest --nbmake docs/tutorial/**/*.ipynb -v --tb=short || echo "⚠️ Some notebook tests may have failed (this is acceptable for documentation notebooks)"
 	@echo "Running multi-version tests with tox..."
-	uv run --with tox tox -p auto || echo "⚠️ Multi-version tests completed with warnings"
+	@echo "⚠️ Note: tox may have issues with uv-managed Python environments. If it fails, consider using system Python for tox."
+	tox -p auto || echo "⚠️ Multi-version tests completed with warnings"
 	@echo "✅ All tests completed!"
 
 # 仅运行 tox 多版本测试
 test-tox:
 	@echo "🔄 Running Multi-version Tests with Tox..."
-	uv run --with tox tox -p auto
+	@echo "⚠️ Note: tox uses system Python interpreters. Make sure python3.11, python3.12, python3.13 are available in PATH."
+	tox -p auto
 
 # 仅运行 notebook 测试（包括所有 ipynb 文件）
 test-all-notebooks:
