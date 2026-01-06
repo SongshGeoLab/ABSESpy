@@ -2,6 +2,7 @@
 # -*-coding:utf-8 -*-
 """Utils module for ABSESpy."""
 
+from .analysis import ExpAnalyzer, ResultAnalyzer
 from .data import load_data
 from .errors import ABSESpyError
 from .func import with_axes
@@ -12,4 +13,6 @@ __all__ = [
     "ABSESpyError",
     "with_axes",
     "ListRandom",
+    "ResultAnalyzer",
+    "ExpAnalyzer",
 ]

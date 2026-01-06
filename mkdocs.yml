@@ -64,6 +64,7 @@ nav:
           - Time Control: api/time.md
           - Random: api/random.md
           - Experiment: api/experiment.md
+          - Analysis: api/analysis.md
 
 theme:
     name: "material"
