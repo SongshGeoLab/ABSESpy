@@ -32,13 +32,14 @@ __all__ = [
     "raster_attribute",
 ]
 
+import warnings
 from importlib.metadata import PackageNotFoundError, version
 
 try:
     __version__ = f"v{version('abses')}"
 except PackageNotFoundError:
-    # Fallback for development mode when package metadata is not available
-    __version__ = "v0.7.5-dev"
+    __version__ = "v0.10.0-dev"
+    warnings.warn(f"Package metadata not found, using fallback version {__version__}")
 
 from .agents.actor import Actor, alive_required, perception
 from .agents.sequences import ActorsList
