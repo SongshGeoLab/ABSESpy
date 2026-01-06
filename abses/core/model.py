@@ -359,9 +359,10 @@ class MainModel(Model, BaseStateManager):
         # For merge mode, add separator for repeats after the first one
         if logging_mode == "merge" and self.run_id is not None and self.run_id > 1:
             # Get total repeats from exp config if available
+            # Both dict and DictConfig support .get() method
             total_repeats = 1
             exp_cfg = self.settings.get("exp", {})
-            if isinstance(exp_cfg, dict):
+            if isinstance(exp_cfg, (dict, DictConfig)):
                 total_repeats = exp_cfg.get("repeats", 1)
             log_repeat_separator(self.run_id, total_repeats)
 

@@ -38,38 +38,48 @@ def get_log_mode(cfg: DictConfig | Dict[str, Any]) -> str:
     """
     # Handle both DictConfig and plain dict
     if isinstance(cfg, DictConfig):
-        mode = OmegaConf.select(cfg, "log.mode", default="once")
-        # Backward compatibility: check exp.logging.mode
-        if mode is None or mode == "once":
+        # Check if log.mode was explicitly set (not defaulted)
+        mode = OmegaConf.select(cfg, "log.mode")
+        if mode is None:
+            # Key doesn't exist, use default and check backward compat
+            mode = "once"
             old_mode = OmegaConf.select(cfg, "exp.logging.mode", default=None)
             if old_mode is not None:
                 if isinstance(old_mode, str):
                     return old_mode
                 elif isinstance(old_mode, dict):
                     return old_mode.get("mode", "once")
+        # If mode was explicitly set, return it without checking old config
+        return mode if mode else "once"
     else:
         # Plain dict: use dict.get() with nested access
         log_section = cfg.get("log", {})
         if isinstance(log_section, dict):
-            mode = log_section.get("mode", "once")
+            # Check if "mode" key exists explicitly
+            if "mode" in log_section:
+                mode = log_section.get("mode", "once")
+                # Explicitly set, return it without checking old config
+                return mode if mode else "once"
+            else:
+                # Key doesn't exist, use default and check backward compat
+                mode = "once"
         else:
             mode = "once"
-        # Backward compatibility: check exp.logging.mode
-        if mode is None or mode == "once":
-            exp_section = cfg.get("exp", {})
-            if isinstance(exp_section, dict):
-                logging_section = exp_section.get("logging", {})
-                if isinstance(logging_section, dict):
-                    old_mode = logging_section.get("mode")
-                elif isinstance(logging_section, str):
-                    old_mode = logging_section
-                else:
-                    old_mode = None
-                if old_mode is not None:
-                    if isinstance(old_mode, str):
-                        return old_mode
-                    elif isinstance(old_mode, dict):
-                        return old_mode.get("mode", "once")
+        # Backward compatibility: check exp.logging.mode only if mode wasn't explicitly set
+        exp_section = cfg.get("exp", {})
+        if isinstance(exp_section, dict):
+            logging_section = exp_section.get("logging", {})
+            if isinstance(logging_section, dict):
+                old_mode = logging_section.get("mode")
+            elif isinstance(logging_section, str):
+                old_mode = logging_section
+            else:
+                old_mode = None
+            if old_mode is not None:
+                if isinstance(old_mode, str):
+                    return old_mode
+                elif isinstance(old_mode, dict):
+                    return old_mode.get("mode", "once")
 
     return mode if mode else "once"
 
@@ -102,7 +112,7 @@ def get_log_config(
         else:
             old_log = cfg.get("log", {})
 
-        if old_log and not isinstance(old_log, dict):
+        if not old_log or not isinstance(old_log, dict):
             return {}
 
         # Map old structure to new structure

@@ -21,7 +21,7 @@ from typing import TYPE_CHECKING, Any, Callable, Dict, Generator, List
 
 import pandas as pd
 import yaml  # type: ignore[import-untyped]
-from omegaconf import DictConfig, OmegaConf
+from omegaconf import DictConfig, ListConfig, OmegaConf
 
 try:
     from typing import TypeAlias
@@ -75,11 +75,11 @@ class _BaseAnalyzer:
         self._path = path
 
     @property
-    def config(self) -> DictConfig:
+    def config(self) -> DictConfig | ListConfig:
         """Configuration loaded from YAML file.
 
         Returns:
-            DictConfig object containing the configuration.
+            DictConfig or ListConfig object containing the configuration.
 
         Raises:
             FileNotFoundError: If the configuration file does not exist.
@@ -160,14 +160,6 @@ class ResultAnalyzer(_BaseAnalyzer):
         self.final_reporter: Dict[str, Any] = {}
 
         super().__init__(path=path)
-        """Initialize the result analyzer.
-
-        Args:
-            path: Path to the single run output directory.
-
-        Raises:
-            FileNotFoundError: If the path is not a valid directory.
-        """
         if not self.path.is_dir():
             raise FileNotFoundError(f"{path} is not a directory.")
         self._hydra = self.path / ".hydra"
@@ -439,6 +431,15 @@ class ExpAnalyzer(_BaseAnalyzer):
                 continue
 
     @cached_property
+    def _results_list(self) -> List[ResultAnalyzer]:
+        """Cached list of ResultAnalyzer instances.
+
+        This property caches the results to avoid generator exhaustion
+        when results are accessed multiple times.
+        """
+        return list(self.results)
+
+    @cached_property
     def diff_runs(self) -> pd.DataFrame:
         """DataFrame showing configuration differences between runs.
 
@@ -454,7 +455,7 @@ class ExpAnalyzer(_BaseAnalyzer):
             if len(expected_values) <= 1:
                 continue
             values = []
-            for res in self.results:
+            for res in self._results_list:
                 try:
                     value = res.select(key)
                     if value is None:
@@ -497,7 +498,7 @@ class ExpAnalyzer(_BaseAnalyzer):
             or use a new instance.
         """
         datasets: List[pd.DataFrame] = []
-        for res in self.results:
+        for res in self._results_list:
             try:
                 data = res.get_data()
                 # Add override columns
@@ -530,7 +531,7 @@ class ExpAnalyzer(_BaseAnalyzer):
             Series with results from applying the function to each run.
         """
         results = []
-        for run in self.results:
+        for run in self._results_list:
             try:
                 result = func(run, *args, **kwargs)
                 results.append(result)

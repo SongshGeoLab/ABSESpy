@@ -417,24 +417,30 @@ class TestLoggingIntegration:
         # Setup experiment logger
         exp_logger = setup_exp_logger(cfg)
 
-        # Check handlers
-        file_handlers = [
-            h for h in exp_logger.handlers if isinstance(h, logging.FileHandler)
-        ]
-        if file_handlers:
-            # Get the actual file path from the handler
-            actual_file_path = Path(file_handlers[0].baseFilename)
-            exp_logger.info("Experiment started")
-            # Force flush to ensure file is written
-            file_handlers[0].flush()
-            # Verify the actual file exists
-            assert actual_file_path.exists(), (
-                f"Log file not found at {actual_file_path}. Files in temp_dir: {list(temp_dir.iterdir())}"
-            )
-        else:
-            # No file handler was created, which might be expected in some cases
-            # But in this test we expect one
-            assert False, f"No file handler found. Handlers: {exp_logger.handlers}"
+        try:
+            # Check handlers
+            file_handlers = [
+                h for h in exp_logger.handlers if isinstance(h, logging.FileHandler)
+            ]
+            if file_handlers:
+                # Get the actual file path from the handler
+                actual_file_path = Path(file_handlers[0].baseFilename)
+                exp_logger.info("Experiment started")
+                # Force flush to ensure file is written
+                file_handlers[0].flush()
+                # Verify the actual file exists
+                assert actual_file_path.exists(), (
+                    f"Log file not found at {actual_file_path}. Files in temp_dir: {list(temp_dir.iterdir())}"
+                )
+            else:
+                # No file handler was created, which might be expected in some cases
+                # But in this test we expect one
+                assert False, f"No file handler found. Handlers: {exp_logger.handlers}"
+        finally:
+            # Close all handlers to release file handles (required on Windows)
+            for handler in exp_logger.handlers[:]:
+                handler.close()
+                exp_logger.removeHandler(handler)
 
     def test_model_logging_integration(self, temp_dir):
         """测试模型日志的完整流程"""
@@ -462,10 +468,17 @@ class TestLoggingIntegration:
             logging_mode="once",
             repeat_id=1,
         )
-        logger.info("Model started")
+        try:
+            logger.info("Model started")
 
-        # Verify model log file exists
-        assert (temp_dir / "model.log").exists()
+            # Verify model log file exists
+            assert (temp_dir / "model.log").exists()
+        finally:
+            # Close all handlers to release file handles (required on Windows)
+            for log in [logger, mesa_logger, mesa_upper_logger]:
+                for handler in log.handlers[:]:
+                    handler.close()
+                    log.removeHandler(handler)
 
     def test_logging_modes(self, temp_dir):
         """测试不同的日志模式"""
@@ -553,5 +566,11 @@ class TestLoggingIntegration:
                 f"Model log not found at {model_log}. Files in {actual_outpath}: {list(actual_outpath.iterdir()) if actual_outpath.exists() else 'directory does not exist'}"
             )
         finally:
+            # Close all log handlers to release file handles (required on Windows)
+            for logger_name in ["abses.core.experiment", "abses", "mesa", "MESA"]:
+                log = logging.getLogger(logger_name)
+                for handler in log.handlers[:]:
+                    handler.close()
+                    log.removeHandler(handler)
             # Restore the original instance
             ExperimentManager._instance = original_instance

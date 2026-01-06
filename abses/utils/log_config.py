@@ -207,6 +207,7 @@ def setup_abses_logger(
         handler = create_console_handler(
             level=console_level or level,
             fmt=console_format or DEFAULT_FORMAT,
+            datefmt=console_datefmt or DEFAULT_DATEFMT,
         )
         logger.addHandler(handler)
 
@@ -347,7 +348,7 @@ def setup_integrated_logging(
     console_datefmt: Optional[str] = None,
     rotation: Optional[str] = None,
     retention: Optional[str] = None,
-    log_file_path: Optional[Path] = _LOG_FILE_PATH_DEFAULT,  # type: ignore
+    log_file_path: Optional[Path] = _LOG_FILE_PATH_DEFAULT,
     file_level: Optional[str] = None,
     file_format: Optional[str] = None,
     file_datefmt: Optional[str] = None,

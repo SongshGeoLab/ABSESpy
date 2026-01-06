@@ -168,8 +168,10 @@ class Experiment:
                 cfg_copy = OmegaConf.create(cfg_dict)
                 setup_exp_logger(cfg_copy)
         elif isinstance(cfg, dict):
-            cfg["outpath"] = str(self.outpath)  # Convert Path to string
-            setup_exp_logger(cfg)
+            # Create a copy to avoid modifying original input
+            cfg_copy = cfg.copy()
+            cfg_copy["outpath"] = str(self.outpath)  # Convert Path to string
+            setup_exp_logger(cfg_copy)
 
     @property
     def model_cls(self) -> Type[MainModelProtocol]:
@@ -418,12 +420,15 @@ class Experiment:
             repeat_id=repeat_id,
         )
 
-    def _log_experiment_info(self, cfg: DictConfig, repeats: int) -> None:
+    def _log_experiment_info(
+        self, cfg: DictConfig, repeats: int, logging_mode: str = "once"
+    ) -> None:
         """Log experiment-level information to experiment log file.
 
         Args:
             cfg: Configuration dictionary.
             repeats: Number of repeats.
+            logging_mode: The logging mode being used.
         """
         try:
             from abses import __version__
@@ -441,7 +446,7 @@ class Experiment:
         logger.info(f"ABSESpy version: {__version__}")
         logger.info(f"Total repeats: {repeats}")
         logger.info(f"Output directory: {self.outpath}")
-        logger.info("Logging mode: separate")
+        logger.info(f"Logging mode: {logging_mode}")
         logger.info("=" * 60)
         logger.info("")
 
@@ -462,14 +467,14 @@ class Experiment:
         exp_file_cfg = get_file_config(cfg, "exp")
         if exp_file_cfg:
             # exp.file is enabled, log experiment info
-            self._log_experiment_info(cfg, repeats)
+            self._log_experiment_info(cfg, repeats, logging_mode)
             # Also log framework banner to experiment log
             from abses.utils.logging import setup_logger_info
 
             setup_logger_info(self)
         elif logging_mode == "separate":
             # In separate mode, even if exp.file is disabled, log to experiment log
-            self._log_experiment_info(cfg, repeats)
+            self._log_experiment_info(cfg, repeats, logging_mode)
             from abses.utils.logging import setup_logger_info
 
             setup_logger_info(self)

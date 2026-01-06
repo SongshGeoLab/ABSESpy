@@ -26,6 +26,9 @@ repos:
         # Use same config as CI - read from pyproject.toml
         # CI uses: uv run mypy abses/
         # This ensures local and CI use identical mypy settings
+        # Check entire abses/ directory to match CI behavior
+        pass_filenames: false
+        args: ["abses/"]
 -   repo: https://github.com/econchick/interrogate
     rev: '1.7.0'  # Check for the latest version
     hooks:
