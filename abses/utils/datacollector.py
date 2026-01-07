@@ -28,8 +28,8 @@ import pandas as pd
 if TYPE_CHECKING:
     from abses.agents.actor import Actor
     from abses.agents.sequences import ActorsList
-    from abses.main import MainModel
-    from abses.time import TimeDriver
+    from abses.core.model import MainModel
+    from abses.core.time_driver import TimeDriver
 
 from abses.utils.tracker import TrackerProtocol
 
