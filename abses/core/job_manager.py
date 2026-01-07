@@ -116,10 +116,10 @@ class ExperimentManager:
         """将嵌套字典转换为 DataFrame
 
         Args:
-            results: 形如 {(job_id, repeat_id): {'metric': value}} 的字典
+            results: 形如 {(job_id, run_id): {'metric': value}} 的字典
 
         Returns:
-        包含 job_id, repeat_id 和指标值的 DataFrame
+        包含 job_id, run_id 和指标值的 DataFrame
         """
         return pd.DataFrame(results.values(), index=self.index)
 
@@ -141,19 +141,17 @@ class ExperimentManager:
         to_concat.append(self.dict_to_df(self._datasets))
         df = pd.concat(to_concat, axis=1).reset_index()
 
-        # Backward compatibility: keep repeat_id, but encourage using run_id.
-        # Later we can drop repeat_id once users have migrated.
-        if "repeat_id" in df.columns:
+        # Backward compatibility: if legacy results contain a `repeat_id` column
+        # (e.g. from older versions or custom datasets), mirror it into `run_id`
+        # and emit a deprecation warning. New code should only rely on `run_id`.
+        if "repeat_id" in df.columns and "run_id" not in df.columns:
             warnings.warn(
                 "Column 'repeat_id' is deprecated and will be removed in a future "
                 "version. Please use 'run_id' instead.",
                 DeprecationWarning,
                 stacklevel=2,
             )
-            # If run_id is not already present (e.g. from datacollector),
-            # create it from repeat_id so new code can rely on run_id.
-            if "run_id" not in df.columns:
-                df["run_id"] = df["repeat_id"]
+            df["run_id"] = df["repeat_id"]
 
         return df
 

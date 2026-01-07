@@ -237,7 +237,7 @@ def determine_log_file_path(
         outpath: Output directory for log files.
         log_name: Base log file name (without extension).
         logging_mode: Logging mode - 'once', 'separate', or 'merge'.
-        run_id: Repeat ID for the current run (1-indexed).
+        run_id: Run ID for the current run (1-indexed).
 
     Returns:
         Path to log file, or None if logging should be disabled.

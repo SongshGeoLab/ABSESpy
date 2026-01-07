@@ -370,34 +370,6 @@ class Experiment:
 
         return cfg
 
-    # def _get_logging_mode(self, run_id: Optional[int] = None) -> str | bool:
-    #     log_mode = self.exp_config.get("logging", "once")
-    #     if log_mode == "once":
-    #         if run_id == 1:
-    #             logging: bool | str = self.name
-    #         else:
-    #             return False
-    #     elif bool(log_mode):
-    #         logging = f"{self.name}_{run_id}"
-    #     else:
-    #         logging = False
-    #     return logging
-
-    # def _update_log_config(
-    #     self, config, run_id: Optional[int] = None
-    # ) -> bool:
-    #     """Update the log configuration."""
-    #     if isinstance(config, dict):
-    #         config = DictConfig(config)
-    #     OmegaConf.set_struct(config, False)
-    #     log_name = self._get_logging_mode(run_id=run_id)
-    #     if not log_name:
-    #         config["log"] = False
-    #         return config
-    #     logging_cfg = OmegaConf.create({"log": {"name": log_name}})
-    #     config = OmegaConf.merge(config, logging_cfg)
-    #     return config
-
     def _get_seed(self, run_id: int, job_id: Optional[int] = None) -> Optional[int]:
         """获取每次运行的随机种子
 
