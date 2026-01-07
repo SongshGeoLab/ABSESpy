@@ -122,10 +122,10 @@ def run_single(
         hooks:
             The hooks to run after the model is run.
     """
-    job_id, repeat_id = key
+    job_id, run_id = key
     model = model_cls(
         parameters=cfg,
-        run_id=repeat_id,
+        run_id=run_id,
         seed=seed,
         **kwargs,
     )
@@ -135,7 +135,7 @@ def run_single(
         for hook_name, hook_func in hooks.items():
             logger.info(f"Running hook {hook_name}.")
             _call_hook_with_optional_args(
-                hook_func, model, job_id=job_id, repeat_id=repeat_id
+                hook_func, model, job_id=job_id, run_id=run_id
             )
     return key, seed, results
 
@@ -370,27 +370,27 @@ class Experiment:
 
         return cfg
 
-    # def _get_logging_mode(self, repeat_id: Optional[int] = None) -> str | bool:
+    # def _get_logging_mode(self, run_id: Optional[int] = None) -> str | bool:
     #     log_mode = self.exp_config.get("logging", "once")
     #     if log_mode == "once":
-    #         if repeat_id == 1:
+    #         if run_id == 1:
     #             logging: bool | str = self.name
     #         else:
     #             return False
     #     elif bool(log_mode):
-    #         logging = f"{self.name}_{repeat_id}"
+    #         logging = f"{self.name}_{run_id}"
     #     else:
     #         logging = False
     #     return logging
 
     # def _update_log_config(
-    #     self, config, repeat_id: Optional[int] = None
+    #     self, config, run_id: Optional[int] = None
     # ) -> bool:
     #     """Update the log configuration."""
     #     if isinstance(config, dict):
     #         config = DictConfig(config)
     #     OmegaConf.set_struct(config, False)
-    #     log_name = self._get_logging_mode(repeat_id=repeat_id)
+    #     log_name = self._get_logging_mode(run_id=run_id)
     #     if not log_name:
     #         config["log"] = False
     #         return config
@@ -398,17 +398,17 @@ class Experiment:
     #     config = OmegaConf.merge(config, logging_cfg)
     #     return config
 
-    def _get_seed(self, repeat_id: int, job_id: Optional[int] = None) -> Optional[int]:
+    def _get_seed(self, run_id: int, job_id: Optional[int] = None) -> Optional[int]:
         """获取每次运行的随机种子
 
         使用基础种子初始化随机数生成器，为每次运行生成唯一的随机种子。
         这样可以保证：
         1. 如果基础种子相同，生成的种子序列也相同
-        2. 不同的 job_id 和 repeat_id 组合会得到不同的种子
+        2. 不同的 job_id 和 run_id 组合会得到不同的种子
         3. 种子序列具有更好的随机性
 
         Args:
-            repeat_id: 重复实验的ID
+            run_id: 重复实验的ID
 
         Returns:
             如果没有设置基础种子则返回 None，否则返回生成的随机种子
@@ -419,7 +419,7 @@ class Experiment:
         if job_id is None:
             job_id = self.job_id
         # 使用基础种子和 job_id 创建随机数生成器
-        r = random.Random(self._base_seed + job_id * 1000 + repeat_id)
+        r = random.Random(self._base_seed + job_id * 1000 + run_id)
         return r.randrange(2**32)
 
     def _get_logging_mode(self) -> str:
@@ -431,13 +431,13 @@ class Experiment:
         return get_log_mode(self._cfg)
 
     def _get_log_file_path(
-        self, log_name: str, repeat_id: int, logging_mode: str
+        self, log_name: str, run_id: int, logging_mode: str
     ) -> Optional[Path]:
         """Get log file path for a specific repeat.
 
         Args:
             log_name: Base log file name.
-            repeat_id: Repeat ID (1-indexed).
+            run_id: Repeat ID (1-indexed).
             logging_mode: Logging mode.
 
         Returns:
@@ -449,7 +449,7 @@ class Experiment:
             outpath=self.outpath,
             log_name=log_name,
             logging_mode=logging_mode,
-            repeat_id=repeat_id,
+            run_id=run_id,
         )
 
     def _log_experiment_info(
@@ -518,18 +518,18 @@ class Experiment:
         if self._is_hydra_parallel() or number_process == 1:
             # Hydra 并行或指定单进程时，顺序执行
             disable = repeats == 1 or not display_progress
-            for repeat_id in tqdm(
+            for run_id in tqdm(
                 range(1, repeats + 1),
                 disable=disable,
                 desc=f"Job {self.job_id} repeats {repeats} times.",
             ):
                 # Log separator for merge mode
-                if logging_mode == "merge" and repeat_id > 1:
+                if logging_mode == "merge" and run_id > 1:
                     # Note: Separator will be logged in model setup
                     pass
 
                 # Get log file path for this repeat
-                log_path = self._get_log_file_path(log_name, repeat_id, logging_mode)
+                log_path = self._get_log_file_path(log_name, run_id, logging_mode)
 
                 # Display log file location for separate mode
                 # This should only go to stdout, not to model run log files
@@ -539,14 +539,14 @@ class Experiment:
                     and log_path is not None
                 ):
                     # Use print instead of logger to avoid writing to model run log files
-                    print(f"Repeat {repeat_id}: Logging to {log_path}")
+                    print(f"Repeat {run_id}: Logging to {log_path}")
 
                 run_single(
                     model_cls=self.model_cls,
                     cfg=cfg,
-                    key=(self.job_id, repeat_id),
+                    key=(self.job_id, run_id),
                     outpath=self.outpath,
-                    seed=self._get_seed(repeat_id),
+                    seed=self._get_seed(run_id),
                     hooks=self._manager.hooks,
                     **self._extra_kwargs,
                 )
@@ -564,13 +564,13 @@ class Experiment:
                 delayed(run_single)(
                     model_cls=self.model_cls,
                     cfg=cfg,
-                    key=(self.job_id, repeat_id),
+                    key=(self.job_id, run_id),
                     outpath=self.outpath,
-                    seed=self._get_seed(repeat_id),
+                    seed=self._get_seed(run_id),
                     hooks=self._manager.hooks,
                     **self._extra_kwargs,
                 )
-                for repeat_id in tqdm(
+                for run_id in tqdm(
                     range(1, repeats + 1),
                     disable=not display_progress,
                     desc=f"Job {self.job_id} repeats {repeats} times, with {number_process} processes.",
@@ -644,7 +644,7 @@ def _call_hook_with_optional_args(
     hook_func: Callable,
     model: MainModelProtocol,
     job_id: Optional[int] = None,
-    repeat_id: Optional[int] = None,
+    run_id: Optional[int] = None,
 ) -> Any:
     """根据钩子函数的参数签名动态调用函数
 
@@ -652,14 +652,14 @@ def _call_hook_with_optional_args(
         hook_func: 要调用的钩子函数
         model: 模型实例
         job_id: 可选的任务ID
-        repeat_id: 可选的重复实验ID
+        run_id: 可选的重复实验ID
     """
     sig = inspect.signature(hook_func)
     hook_args = {}
 
     if "job_id" in sig.parameters:
         hook_args["job_id"] = job_id
-    if "repeat_id" in sig.parameters:
-        hook_args["repeat_id"] = repeat_id
+    if "run_id" in sig.parameters:
+        hook_args["run_id"] = run_id
 
     return hook_func(model, **hook_args)

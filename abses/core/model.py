@@ -140,7 +140,9 @@ class MainModel(Model, BaseStateManager):
         tracker_backend = create_tracker(tracker_cfg, model=self)
         collector_cfg = prepare_collector_config(tracker_cfg)
         self.datacollector: ABSESpyDataCollector = ABSESpyDataCollector(
-            reports=collector_cfg, tracker=tracker_backend
+            reports=collector_cfg,
+            tracker=tracker_backend,
+            run_id=run_id,
         )
 
         # Setup logging BEFORE initialize() so user logs in initialize() are captured
@@ -347,7 +349,7 @@ class MainModel(Model, BaseStateManager):
             rotation=rotation,
             retention=retention,
             logging_mode=logging_mode,
-            repeat_id=self.run_id,
+            run_id=self.run_id,
             file_level=file_level,
             file_format=file_format,
             file_datefmt=file_datefmt,

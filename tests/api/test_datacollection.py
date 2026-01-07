@@ -90,3 +90,38 @@ class TestDataCollector:
         result = agent_vars[name]
         assert len(result) == ticks
         assert result.mode().item() == 1
+
+    def test_run_id_added_to_outputs(
+        self,
+        test_config,
+        testing_breeds: Dict[str, Type[Actor]],
+    ):
+        """Ensure run_id is propagated into collected outputs when provided."""
+        # arrange: create model with explicit run_id
+        run_id = 7
+        model = MainModel(parameters=test_config, seed=42, run_id=run_id)
+        datacollector = model.datacollector
+
+        # create one agent for a known breed
+        actor = model.agents.new(testing_breeds["Actor"], singleton=True)
+        setattr(actor, "test", 1)
+
+        # act
+        model.run_model(steps=3)
+
+        # model-level data should contain run_id column with constant value
+        model_df = datacollector.get_model_vars_dataframe()
+        assert "run_id" in model_df.columns
+        assert model_df["run_id"].nunique() == 1
+        assert model_df["run_id"].iloc[0] == run_id
+
+        # agent-level data should also contain run_id column with constant value
+        agent_df = datacollector.get_agent_vars_dataframe("Actor")
+        assert "run_id" in agent_df.columns
+        assert agent_df["run_id"].nunique() == 1
+        assert agent_df["run_id"].iloc[0] == run_id
+
+        # final report dictionary should include run_id key
+        final_report = datacollector.get_final_vars_report(model)
+        assert "run_id" in final_report
+        assert final_report["run_id"] == run_id

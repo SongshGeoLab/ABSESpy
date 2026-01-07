@@ -86,15 +86,15 @@ def setup_logger_info(
     logger.bind(no_format=True).info(f"Exp environment: {is_exp_env}\n")
 
 
-def log_repeat_separator(repeat_id: int, total_repeats: int) -> None:
+def log_repeat_separator(run_id: int, total_repeats: int) -> None:
     """Log a separator for a new repeat run in merge mode.
 
     Args:
-        repeat_id: Current repeat ID (1-indexed).
+        run_id: Current repeat ID (1-indexed).
         total_repeats: Total number of repeats.
     """
     separator = "\n" + "=" * 60 + "\n"
-    header = f"Repeat {repeat_id}/{total_repeats}".center(60) + "\n"
+    header = f"Repeat {run_id}/{total_repeats}".center(60) + "\n"
     footer = "=" * 60 + "\n"
     logger.bind(no_format=True).info(separator + header + footer)
 
@@ -111,7 +111,7 @@ def setup_model_logger(
     retention: Optional[str] = None,
     log_file_path: Optional[Path] = None,
     logging_mode: str = "once",
-    repeat_id: Optional[int] = None,
+    run_id: Optional[int] = None,
     file_level: Optional[str] = None,
     file_format: Optional[str] = None,
     file_datefmt: Optional[str] = None,
@@ -136,7 +136,7 @@ def setup_model_logger(
         retention: Retention period (e.g., "10 days").
         log_file_path: Explicit log file path (overrides automatic path determination).
         logging_mode: Logging mode - 'once', 'separate', or 'merge'.
-        repeat_id: Repeat ID for the current run (1-indexed).
+        run_id: Repeat ID for the current run (1-indexed).
         file_level: File handler level (defaults to level).
         file_format: File format string.
         file_datefmt: File date format string.
@@ -156,7 +156,7 @@ def setup_model_logger(
             outpath=outpath,
             log_name=name,
             logging_mode=logging_mode,
-            repeat_id=repeat_id,
+            run_id=run_id,
         )
 
     # Setup integrated logging

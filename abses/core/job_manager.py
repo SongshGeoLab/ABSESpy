@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, Type
 
 import pandas as pd
@@ -102,7 +103,7 @@ class ExperimentManager:
         """更新实验结果
 
         Args:
-            key: (job_id, repeat_id) tuple
+            key: (job_id, run_id) tuple
             overrides: Configuration overrides for this run
             datasets: Row-like mapping of metrics/values to store
             seed: Random seed used for this run
@@ -126,14 +127,35 @@ class ExperimentManager:
         self,
         seed: bool = True,
     ) -> pd.DataFrame:
-        """获取所有实验结果的 DataFrame"""
+        """获取所有实验结果的 DataFrame
+
+        Note:
+            The ``repeat_id`` column is **deprecated** and will be removed in a
+            future version. Please use the ``run_id`` column instead.
+        """
         to_concat = []
         to_concat.append(self.dict_to_df(self._overrides))
         if seed:
             seed = pd.Series(self._seeds, name="seed", index=self.index)
             to_concat.append(seed)
         to_concat.append(self.dict_to_df(self._datasets))
-        return pd.concat(to_concat, axis=1).reset_index()
+        df = pd.concat(to_concat, axis=1).reset_index()
+
+        # Backward compatibility: keep repeat_id, but encourage using run_id.
+        # Later we can drop repeat_id once users have migrated.
+        if "repeat_id" in df.columns:
+            warnings.warn(
+                "Column 'repeat_id' is deprecated and will be removed in a future "
+                "version. Please use 'run_id' instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            # If run_id is not already present (e.g. from datacollector),
+            # create it from repeat_id so new code can rely on run_id.
+            if "run_id" not in df.columns:
+                df["run_id"] = df["repeat_id"]
+
+        return df
 
     def add_a_hook(
         self,

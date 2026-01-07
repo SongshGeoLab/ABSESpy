@@ -229,7 +229,7 @@ def determine_log_file_path(
     outpath: Optional[Path],
     log_name: str,
     logging_mode: str = "once",
-    repeat_id: Optional[int] = None,
+    run_id: Optional[int] = None,
 ) -> Optional[Path]:
     """Determine log file path based on logging mode.
 
@@ -237,7 +237,7 @@ def determine_log_file_path(
         outpath: Output directory for log files.
         log_name: Base log file name (without extension).
         logging_mode: Logging mode - 'once', 'separate', or 'merge'.
-        repeat_id: Repeat ID for the current run (1-indexed).
+        run_id: Repeat ID for the current run (1-indexed).
 
     Returns:
         Path to log file, or None if logging should be disabled.
@@ -250,21 +250,21 @@ def determine_log_file_path(
 
     if logging_mode == "once":
         # Only log the first repeat
-        if repeat_id is None or repeat_id == 1:
+        if run_id is None or run_id == 1:
             return outpath / f"{log_name}.log"
         return None
     elif logging_mode == "separate":
         # Each repeat gets its own file
-        # In separate mode, repeat_id must be provided
-        if repeat_id is None:
+        # In separate mode, run_id must be provided
+        if run_id is None:
             return None  # Don't create default file in separate mode
-        return outpath / f"{log_name}_{repeat_id}.log"
+        return outpath / f"{log_name}_{run_id}.log"
     elif logging_mode == "merge":
         # All repeats go to the same file
         return outpath / f"{log_name}.log"
     else:
         # Unknown mode, default to once behavior
-        if repeat_id is None or repeat_id == 1:
+        if run_id is None or run_id == 1:
             return outpath / f"{log_name}.log"
         return None
 
