@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.3](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.2...v0.11.3) (2026-01-07)
+
+
+### Bug Fixes
+
+* **experiment:** :bug: Update repeat_id to run_id for consistency in experiment logging ([93cf775](https://github.com/SongshGeoLab/ABSESpy/commit/93cf7759906a23823a18a5a5cc274db61c6e43a0))
+
 ## [0.11.2](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.1...v0.11.2) (2026-01-07)
 
 
