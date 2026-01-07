@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.11.1](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.0...v0.11.1) (2026-01-06)
+
+
+### Bug Fixes
+
+* **analysis:** :bug: Improve error handling for uninitialized data in ResultAnalyzer ([ef99a6d](https://github.com/SongshGeoLab/ABSESpy/commit/ef99a6d8ca740b6497efcf6c4bb6153bd596288f))
+* **logging:** :bug: Enhance logging setup for experiments and user modules ([63cf80d](https://github.com/SongshGeoLab/ABSESpy/commit/63cf80dcad54805809d7c040d24c9a59116046cd))
+* **logging:** :bug: Update logging configuration to prevent empty log files and improve experiment log naming ([82e9e44](https://github.com/SongshGeoLab/ABSESpy/commit/82e9e44e3efb392a711f9cf7acc83b7a554ec433))
+
 ## [0.11.0](https://github.com/SongshGeoLab/ABSESpy/compare/v0.10.0...v0.11.0) (2026-01-06)
 
 
