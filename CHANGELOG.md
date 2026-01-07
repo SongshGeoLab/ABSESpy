@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.2](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.1...v0.11.2) (2026-01-07)
+
+
+### Bug Fixes
+
+* **logging:** :memo: Clarify logging configuration in absespy.yaml ([892f098](https://github.com/SongshGeoLab/ABSESpy/commit/892f098a7dfcfc2b215d4a7b6fed6cc5a40b65f0))
+
 ## [0.11.1](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.0...v0.11.1) (2026-01-06)
 
 
