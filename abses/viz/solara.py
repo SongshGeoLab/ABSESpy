@@ -23,7 +23,7 @@ from xarray import DataArray
 try:
     from mesa.visualization.components import AgentPortrayalStyle
 except ImportError:
-    raise ImportError("Mesa 3.3+ is required for AgentPortrayalStyle.")
+    AgentPortrayalStyle = None
 
 from abses import MainModel, PatchModule
 

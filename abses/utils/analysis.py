@@ -280,10 +280,12 @@ class ResultAnalyzer(_BaseAnalyzer):
                 "Loaded and merged result files: "
                 f"{[f.name for f in csv_files]} from {self.path}."
             )
+            return self.data
         else:
             # Backward compatibility: fall back to a single cities.csv
             logger.warning(f"No valid *.{suffix} files found under {self.path}.")
-            return pd.DataFrame()
+            self.data = pd.DataFrame()
+            return self.data
 
     def read_csv(self, path: PathLike) -> pd.DataFrame:
         """Read a CSV file into a DataFrame.
