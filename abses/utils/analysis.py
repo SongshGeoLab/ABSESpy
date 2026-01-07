@@ -250,41 +250,42 @@ class ResultAnalyzer(_BaseAnalyzer):
         self.agent_reporter = reporters.get("agents", {})
         self.final_reporter = reporters.get("final", {})
 
-    def read_data(self) -> None:
-        """Read data from CSV files or datacollector output.
+    def read_data(self, suffix: str = "csv") -> pd.DataFrame:
+        """Read and merge result csv files under the experiment folder.
 
-        This method attempts to find and load data files in the following order:
-        1. Common CSV filenames (cities.csv, 1_cities.csv, etc.)
-        2. Datacollector output files if available
-        3. User-specified files
-
-        Raises:
-            FileNotFoundError: If no data file is found.
+        This method will:
+        - First, look for all files matching ``*_cities.csv`` (e.g. ``1_cities.csv``,
+          ``2_cities.csv`` ...) under ``self.path``.
+        - If found, read them all and vertically concatenate them into a single
+          dataframe.
+        - If none are found, fall back to reading a single ``cities.csv`` file.
         """
-        # Try common CSV filenames
-        common_names = ["cities.csv", "1_cities.csv", "data.csv", "results.csv"]
-        for name in common_names:
-            csv_path = self.path / name
-            if csv_path.is_file():
-                self.data = self.read_csv(csv_path)
-                logger.info(f"Loaded data from {csv_path}.")
-                return
+        # Prefer numbered runs like 1_cities.csv, 2_cities.csv, ...
+        csv_files = sorted(self.path.glob(f"*.{suffix}"))
 
-        # Try to find any CSV file in the directory
-        csv_files = list(self.path.glob("*.csv"))
         if csv_files:
-            # Use the first CSV file found
-            self.data = self.read_csv(csv_files[0])
-            logger.info(f"Loaded data from {csv_files[0]}.")
-            return
-
-        # If no CSV found, try to load from datacollector output
-        # This would require the datacollector to have saved its output
-        # For now, we'll raise an error
-        raise FileNotFoundError(
-            f"No data file found in {self.path}. "
-            f"Expected CSV files or datacollector output."
-        )
+            data_frames = []
+            for csv_file in csv_files:
+                try:
+                    df = self.read_csv(path=csv_file)
+                    data_frames.append(df)
+                except FileNotFoundError:
+                    logger.warning(f"Skip missing file: {csv_file}")
+            if not data_frames:
+                raise FileNotFoundError(
+                    f"No valid *.{suffix} files found under {self.path}."
+                )
+            self.data = pd.concat(data_frames, ignore_index=True)
+            logger.info(
+                "Loaded and merged result files: "
+                f"{[f.name for f in csv_files]} from {self.path}."
+            )
+            return self.data
+        else:
+            # Backward compatibility: fall back to a single cities.csv
+            logger.warning(f"No valid *.{suffix} files found under {self.path}.")
+            self.data = pd.DataFrame()
+            return self.data
 
     def read_csv(self, path: PathLike) -> pd.DataFrame:
         """Read a CSV file into a DataFrame.

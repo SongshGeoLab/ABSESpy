@@ -155,12 +155,20 @@ def start_tracker_run(
 
     log_params = cfg_dict.get("log_params", True)
     if log_params and hasattr(tracker, "log_params"):
-        if isinstance(model_params, DictConfig):
-            params_dict = OmegaConf.to_container(model_params, resolve=True)
+        # For AimTracker, if model_params is DictConfig, pass it directly
+        # to use Aim's built-in OmegaConf integration
+        if type(tracker).__name__ == "AimTracker" and isinstance(
+            model_params, DictConfig
+        ):
+            tracker.log_params(model_params)
         else:
-            params_dict = dict(model_params)
-        if isinstance(params_dict, dict):
-            tracker.log_params(params_dict)
+            # For other trackers or plain dict, convert to dict first
+            if isinstance(model_params, DictConfig):
+                params_dict = OmegaConf.to_container(model_params, resolve=True)
+            else:
+                params_dict = dict(model_params)
+            if isinstance(params_dict, dict):
+                tracker.log_params(params_dict)
 
 
 def create_tracker(

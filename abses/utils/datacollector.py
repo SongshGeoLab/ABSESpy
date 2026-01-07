@@ -28,8 +28,8 @@ import pandas as pd
 if TYPE_CHECKING:
     from abses.agents.actor import Actor
     from abses.agents.sequences import ActorsList
-    from abses.main import MainModel
-    from abses.time import TimeDriver
+    from abses.core.model import MainModel
+    from abses.core.time_driver import TimeDriver
 
 from abses.utils.tracker import TrackerProtocol
 
@@ -192,7 +192,7 @@ class ABSESpyDataCollector:
         result = {
             "AgentID": agents.array("unique_id"),
             "Step": np.repeat(time.tick, len(agents)),
-            "Time": np.repeat(time.dt, len(agents)),
+            "Time": np.repeat(str(time.dt), len(agents)),
         }
         for name, reporter in self.agent_reporters[breed].items():
             result[name] = agents.apply(reporter)

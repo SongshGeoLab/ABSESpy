@@ -9,6 +9,12 @@ from typing import Any, Dict
 from abses.utils.tracker import TrackerProtocol
 
 try:
+    from omegaconf import DictConfig, OmegaConf
+except ImportError:
+    DictConfig = None
+    OmegaConf = None
+
+try:
     from aim import Run
 except ImportError:
     Run = None
@@ -140,12 +146,18 @@ class AimTracker(TrackerProtocol):
         if numeric_metrics:
             self.log_metrics(numeric_metrics, step=step)
 
-    def log_params(self, params: Dict[str, Any]) -> None:
+    def log_params(self, params: Dict[str, Any] | DictConfig) -> None:
         """Log hyperparameters to Aim.
 
         Args:
-            params: Dictionary of parameter names to values.
+            params: Dictionary of parameter names to values, or DictConfig.
         """
+        # If params is DictConfig, use Aim's built-in OmegaConf integration
+        if DictConfig is not None and isinstance(params, DictConfig):
+            self._run["config"] = OmegaConf.to_container(params, resolve=True)
+            return
+
+        # Otherwise, handle as regular dict
         for key, value in params.items():
             # Aim supports various types for parameters
             if isinstance(value, (int, float, str, bool)):
