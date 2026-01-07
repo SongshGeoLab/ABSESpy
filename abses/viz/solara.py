@@ -20,8 +20,12 @@ from mesa.visualization.mpl_space_drawing import _scatter
 from mesa.visualization.utils import update_counter
 from xarray import DataArray
 
-from abses.main import MainModel
-from abses.patch import PatchModule
+try:
+    from mesa.visualization.components import AgentPortrayalStyle
+except ImportError:
+    raise ImportError("Mesa 3.3+ is required for AgentPortrayalStyle.")
+
+from abses import MainModel, PatchModule
 
 
 def draw_property_layers(
@@ -106,12 +110,14 @@ def collect_agent_data(
     Args:
         space: The space containing the Agents.
         agent_portrayal: A callable that is called with the agent and returns a dict
+                         or AgentPortrayalStyle object (Mesa 3.3+)
         color: default color
         size: default size
         marker: default marker
         zorder: default zorder
 
-    agent_portrayal should return a dict, limited to size (size of marker), color (color of marker), zorder (z-order),
+    agent_portrayal should return a dict or AgentPortrayalStyle object, limited to
+    size (size of marker), color (color of marker), zorder (z-order),
     marker (marker style), alpha, linewidths, and edgecolors
 
     """
@@ -126,7 +132,43 @@ def collect_agent_data(
     }
 
     for agent in space.agents:
-        portray = agent_portrayal(agent)
+        portray_result = agent_portrayal(agent)
+
+        # Convert AgentPortrayalStyle to dict if needed (Mesa 3.3+)
+        if AgentPortrayalStyle is not None and isinstance(
+            portray_result, AgentPortrayalStyle
+        ):
+            # AgentPortrayalStyle objects can be converted using vars() or direct attribute access
+            try:
+                # Try vars() first (works for most Python objects with __dict__)
+                portray = vars(portray_result).copy()
+            except (TypeError, AttributeError):
+                # Fallback: build dict from direct attribute access
+                portray = {}
+                for attr in [
+                    "size",
+                    "color",
+                    "marker",
+                    "zorder",
+                    "alpha",
+                    "edgecolors",
+                    "linewidths",
+                ]:
+                    if hasattr(portray_result, attr):
+                        value = getattr(portray_result, attr)
+                        if value is not None:
+                            portray[attr] = value
+        elif isinstance(portray_result, dict):
+            portray = portray_result.copy()
+        else:
+            # Fallback: try to convert to dict
+            try:
+                portray = (
+                    vars(portray_result) if hasattr(portray_result, "__dict__") else {}
+                )
+            except (TypeError, AttributeError):
+                portray = {}
+
         arguments["s"].append(portray.pop("size", size))
         arguments["c"].append(portray.pop("color", color))
         arguments["marker"].append(portray.pop("marker", marker))
@@ -145,7 +187,21 @@ def collect_agent_data(
             )
     # ensure loc is always a shape of (n, 2) array, even if n=0
     result = {k: np.asarray(v) for k, v in arguments.items()}
-    result["loc"] = space.agents.array("indices")
+    indices_array = space.agents.array("indices")
+    # Convert to (n, 2) shape
+    if len(indices_array) == 0:
+        result["loc"] = np.empty((0, 2), dtype=int)
+    else:
+        # Convert list of tuples/arrays to 2D array
+        result["loc"] = np.array(
+            [
+                list(idx) if isinstance(idx, (tuple, list)) else idx
+                for idx in indices_array
+            ]
+        )
+        # Ensure it's 2D
+        if result["loc"].ndim == 1:
+            result["loc"] = result["loc"].reshape(-1, 2)
     return result
 
 
@@ -168,8 +224,9 @@ def draw_orthogonal_grid(
     Returns:
         Returns the Axes object with the plot drawn onto it.
 
-    ``agent_portrayal`` is called with an agent and should return a dict. Valid fields in this dict are "color",
-    "size", "marker", and "zorder". Other field are ignored and will result in a user warning.
+    ``agent_portrayal`` is called with an agent and should return a dict or AgentPortrayalStyle
+    object (Mesa 3.3+). Valid fields are "color", "size", "marker", "zorder", "alpha",
+    "linewidths", and "edgecolors". Other fields are ignored and will result in a user warning.
 
     """
     if ax is None:
@@ -214,6 +271,11 @@ def SpaceMatplotlib(
     fig = Figure()
     ax = fig.add_subplot()
 
+    # Draw property layers first (background)
+    if propertylayer_portrayal:
+        draw_property_layers(space, propertylayer_portrayal, ax=ax)
+
+    # Draw agents on top
     draw_orthogonal_grid(
         space,
         agent_portrayal,
@@ -227,9 +289,6 @@ def SpaceMatplotlib(
     solara.FigureMatplotlib(
         fig, format="png", bbox_inches="tight", dependencies=dependencies
     )
-
-    if propertylayer_portrayal:
-        draw_property_layers(space, propertylayer_portrayal, ax=ax)
 
 
 def make_mpl_space_component(
@@ -247,8 +306,9 @@ def make_mpl_space_component(
         space_drawing_kwargs : additional keyword arguments to be passed on to the underlying space drawer function. See
                                the functions for drawing the various spaces for further details.
 
-    ``agent_portrayal`` is called with an agent and should return a dict. Valid fields in this dict are "color",
-    "size", "marker", "zorder", alpha, linewidths, and edgecolors. Other field are ignored and will result in a user warning.
+    ``agent_portrayal`` is called with an agent and should return a dict or AgentPortrayalStyle
+    object (Mesa 3.3+). Valid fields are "color", "size", "marker", "zorder", "alpha",
+    "linewidths", and "edgecolors". Other fields are ignored and will result in a user warning.
 
     Returns:
         function: A function that creates a SpaceMatplotlib component
