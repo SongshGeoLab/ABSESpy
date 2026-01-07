@@ -176,37 +176,37 @@ class TestLogConfig:
         """测试确定日志文件路径（once 模式）"""
         # First repeat should create file
         path = determine_log_file_path(
-            outpath=tmp_path, log_name="test", logging_mode="once", repeat_id=1
+            outpath=tmp_path, log_name="test", logging_mode="once", run_id=1
         )
         assert path == tmp_path / "test.log"
 
         # Subsequent repeats should return None
         path = determine_log_file_path(
-            outpath=tmp_path, log_name="test", logging_mode="once", repeat_id=2
+            outpath=tmp_path, log_name="test", logging_mode="once", run_id=2
         )
         assert path is None
 
     def test_determine_log_file_path_separate_mode(self, tmp_path: Path) -> None:
         """测试确定日志文件路径（separate 模式）"""
         path1 = determine_log_file_path(
-            outpath=tmp_path, log_name="test", logging_mode="separate", repeat_id=1
+            outpath=tmp_path, log_name="test", logging_mode="separate", run_id=1
         )
         assert path1 == tmp_path / "test_1.log"
 
         path2 = determine_log_file_path(
-            outpath=tmp_path, log_name="test", logging_mode="separate", repeat_id=2
+            outpath=tmp_path, log_name="test", logging_mode="separate", run_id=2
         )
         assert path2 == tmp_path / "test_2.log"
 
     def test_determine_log_file_path_merge_mode(self, tmp_path: Path) -> None:
         """测试确定日志文件路径（merge 模式）"""
         path1 = determine_log_file_path(
-            outpath=tmp_path, log_name="test", logging_mode="merge", repeat_id=1
+            outpath=tmp_path, log_name="test", logging_mode="merge", run_id=1
         )
         assert path1 == tmp_path / "test.log"
 
         path2 = determine_log_file_path(
-            outpath=tmp_path, log_name="test", logging_mode="merge", repeat_id=2
+            outpath=tmp_path, log_name="test", logging_mode="merge", run_id=2
         )
         assert path2 == tmp_path / "test.log"  # Same file
 
@@ -344,7 +344,7 @@ class TestModelLogging:
             outpath=tmp_path,
             console=False,
             logging_mode="once",
-            repeat_id=1,
+            run_id=1,
         )
         assert logger.name == "abses"
         assert len(logger.handlers) == 1
@@ -363,7 +363,7 @@ class TestModelLogging:
             file_format="[%(asctime)s] %(message)s",
             file_datefmt="%H:%M:%S",
             logging_mode="once",
-            repeat_id=1,
+            run_id=1,
         )
         # Check that handlers have correct formatters
         console_handler = next(
@@ -467,7 +467,7 @@ class TestLoggingIntegration:
             outpath=temp_dir,
             console=True,
             logging_mode="once",
-            repeat_id=1,
+            run_id=1,
         )
         try:
             logger.info("Model started")
@@ -485,30 +485,30 @@ class TestLoggingIntegration:
         """测试不同的日志模式"""
         # Test once mode
         path1 = determine_log_file_path(
-            outpath=temp_dir, log_name="model", logging_mode="once", repeat_id=1
+            outpath=temp_dir, log_name="model", logging_mode="once", run_id=1
         )
         path2 = determine_log_file_path(
-            outpath=temp_dir, log_name="model", logging_mode="once", repeat_id=2
+            outpath=temp_dir, log_name="model", logging_mode="once", run_id=2
         )
         assert path1 == temp_dir / "model.log"
         assert path2 is None
 
         # Test separate mode
         path1 = determine_log_file_path(
-            outpath=temp_dir, log_name="model", logging_mode="separate", repeat_id=1
+            outpath=temp_dir, log_name="model", logging_mode="separate", run_id=1
         )
         path2 = determine_log_file_path(
-            outpath=temp_dir, log_name="model", logging_mode="separate", repeat_id=2
+            outpath=temp_dir, log_name="model", logging_mode="separate", run_id=2
         )
         assert path1 == temp_dir / "model_1.log"
         assert path2 == temp_dir / "model_2.log"
 
         # Test merge mode
         path1 = determine_log_file_path(
-            outpath=temp_dir, log_name="model", logging_mode="merge", repeat_id=1
+            outpath=temp_dir, log_name="model", logging_mode="merge", run_id=1
         )
         path2 = determine_log_file_path(
-            outpath=temp_dir, log_name="model", logging_mode="merge", repeat_id=2
+            outpath=temp_dir, log_name="model", logging_mode="merge", run_id=2
         )
         assert path1 == temp_dir / "model.log"
         assert path2 == temp_dir / "model.log"
@@ -585,7 +585,7 @@ class TestLoggingIntegration:
             outpath=temp_dir,
             console=False,
             logging_mode="once",
-            repeat_id=1,
+            run_id=1,
         )
 
         try:

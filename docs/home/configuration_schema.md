@@ -53,6 +53,7 @@ tracker:
 - [2. Experiment Configuration](#2-experiment-configuration)
 - [3. Model Parameters](#3-model-parameters)
 - [4. Tracker Configuration](#4-tracker-configuration)
+- [5. Logging Configuration](#5-logging-configuration)
 - [Parameter Sweeps](#parameter-sweeps)
 - [Complete Examples](#complete-examples)
 - [Best Practices](#best-practices)
@@ -437,6 +438,154 @@ tracker:
 | `KeyError: 'Sheep'` | Agent breed name mismatch | Use exact class name (case-sensitive) |
 | Empty DataFrame | No trackers defined | Add at least one tracker |
 | `TypeError: 'str' object is not callable` | Tried to call a string | Use method name without quotes in code |
+
+---
+
+## 5. Logging Configuration
+
+ABSESpy provides a unified logging configuration on top of Python's standard `logging`
+and Hydra's `job_logging`. This section summarizes the YAML fields that control
+logging behaviour in ABSESpy projects.
+
+There are three main configuration entry points:
+
+1. **Unified `log` section** (recommended, new style)
+2. **Experiment-level `exp.logging` flag** (simple mode, kept for compatibility)
+3. **Legacy `log` shorthand in old examples** (deprecated but still supported)
+
+### 5.1 Unified `log` section (recommended)
+
+The unified `log` section is defined in the core config and can be
+overridden in your experiment config (for example in `examples/fire_spread/config.yaml`).
+It controls both experiment-level logging and per-run logging:
+
+```yaml
+log:
+  # Logging mode for repeated runs: once | separate | merge
+  mode: str                # "once" | "separate" | "merge"
+
+  # Experiment-level logging (progress, high-level summary)
+  exp:
+    stdout:
+      enabled: bool        # Enable experiment logs to console
+      level: str           # e.g. "INFO", "DEBUG"
+      format: str          # Log format string
+      datefmt: str         # Time format
+    file:
+      enabled: bool        # Enable experiment log file
+      level: str           # File log level
+      format: str          # File log format
+      datefmt: str         # File time format
+
+  # Run-level logging (each model execution)
+  run:
+    stdout:
+      enabled: bool        # Enable per-run logs to console
+      level: str
+      format: str
+      datefmt: str
+    file:
+      enabled: bool        # Enable per-run log files
+      level: str
+      format: str
+      datefmt: str
+      name: str            # Base log file name (without extension)
+      rotation: str | null # e.g. "1 day", "100 MB", null = no rotation
+      retention: str | null# e.g. "10 days", null = default policy
+    mesa:
+      level: str | null    # If null, uses run.file.level
+      format: str | null   # If null, uses run.file.format
+```
+
+#### 5.1.1 `log.mode`
+
+Controls how repeated runs share log files:
+
+| Value | Behaviour |
+|-------|-----------|
+| `"once"` | Only the first repeat writes to the log file |
+| `"separate"` | Each repeat writes to its own file with an index suffix |
+| `"merge"` | All repeats write to the same log file |
+
+#### 5.1.2 Experiment-level logging (`log.exp.*`)
+
+Experiment-level logging is intended for high-level progress and summaries, not
+per-step model details.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `log.exp.stdout.enabled` | bool | Enable experiment messages on console |
+| `log.exp.stdout.level` | str | Console log level (e.g. `"INFO"`) |
+| `log.exp.stdout.format` | str | Console log format string |
+| `log.exp.stdout.datefmt` | str | Console time format |
+| `log.exp.file.enabled` | bool | Enable experiment log file |
+| `log.exp.file.level` | str | Experiment file log level |
+| `log.exp.file.format` | str | Experiment file log format |
+| `log.exp.file.datefmt` | str | Experiment file time format |
+
+#### 5.1.3 Run-level logging (`log.run.*`)
+
+Run-level logging controls logging for each single model run:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `log.run.stdout.enabled` | bool | Enable per-run console logging |
+| `log.run.stdout.level` | str | Per-run console log level |
+| `log.run.stdout.format` | str | Per-run console log format |
+| `log.run.stdout.datefmt` | str | Per-run console time format |
+| `log.run.file.enabled` | bool | Enable per-run log files |
+| `log.run.file.level` | str | Per-run file log level (e.g. `"DEBUG"`) |
+| `log.run.file.format` | str | Per-run file log format |
+| `log.run.file.datefmt` | str | Per-run file time format |
+| `log.run.file.name` | str | Base file name for logs (without extension) |
+| `log.run.file.rotation` | str/null | Rotation policy, e.g. `"1 day"`, `"100 MB"` |
+| `log.run.file.retention` | str/null | Retention policy, e.g. `"10 days"` |
+| `log.run.mesa.level` | str/null | Log level for Mesa loggers; `null` uses `log.run.file.level` |
+| `log.run.mesa.format` | str/null | Log format for Mesa; `null` uses `log.run.file.format` |
+
+> **Recommended:** For most projects, start by modifying only:
+> - `log.mode`
+> - `log.exp.file.enabled`
+> - `log.run.file.enabled`
+> - `log.run.file.level`
+> and keep the default formats unless you have special formatting needs.
+
+### 5.2 Experiment-level `exp.logging` flag (compatibility)
+
+The `exp.logging` field (described in [2. Experiment Configuration](#2-experiment-configuration))
+is a simpler, older switch that controls logging behaviour at the experiment level:
+
+```yaml
+exp:
+  logging: str | bool  # "once" | "always" | false
+```
+
+| Value | Behaviour |
+|-------|-----------|
+| `"once"` | Log only the first repeat |
+| `"always"` | Log all repeats |
+| `false` | Disable logging for repeats (where supported) |
+
+> This flag is kept for backward compatibility. New projects should prefer the
+> unified `log` section, which gives you explicit control over console/file
+> logging at both experiment and run levels.
+
+### 5.3 Legacy `log` shorthand in examples
+
+Some older example configs (such as `examples/wolf_sheep/config.yaml`
+and `examples/schelling/config.yaml`) use a simplified `log` section:
+
+```yaml
+log:
+  name: str       # Base log file name
+  level: str      # Global log level, e.g. "INFO"
+  console: bool   # Enable/disable console logging
+  file: bool      # (optional) Enable/disable file logging
+```
+
+These fields are normalized internally to the new unified logging schema and
+are maintained for compatibility with older projects. For new models, prefer
+defining `log.mode`, `log.exp.*` and `log.run.*` instead of this shorthand.
 
 ---
 

@@ -116,15 +116,18 @@ class ABSESpyDataCollector:
         self,
         reports: Dict[ReportType, Dict[str, Reporter]] | None = None,
         tracker: Optional[TrackerProtocol] = None,
+        run_id: Optional[int] = None,
     ):
         """Initialize data collector.
 
         Args:
             reports: Reporters configuration.
             tracker: Optional tracker backend.
+            run_id: Optional run id.
         """
         reports = reports or {}
         self.tracker = tracker
+        self.run_id = run_id
         self.model_reporters: Dict[str, Reporter] = {}
         self.final_reporters: Dict[str, Reporter] = {}
         self.agent_reporters: Dict[str, Dict[str, Reporter]] = {}
@@ -161,6 +164,13 @@ class ABSESpyDataCollector:
             return
         for name, reporter in reporters.items():
             self._new_agent_reporter(breed=item, name=name, reporter=reporter)
+
+    def _add_run_id_to_data(
+        self, data: pd.DataFrame | Dict[str, Any]
+    ) -> pd.DataFrame | Dict[str, Any]:
+        if self.run_id is not None:
+            data["run_id"] = self.run_id
+        return data
 
     def _new_model_reporter(self, name: str, reporter: Reporter) -> None:
         """Add a new model-level reporter to collect data.
@@ -216,8 +226,9 @@ class ABSESpyDataCollector:
             logger.warning(
                 "No model reporters have been definedreturning empty DataFrame."
             )
-
-        return pd.DataFrame(self.model_vars)
+        df = pd.DataFrame(self.model_vars)
+        df = self._add_run_id_to_data(df)
+        return df
 
     def get_agent_vars_dataframe(self, breed: Optional[str] = None) -> pd.DataFrame:
         """获取某种 Agents 的 DataFrame"""
@@ -229,8 +240,12 @@ class ABSESpyDataCollector:
         if not self.agent_reporters:
             logger.warning("No agent reporters have been defined in the DataCollector.")
         if results := self._agent_records.get(breed):
-            return pd.concat([pd.DataFrame(res) for res in results])
-        return pd.DataFrame()
+            df = pd.concat([pd.DataFrame(res) for res in results])
+        else:
+            logger.warning(f"No agent records found for breed {breed}.")
+            df = pd.DataFrame()
+        df = self._add_run_id_to_data(data=df)
+        return df
 
     def get_final_vars_report(self, model: MainModel) -> Dict[str, Any]:
         """Report at the end of this model.
@@ -239,11 +254,10 @@ class ABSESpyDataCollector:
             A dictionary mapping variable names to their computed values.
         """
         if not self.final_reporters:
-            logger.warning(
-                "No final reporters have been defined, returning empty dict."
-            )
+            logger.info("No final reporters have been defined.")
             return {}
         results = {var: func(model) for var, func in self.final_reporters.items()}
+        self._add_run_id_to_data(results)
         if self.tracker is not None:
             self.tracker.log_final_metrics(results)
         return results

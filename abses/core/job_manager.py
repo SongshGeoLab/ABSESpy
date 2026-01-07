@@ -7,6 +7,7 @@
 
 from __future__ import annotations
 
+import warnings
 from typing import TYPE_CHECKING, Any, Dict, Optional, Tuple, Type
 
 import pandas as pd
@@ -102,7 +103,7 @@ class ExperimentManager:
         """更新实验结果
 
         Args:
-            key: (job_id, repeat_id) tuple
+            key: (job_id, run_id) tuple
             overrides: Configuration overrides for this run
             datasets: Row-like mapping of metrics/values to store
             seed: Random seed used for this run
@@ -115,10 +116,10 @@ class ExperimentManager:
         """将嵌套字典转换为 DataFrame
 
         Args:
-            results: 形如 {(job_id, repeat_id): {'metric': value}} 的字典
+            results: 形如 {(job_id, run_id): {'metric': value}} 的字典
 
         Returns:
-        包含 job_id, repeat_id 和指标值的 DataFrame
+        包含 job_id, run_id 和指标值的 DataFrame
         """
         return pd.DataFrame(results.values(), index=self.index)
 
@@ -126,14 +127,33 @@ class ExperimentManager:
         self,
         seed: bool = True,
     ) -> pd.DataFrame:
-        """获取所有实验结果的 DataFrame"""
+        """获取所有实验结果的 DataFrame
+
+        Note:
+            The ``repeat_id`` column is **deprecated** and will be removed in a
+            future version. Please use the ``run_id`` column instead.
+        """
         to_concat = []
         to_concat.append(self.dict_to_df(self._overrides))
         if seed:
             seed = pd.Series(self._seeds, name="seed", index=self.index)
             to_concat.append(seed)
         to_concat.append(self.dict_to_df(self._datasets))
-        return pd.concat(to_concat, axis=1).reset_index()
+        df = pd.concat(to_concat, axis=1).reset_index()
+
+        # Backward compatibility: if legacy results contain a `repeat_id` column
+        # (e.g. from older versions or custom datasets), mirror it into `run_id`
+        # and emit a deprecation warning. New code should only rely on `run_id`.
+        if "repeat_id" in df.columns and "run_id" not in df.columns:
+            warnings.warn(
+                "Column 'repeat_id' is deprecated and will be removed in a future "
+                "version. Please use 'run_id' instead.",
+                DeprecationWarning,
+                stacklevel=2,
+            )
+            df["run_id"] = df["repeat_id"]
+
+        return df
 
     def add_a_hook(
         self,
