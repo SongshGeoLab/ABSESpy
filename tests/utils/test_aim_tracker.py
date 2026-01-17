@@ -42,7 +42,7 @@ def mock_distribution_class():
 
     # Create a mock Distribution class when aim is not available
     # It should be callable (a class), not an instance
-    def create_mock_distribution(distribution, bin_count=64):
+    def create_mock_distribution(samples, bin_count=64):
         """Create a mock Distribution instance."""
         mock_instance = MagicMock()
         mock_instance.bin_count = bin_count
@@ -92,7 +92,7 @@ def aim_tracker_custom_bin(mock_aim_run):
         dist_class = Distribution
     else:
 
-        def create_mock_distribution(distribution, bin_count=100):
+        def create_mock_distribution(samples, bin_count=100):
             """Create a mock Distribution instance with custom bin_count."""
             mock_instance = MagicMock()
             mock_instance.bin_count = bin_count
