@@ -368,6 +368,32 @@ Agent trackers collect data from agent instances at each step.
 - The referenced attribute must exist on the agent class
 - Attributes should be scalar values
 
+**Data Type Handling:**
+
+When using the Aim tracker backend (`backend: aim`), agent variables are automatically handled based on their data types:
+
+- **Numeric types** (int, float): Recorded as **Distribution** objects in Aim, allowing you to visualize the full distribution of values across agents (histograms, density plots, etc.). This preserves the heterogeneity of agent attributes.
+
+- **Boolean types**: Converted to 0/1 and recorded as Distribution, with additional statistics (true_count, true_ratio).
+
+- **String types** (categorical): Recorded as frequency statistics:
+  - `{breed}.{attribute}.unique_count` - Number of unique categories
+  - `{breed}.{attribute}.most_common_count` - Count of most common category
+  - `{breed}.{attribute}.most_common_ratio` - Ratio of most common category
+  - `{breed}.{attribute}.{category}_count` - Count for each category (if ≤10 categories)
+
+**Aim Tracker Configuration:**
+
+```yaml
+tracker:
+  backend: aim
+  aim:
+    experiment: "my_experiment"
+    repo: "./aim_repo"  # Optional, defaults to ~/.aim
+    distribution_bin_count: 64  # Optional, default 64, range 1-512
+    log_categorical_stats: true  # Optional, default true
+```
+
 **Example Agent Classes:**
 
 ```python
@@ -430,6 +456,43 @@ tracker:
     burned_rate: "burned_rate"
 ```
 
+### Agent Variable Distribution Tracking (Aim Backend)
+
+When using the Aim tracker backend, agent variables are tracked as distributions rather than simple aggregates. This allows you to:
+
+- **Visualize heterogeneity**: See the full distribution of agent attributes, not just mean/min/max
+- **Track changes over time**: Observe how distributions evolve during simulation
+- **Compare runs**: Compare distributions across different parameter settings
+
+**Example:**
+
+```yaml
+tracker:
+  backend: aim
+  aim:
+    experiment: "flood_adaptation_abm"
+  agents:
+    City:
+      budget: budget
+      population: population
+    Individual:
+      wealth: wealth
+      moved: moved  # Boolean
+      status: status  # String/categorical
+```
+
+In Aim UI, you'll see:
+- `City.budget` as a distribution (histogram) showing the full range of budgets
+- `City.population` as a distribution
+- `Individual.wealth` as a distribution
+- `Individual.moved` as a distribution (0/1) plus `Individual.moved.true_count` and `Individual.moved.true_ratio`
+- `Individual.status` as frequency statistics (unique_count, most_common_count, etc.)
+
+**Configuration Options:**
+
+- `distribution_bin_count` (default: 64, range: 1-512): Number of bins for Distribution histograms
+- `log_categorical_stats` (default: true): Whether to log statistics for string/categorical variables
+
 ### Common Tracker Errors
 
 | Error | Cause | Solution |
@@ -438,6 +501,7 @@ tracker:
 | `KeyError: 'Sheep'` | Agent breed name mismatch | Use exact class name (case-sensitive) |
 | Empty DataFrame | No trackers defined | Add at least one tracker |
 | `TypeError: 'str' object is not callable` | Tried to call a string | Use method name without quotes in code |
+| `ValueError: distribution_bin_count must be...` | Invalid bin_count value | Use integer between 1 and 512 |
 
 ---
 
