@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.11.4](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.3...v0.11.4) (2026-01-07)
+
+
+### Bug Fixes
+
+* **analysis:** :bug: Improve data handling in ResultAnalyzer for missing CSV files ([e0b5d5f](https://github.com/SongshGeoLab/ABSESpy/commit/e0b5d5f2a5c8e8182cd26b1d2a7c6d6a3fce1f8d))
+* **tracker:** :bug: Resolved the issue where configurations could only be recorded as strings. ([1745558](https://github.com/SongshGeoLab/ABSESpy/commit/1745558440abcb6ed043265a1fb099ab96121499))
+
 ## [0.11.3](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.2...v0.11.3) (2026-01-07)
 
 
