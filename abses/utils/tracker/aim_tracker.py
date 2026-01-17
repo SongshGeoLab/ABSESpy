@@ -172,7 +172,7 @@ class AimTracker(TrackerProtocol):
                     self._run.track(numeric_series.iloc[0], name=metric_name, step=step)
                 else:
                     dist = Distribution(
-                        distribution=numeric_series, bin_count=self._bin_count
+                        samples=numeric_series, bin_count=self._bin_count
                     )
                     self._run.track(dist, name=metric_name, step=step)
                 # Additional statistics
@@ -196,7 +196,7 @@ class AimTracker(TrackerProtocol):
                 else:
                     # Multiple values, use Distribution
                     dist = Distribution(
-                        distribution=numeric_series, bin_count=self._bin_count
+                        samples=numeric_series, bin_count=self._bin_count
                     )
                     self._run.track(dist, name=metric_name, step=step)
 
@@ -258,7 +258,7 @@ class AimTracker(TrackerProtocol):
                             )
                         else:
                             dist = Distribution(
-                                distribution=numeric_series, bin_count=self._bin_count
+                                samples=numeric_series, bin_count=self._bin_count
                             )
                             self._run.track(dist, name=metric_name, step=step)
                 except (TypeError, ValueError):
