@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.5](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.4...v0.11.5) (2026-01-17)
+
+
+### Bug Fixes
+
+* **tracker:** :bug: Rename 'distribution' to 'samples' in AimTracker for API compatibility ([a387f1e](https://github.com/SongshGeoLab/ABSESpy/commit/a387f1ee21bc6f748c617b386573889515861b11))
+
 ## [0.11.4](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.3...v0.11.4) (2026-01-07)
 
 
