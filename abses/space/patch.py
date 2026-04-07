@@ -42,6 +42,10 @@ from abses.agents.sequences import ActorsList
 from abses.core.base import BaseModule
 from abses.core.primitives import DEFAULT_CRS
 from abses.space.cells import PatchCell
+from abses.space.mesa_raster_compat import (
+    maybe_sync_cell_xy,
+    raster_base_update_transform,
+)
 from abses.utils.errors import ABSESpyError
 from abses.utils.func import get_buffer, set_null_values
 from abses.utils.random import ListRandom
@@ -284,6 +288,19 @@ class PatchModule(BaseModule, RasterLayer):
         # Apply raster data if requested
         if apply_raster and xda is not None and attr_name is not None:
             self.apply_raster(xda.to_numpy(), attr_name=attr_name)
+
+    def _update_transform(self) -> None:
+        """Recompute affine transform and optionally sync cell centers.
+
+        Mesa-geo may call this from ``RasterBase.__init__`` before cells exist.
+        Upstream ``RasterLayer._update_transform`` can probe ``cells`` via
+        ``getattr``, which is unsafe for ``PatchModule`` during early init.
+        We always apply ``RasterBase`` math first, then sync only when
+        ``_cells`` is populated (and when the installed mesa-geo provides
+        ``_sync_cell_xy``).
+        """
+        raster_base_update_transform(self)
+        maybe_sync_cell_xy(self)
 
     def _initialize_cells(
         self,
@@ -552,13 +569,20 @@ class PatchModule(BaseModule, RasterLayer):
             >>> # Save plot to file
             >>> grid.elevation.plot(save_path='elevation.png', show=False)
         """
-        # Check if it's a raster attribute
-        if name in self.cell_properties:
+        # Avoid ``self.cell_properties`` while ``cell_cls`` is not set yet
+        # (e.g. during ``RasterBase.__init__``), which would recurse here.
+        try:
+            cell_cls = object.__getattribute__(self, "cell_cls")
+        except AttributeError as exc:
+            raise AttributeError(
+                f"'{self.__class__.__name__}' object has no attribute '{name}'"
+            ) from exc
+
+        if name in cell_cls.__attribute_properties__():
             from abses.viz import PlotableAttribute
 
             return PlotableAttribute(module=self, attr_name=name)
 
-        # Raise AttributeError if not found
         raise AttributeError(
             f"'{self.__class__.__name__}' object has no attribute '{name}'"
         )
