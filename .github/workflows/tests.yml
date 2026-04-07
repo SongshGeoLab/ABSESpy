@@ -81,3 +81,40 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
+  deps-compat:
+    name: Mesa / mesa-geo compatibility (${{ matrix.variant }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - variant: min-supported
+            install_cmd: 'uv pip install "mesa==3.1.0" "mesa-geo==0.9.1"'
+          - variant: latest-upstream
+            install_cmd: "uv pip install -U mesa mesa-geo"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Install project dependencies
+        run: uv sync --dev
+
+      - name: Override mesa / mesa-geo for this matrix leg
+        run: ${{ matrix.install_cmd }}
+
+      - name: Show installed mesa versions
+        run: |
+          uv run python -c "import importlib.metadata as m; print('mesa', m.version('mesa')); print('mesa-geo', m.version('mesa-geo'))"
+
+      - name: Run spatial / raster regression tests
+        run: |
+          uv run pytest tests/api/test_patch_mesa_compat.py tests/api/test_nature.py tests/foundation/test_basic_functionality.py -v --tb=short
+
