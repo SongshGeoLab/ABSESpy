@@ -12,7 +12,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0+insiders-4.53.17">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0+insiders-4.53.18">
     
     
       
@@ -20,7 +20,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.22cc1d52.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.df281a37.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -77,6 +77,11 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
+      
+        
+        <a href="#mesa-mesa-geo" class="md-skip">
+          Skip to content
+        </a>
       
     </div>
     <div data-md-component="announce">
@@ -2443,6 +2448,25 @@
   
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Page contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#mesa-mesa-geo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mesa / mesa-geo 兼容性说明
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -2475,7 +2499,7 @@
 <tbody>
 <tr>
 <td>python</td>
-<td>"&gt;=3.9,&lt;3.12"</td>
+<td>"&gt;=3.11,&lt;3.14"</td>
 <td>开发使用的核心编程语言</td>
 </tr>
 <tr>
@@ -2485,17 +2509,22 @@
 </tr>
 <tr>
 <td>hydra-core</td>
-<td>"~1.3"</td>
+<td>"&gt;=1.3,&lt;1.4"</td>
 <td>管理应用程序配置</td>
 </tr>
 <tr>
+<td>mesa</td>
+<td>"&gt;=3.1.0"</td>
+<td>智能体调度与核心工具</td>
+</tr>
+<tr>
 <td>mesa-geo</td>
-<td>"&gt;=0.6"</td>
-<td>创建空间显式的基于智能体的模型</td>
+<td>"&gt;=0.9.1"</td>
+<td>空间显式图层与栅格支持</td>
 </tr>
 <tr>
 <td>xarray</td>
-<td>"~2024"</td>
+<td>"&gt;=2023"</td>
 <td>处理标记的多维数组</td>
 </tr>
 <tr>
@@ -2504,27 +2533,26 @@
 <td>读写矢量数据（shapefiles 等）</td>
 </tr>
 <tr>
-<td>loguru</td>
-<td>"~0.7"</td>
-<td>更好的日志记录</td>
-</tr>
-<tr>
 <td>rioxarray</td>
 <td>"&gt;=0.13"</td>
 <td>操作栅格数据和 xarray</td>
 </tr>
 <tr>
 <td>pendulum</td>
-<td>"~2"</td>
+<td>"&gt;=3.0.0"</td>
 <td>时间控制</td>
 </tr>
 <tr>
 <td>geopandas</td>
-<td>"~0"</td>
+<td>"&gt;=0,&lt;1"</td>
 <td>shapefile 地理数据操作</td>
 </tr>
 </tbody>
 </table>
+<h4 id="mesa-mesa-geo">Mesa / mesa-geo 兼容性说明<a class="headerlink" href="#mesa-mesa-geo" title="Permanent link">¶</a></h4>
+<p><code>ABSESpy</code> 在 <code>pyproject.toml</code> 中对 <code>mesa</code> 与 <code>mesa-geo</code> 仅声明<strong>下界</strong>，以便下游项目按需升级。不同 <code>mesa-geo</code> 版本在栅格初始化顺序上的差异在代码中处理（例如 <code>abses/space/mesa_raster_compat.py</code> 与 <code>PatchModule</code>）。</p>
+<p>CI 在 Ubuntu 上运行<strong>依赖兼容</strong>任务：分别安装声明的最低版本与当前 PyPI 最新版本，再跑空间相关回归测试。这不保证未来任意大版本 <code>mesa-geo</code> 都无需改动，但能尽早发现破坏性变更。</p>
+<p>若升级 <code>mesa</code> / <code>mesa-geo</code> 后在 <code>PatchModule</code> 或栅格初始化阶段报错，请记录 <code>pip show mesa mesa-geo</code>（或 <code>uv pip list</code>）中的版本并附上完整 traceback 提 issue。</p>
 <div class="admonition warning">
 <p class="admonition-title">警告</p>
 <p>上表可能不是最新的，请参考 <code>pyproject.toml</code> 文件中的完整依赖项及其版本。</p>
