@@ -41,7 +41,7 @@ if TYPE_CHECKING:
     from abses.core.types import HOW_TO_SELECT
 
 
-class ActorsList(Generic[A], AgentSet):
+class ActorsList(AgentSet, Generic[A]):
     """Extended agent set specifically designed for managing Actor collections.
 
     ActorsList extends Mesa's AgentSet with ABSESpy-specific functionality, providing
