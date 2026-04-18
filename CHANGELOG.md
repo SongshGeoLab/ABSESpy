@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.11.6](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.5...v0.11.6) (2026-04-18)
+
+
+### Bug Fixes
+
+* **agents:** :bug: Swap ActorsList base order to fix mesa 3.5 MRO error ([2c17215](https://github.com/SongshGeoLab/ABSESpy/commit/2c17215975f8cc68ebe2c5f5f2abf1e5b5015ee2))
+* **compatibility:** :bug: Introduce mesa-geo compatibility handling and regression tests ([c92eefd](https://github.com/SongshGeoLab/ABSESpy/commit/c92eefd887df29ebf2e013df48758612fe6c92c7))
+
 ## [0.11.5](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.4...v0.11.5) (2026-01-17)
 
 
