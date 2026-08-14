@@ -12,6 +12,7 @@ The main modelling framework of ABSESpy.
 from __future__ import annotations
 
 import functools
+import itertools
 from pathlib import Path
 from typing import (
     TYPE_CHECKING,
@@ -121,6 +122,10 @@ class MainModel(Model, BaseStateManager):
         self._names: Set[str] = set()
         Model.__init__(self, seed=seed, rng=rng)
         BaseStateManager.__init__(self)
+        # Cells are not mesa `Agent`s, so they need their own ID allocator.
+        # Counting *down* keeps them disjoint from mesa's agent IDs, which
+        # count up from 1 -- both share the `_links` / `_node_cache` key space.
+        self._cell_id_counter = itertools.count(-1, -1)
         self._exp = experiment
         self._run_id: Optional[int] = run_id
         # Filter out None values from kwargs for type safety
@@ -226,6 +231,19 @@ class MainModel(Model, BaseStateManager):
             String with version, name, and current state.
         """
         return f"<[{self.version}] {self.name}({self.state.name})>"
+
+    def next_cell_id(self) -> int:
+        """Allocate a model-unique ID for a `PatchCell`.
+
+        Cells are not mesa `Agent`s, so mesa does not assign them a
+        `unique_id`. Since links index actors and cells in the same key
+        space, cell IDs count *down* from -1 to stay disjoint from mesa's
+        agent IDs, which count up from 1.
+
+        Returns:
+            A negative integer, unique within this model.
+        """
+        return next(self._cell_id_counter)
 
     def _logging_begin(self) -> None:
         """Logging the beginning of the model."""

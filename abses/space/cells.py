@@ -106,6 +106,7 @@ class PatchCell(_LinkNodeCell, BaseModelElement, ActorProtocol):
     ):
         BaseModelElement.__init__(self, model=layer.model)
         _LinkNodeCell.__init__(self)
+        self.unique_id = layer.model.next_cell_id()
         self.indices = indices
         self.pos = pos
         self._set_layer(layer=layer)

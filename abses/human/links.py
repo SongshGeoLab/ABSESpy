@@ -608,7 +608,11 @@ class _LinkNode:
         link: 管理链接的代理。
     """
 
-    unique_id: UniqueID = -1
+    # Declared, but deliberately *not* given a default: links index nodes by
+    # `unique_id`, so a shared class-level fallback would silently collapse
+    # every node into one bucket. Subclasses must assign it per instance
+    # (mesa does this for `Actor`; `PatchCell` uses `model.next_cell_id()`).
+    unique_id: UniqueID
     breed = _BreedDescriptor()
 
     @abstractmethod
