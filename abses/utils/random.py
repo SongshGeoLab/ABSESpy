@@ -9,6 +9,7 @@
 
 from __future__ import annotations
 
+import warnings
 from itertools import combinations
 from random import Random
 from typing import (
@@ -44,24 +45,64 @@ class ListRandom(Random):
     """
 
     def __init__(self, model: MainModelProtocol, actors: Iterable[Any]) -> None:
-        # Get seed from model and ensure it's a valid type
-        if hasattr(model, "_seed"):
-            seed = model._seed
-            # Ensure seed is a valid type for Random
-            if seed is not None and not isinstance(
-                seed, (int, float, str, bytes, bytearray)
-            ):
-                seed = None
-        else:
-            seed = None
-
-        # Initialize parent Random with seed
-        super().__init__(seed)
+        # NOTE: `.random` is a property that builds a new `ListRandom` on every
+        # access, so this object must NOT own any RNG state -- seeding a fresh
+        # `Random` here would reset the stream on every access and freeze every
+        # inherited method. Instead the core generator is delegated to the
+        # model's own `Random` (see the overrides below), so all draws share
+        # one seeded stream.
+        super().__init__()
+        self._source: Random = model.random
 
         self.model = model
         self.actors = self._to_actors_list(actors)
         self.rng = model.rng if model.rng else np.random.default_rng()
-        self.seed = seed
+
+    # -- Core generator: delegate to the model's RNG -------------------------
+    # `Random` builds shuffle/sample/choices/randint/gauss/... on top of
+    # `random()` and `getrandbits()`, so overriding the primitives is enough
+    # to route the whole inherited API through the model's seeded stream.
+
+    def random(self) -> float:
+        """Return the next random float from the model's RNG."""
+        return self._source.random()
+
+    def getrandbits(self, k: int) -> int:
+        """Return `k` random bits from the model's RNG."""
+        return self._source.getrandbits(k)
+
+    def randbytes(self, n: int) -> bytes:
+        """Return `n` random bytes from the model's RNG."""
+        return self._source.randbytes(n)
+
+    def getstate(self) -> tuple:
+        """Return the state of the model's RNG."""
+        return self._source.getstate()
+
+    def setstate(self, state: tuple) -> None:
+        """Restore the state of the model's RNG."""
+        self._source.setstate(state)
+
+    def seed(self, *args: Any, **kwargs: Any) -> None:
+        """Refuse to re-seed: this object shares the model's RNG.
+
+        Must not delegate to `self._source.seed(...)`: `Random.__init__` calls
+        `self.seed(...)`, which would re-seed the model's RNG on every `.random`
+        access. Callers who really want to re-seed should seed the model.
+
+        A bare no-op would be worse than useless -- `actors.random.seed(42)`
+        would look like it worked -- so a call with a real seed warns.
+        `Random.__init__` calls `self.seed(None)`, which stays silent.
+        """
+        given = args[0] if args else kwargs.get("a")
+        if given is not None:
+            warnings.warn(
+                "`ListRandom` shares the model's RNG and cannot be re-seeded; "
+                "this call did nothing. Seed the model instead, e.g. "
+                "`MainModel(seed=42)`.",
+                UserWarning,
+                stacklevel=2,
+            )
 
     def _to_actors_list(self, objs: Iterable) -> ActorsList:
         from abses.agents.sequences import ActorsList
