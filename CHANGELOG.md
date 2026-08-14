@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.11.7](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.6...v0.11.7) (2026-08-14)
+
+
+### ⚠ BREAKING CHANGES
+
+* **random:** models using `.random.shuffle/sample/randint/random()` will produce different trajectories at the same seed, because those methods now actually advance. Results are reproducible across runs and processes for a given seed, but they will not match output recorded before this fix -- check any baseline that was captured from the frozen behaviour.
+* **links:** `_LinkContainer.linked()` now returns an ordered `list` instead of a `set`; code using `|`, `&` or `.union` on its result must be updated. `_LinkProxy.get()` still returns an `ActorsList`, so the public surface is unaffected. `link.get(direction=None)` is now specified as out-links first, then in-links, de-duplicated keeping first occurrence.
+* **space:** `PatchCell.unique_id` is no longer the constant -1; each cell now has a distinct negative integer. Code that persisted cell IDs or relied on `cell.unique_id == -1` needs updating, and the `AgentID` column collected by the datacollector is now meaningful for cells. Cell links are now per-cell, so models that (unknowingly) depended on the shared-bucket behaviour will produce different -- correct -- results.
+
+### Bug Fixes
+
+* **links:** :bug: Return linked nodes in a reproducible order ([bb925c6](https://github.com/SongshGeoLab/ABSESpy/commit/bb925c68a09d727715701b34e34bb49aa32b3e12))
+* **random:** :bug: Share the model's RNG instead of re-seeding per access ([c570cac](https://github.com/SongshGeoLab/ABSESpy/commit/c570cac774eff88f46d3c4a7c60a3469ac869294))
+* **space:** :bug: Give every PatchCell its own unique_id ([f93ed22](https://github.com/SongshGeoLab/ABSESpy/commit/f93ed22766a6da3b74ae5f55392c35ab292c04e4))
+
+
+### Miscellaneous Chores
+
+* release 0.11.7 ([fd28cdc](https://github.com/SongshGeoLab/ABSESpy/commit/fd28cdc4962ee62665cded2a31adaa90f39f8e42))
+
 ## [0.11.6](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.5...v0.11.6) (2026-04-18)
 
 
