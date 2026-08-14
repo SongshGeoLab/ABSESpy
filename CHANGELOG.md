@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.11.7](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.6...v0.11.7) (2026-08-14)
+
+
+### Bug Fixes
+
+* **links:** :bug: Return linked nodes in a reproducible order ([bb925c6](https://github.com/SongshGeoLab/ABSESpy/commit/bb925c68a09d727715701b34e34bb49aa32b3e12))
+* **random:** :bug: Share the model's RNG instead of re-seeding per access ([c570cac](https://github.com/SongshGeoLab/ABSESpy/commit/c570cac774eff88f46d3c4a7c60a3469ac869294))
+* **space:** :bug: Give every PatchCell its own unique_id ([f93ed22](https://github.com/SongshGeoLab/ABSESpy/commit/f93ed22766a6da3b74ae5f55392c35ab292c04e4))
+
 ## [0.11.6](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.5...v0.11.6) (2026-04-18)
 
 
