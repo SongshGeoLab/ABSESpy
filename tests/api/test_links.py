@@ -162,6 +162,131 @@ class TestLinkContainer:
         assert container.has_link("test", node_1, node_2) == expected
 
 
+class TestLinkOrder:
+    """Links must come back in creation order, not identity-hash order.
+
+    See https://github.com/SongshGeoLab/ABSESpy/issues/164
+    """
+
+    @pytest.fixture(name="hub_and_spokes")
+    def hub_and_spokes(self, mock_model):
+        """One hub node linked out to five spokes, in a known order."""
+        hub = MockNode(mock_model, "hub")
+        spokes = [MockNode(mock_model, f"spoke_{i}") for i in range(5)]
+        return hub, spokes
+
+    def test_linked_follows_creation_order(
+        self, hub_and_spokes, container: _LinkContainer
+    ):
+        """`linked()` preserves the order links were created in."""
+        # arrange
+        hub, spokes = hub_and_spokes
+        for spoke in spokes:
+            container.add_a_link("test", hub, spoke)
+
+        # act
+        linked = container.linked(hub, "test", direction="out")
+
+        # assert
+        assert linked == spokes
+
+    def test_linked_order_survives_removal(
+        self, hub_and_spokes, container: _LinkContainer
+    ):
+        """Removing a link keeps the remaining ones in order."""
+        # arrange
+        hub, spokes = hub_and_spokes
+        for spoke in spokes:
+            container.add_a_link("test", hub, spoke)
+
+        # act
+        container.remove_a_link("test", hub, spokes[2])
+
+        # assert
+        expected = [spokes[0], spokes[1], spokes[3], spokes[4]]
+        assert container.linked(hub, "test", direction="out") == expected
+
+    def test_re_adding_a_link_keeps_original_position(
+        self, hub_and_spokes, container: _LinkContainer
+    ):
+        """Re-adding an existing link must not move it to the end."""
+        # arrange
+        hub, spokes = hub_and_spokes
+        for spoke in spokes:
+            container.add_a_link("test", hub, spoke)
+
+        # act
+        container.add_a_link("test", hub, spokes[0])
+
+        # assert
+        assert container.linked(hub, "test", direction="out") == spokes
+
+    def test_linked_both_directions_is_out_then_in(
+        self, hub_and_spokes, container: _LinkContainer
+    ):
+        """`direction=None` returns out-links first, then in-links."""
+        # arrange
+        hub, spokes = hub_and_spokes
+        container.add_a_link("test", hub, spokes[0])
+        container.add_a_link("test", hub, spokes[1])
+        container.add_a_link("test", spokes[2], hub)
+        container.add_a_link("test", spokes[3], hub)
+
+        # act
+        linked = container.linked(hub, "test", direction=None)
+
+        # assert
+        assert linked == [spokes[0], spokes[1], spokes[2], spokes[3]]
+
+    def test_linked_both_directions_dedupes(
+        self, hub_and_spokes, container: _LinkContainer
+    ):
+        """A mutual link yields the peer once, at its out-link position."""
+        # arrange
+        hub, spokes = hub_and_spokes
+        container.add_a_link("test", hub, spokes[0], mutual=True)
+        container.add_a_link("test", spokes[1], hub)
+
+        # act
+        linked = container.linked(hub, "test", direction=None)
+
+        # assert
+        assert linked == [spokes[0], spokes[1]]
+
+    def test_default_is_honoured_in_both_directions(
+        self, hub_and_spokes, container: _LinkContainer
+    ):
+        """`direction=None` honours `default` like the directional branches.
+
+        It used to drop `default` when recursing, so an unknown link name
+        raised KeyError for `direction=None` but not for "in"/"out".
+        """
+        # arrange
+        hub, spokes = hub_and_spokes
+        container.add_a_link("known", hub, spokes[0])
+
+        # act / assert -- no KeyError for an unregistered link name
+        assert container.linked(hub, "missing", None, None) == []
+        assert container.linked(hub, "missing", "out", None) == []
+
+    def test_owns_links_follows_registration_order(
+        self, hub_and_spokes, container: _LinkContainer
+    ):
+        """`owns_links()` follows link-type registration order."""
+        # arrange
+        hub, spokes = hub_and_spokes
+        for name in ("alpha", "beta", "gamma", "delta"):
+            container.add_a_link(name, hub, spokes[0])
+
+        # act / assert
+        assert container.owns_links(hub, direction="out") == (
+            "alpha",
+            "beta",
+            "gamma",
+            "delta",
+        )
+
+
 class TestNetworkx:
     """Test linking nodes into networkx."""
 
@@ -180,6 +305,21 @@ class TestNetworkx:
         # assert
         assert set(graph.nodes) == set(tres_nodes)
         assert graph.number_of_edges() == 2
+
+    def test_graph_node_order_is_deterministic(
+        self, tres_nodes: List[ActorProtocol], container: _LinkContainer
+    ):
+        """Graph node order follows link creation order, not identity hash."""
+        # arrange
+        node_1, node_2, node_3 = tres_nodes
+        container.add_a_link("test", node_1, node_2, mutual=True)
+        container.add_a_link("test", node_2, node_3, mutual=True)
+
+        # act
+        graph = container.get_graph("test")
+
+        # assert
+        assert list(graph.nodes) == [node_1, node_2, node_3]
 
 
 class TestLinkProxy:
