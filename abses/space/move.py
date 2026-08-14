@@ -11,12 +11,15 @@ This script is used to manipulate actors' movements.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal, Optional, Tuple, cast
-
-try:
-    from typing import TypeAlias
-except ImportError:
-    from typing_extensions import TypeAlias
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Literal,
+    Optional,
+    Tuple,
+    TypeAlias,
+    cast,
+)
 
 from mesa.space import Coordinate
 from mesa_geo import RasterLayer

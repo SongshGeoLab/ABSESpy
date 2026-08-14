@@ -9,13 +9,7 @@
 
 from importlib import resources
 from pathlib import Path
-from typing import Literal
-
-try:
-    from typing import TypeAlias
-except ImportError:
-    from typing_extensions import TypeAlias
-
+from typing import Literal, TypeAlias
 
 DATA_LIST = [
     "farmland.tif",

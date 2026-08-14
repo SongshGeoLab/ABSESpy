@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional
+from typing import Optional
 
 from omegaconf import DictConfig, OmegaConf
 
@@ -31,9 +31,6 @@ from abses.utils.log_parser import (
     get_log_mode,
     get_stdout_config,
 )
-
-if TYPE_CHECKING:
-    pass
 
 # Experiment-level logger name
 EXP_LOGGER_NAME = "abses.core.experiment"

@@ -158,10 +158,6 @@ class PatchModule(BaseModule, RasterLayer):
         # Initialize BaseModule
         BaseModule.__init__(self, model, name=name)
 
-        # Normalize CRS if provided
-        if crs is not None:
-            crs = crs
-
         # Determine creation method based on provided parameters
         if raster_file is not None:
             # Create from raster file

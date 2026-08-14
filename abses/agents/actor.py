@@ -350,8 +350,6 @@ class Actor(mg.GeoAgent, _LinkNodeActor, BaseModelElement, ActorProtocol):
         Returns:
             The value of the attribute.
         """
-        # if attr in self.dynamic_variables:
-        #     return self.dynamic_var(attr)
         return super().get(attr=attr, target=target, default=default)
 
     @alive_required
@@ -403,12 +401,11 @@ class Actor(mg.GeoAgent, _LinkNodeActor, BaseModelElement, ActorProtocol):
 
         After calling this method, the actor should no longer be used.
         """
-        self.link.clean()  # 从链接中移除
-        if self.on_earth:  # 如果在地上，那么从地块上移除
+        self.link.clean()  # drop all links with other actors
+        if self.on_earth:  # leave the cell it is standing on, if any
             self.move.off()
-        super().remove()  # 从总模型里移除
-        self._alive = False  # 设置为死亡状态
-        del self
+        super().remove()  # deregister from the model
+        self._alive = False
 
     def _setup(self) -> None:
         """Internal method to trigger actor setup.
@@ -541,4 +538,4 @@ class Actor(mg.GeoAgent, _LinkNodeActor, BaseModelElement, ActorProtocol):
         if len(scores) == 0:
             return None
         idx = int(np.argmax(scores)) if how == "max" else int(np.argmin(scores))
-        return seq[idx] if not is_actors_list else seq[idx]
+        return seq[idx]

@@ -229,14 +229,11 @@ class MainModel(Model, BaseStateManager):
 
     def _logging_begin(self) -> None:
         """Logging the beginning of the model."""
-        # settings = OmegaConf.to_container(self._settings)
         msg = (
             f"Model: {self.__class__.__name__}\n"
             f"ABSESpy version: {__version__}\n"
             f"Outpath: {self.outpath}\n"
-            # f"Model parameters: {json.dumps(settings, indent=4)}\n"
         )
-        # logger.bind(data=self._settings).info("Params:")
         log_session(title="MainModel", msg=msg)
 
     def _logging_step(self) -> None:
@@ -367,15 +364,9 @@ class MainModel(Model, BaseStateManager):
                 total_repeats = exp_cfg.get("repeats", 1)
             log_repeat_separator(self.run_id, total_repeats)
 
-        # Display startup info
-        # In separate mode, setup_logger_info should only go to experiment log
-        # For model run logs, only log model-specific info
-        if logging_mode == "separate":
-            # In separate mode, don't log framework banner to model run log
-            # It will be logged to experiment log file instead
-            pass
-        else:
-            # In once/merge mode, log to model run log
+        # Display startup info. In separate mode the framework banner goes to the
+        # experiment log instead, so only once/merge mode logs it here.
+        if logging_mode != "separate":
             setup_logger_info(self.exp)
         # Always log model-specific info to model run log
         self._logging_begin()
@@ -547,22 +538,3 @@ class MainModel(Model, BaseStateManager):
         # End tracker run if available
         if self.datacollector.tracker is not None:
             self.datacollector.tracker.end_run()
-
-    # def summary(self, verbose: bool = False) -> pd.DataFrame:
-    #     """Generates a summary report of the model's current state.
-
-    #     Args:
-    #         verbose: If True, includes additional details about model and agent variables.
-
-    #     Returns:
-    #         DataFrame containing model statistics and state information.
-    #     """
-    #     print(f"Using ABSESpy version: {self.version}")
-    #     # Basic reports
-    #     to_report = {"name": self.name, "state": self.state, "tick": self.time.tick}
-    #     for breed in self.agents_by_type:
-    #         to_report[breed] = self.agents.has(breed)
-    #     if verbose:
-    #         to_report["model_vars"] = self.datacollector.model_reporters.keys()
-    #         to_report["agent_vars"] = self.datacollector.agent_reporters.keys()
-    #     return pd.Series(to_report)

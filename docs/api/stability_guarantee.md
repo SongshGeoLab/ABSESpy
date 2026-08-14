@@ -54,9 +54,23 @@ These APIs are guaranteed to maintain backward compatibility across minor and pa
 
 ### ⚠️ **Deprecated APIs** (Scheduled for Removal)
 
-These APIs are still functional but will be removed in future major versions:
+These APIs are still functional but will be removed in a future version. Each one
+currently emits a `DeprecationWarning` at runtime.
 
-- None currently identified
+| Deprecated | Replacement | Introduced in | Emitted from |
+|---|---|---|---|
+| Lowercase parameter keys for a component (e.g. `farmer:` for the `Farmer` breed) | Use the component's PascalCase class name (`Farmer:`) | 0.8 | `abses/core/base_module.py` |
+| The `how=` argument of `BaseSubSystem.create_module()` | Removed; the argument is accepted and ignored | 0.8 | `abses/core/base_subsystem.py` |
+| The `repeat_id` column in experiment results | Use `run_id` | 0.9 | `abses/core/job_manager.py` |
+
+Silent (non-warning) compatibility shims also still exist — `abses.core.base` as a
+re-export module, the `reports` → `tracker` config key rename, and Hydra struct
+mode being disabled for pre-0.8 projects.
+
+!!! note "No removal version has been fixed yet"
+    None of the entries above currently declare a target release. Establishing a
+    deprecation policy (introduce in X, remove in X+2) is tracked as a separate
+    issue; until then, assume they remain available.
 
 ### 🔄 **Experimental APIs** (May Change)
 

@@ -1,7 +1,14 @@
 [tool.pytest.ini_options]
+# Single source of truth for pytest settings. A root-level `pytest.ini` used to
+# exist and silently took precedence over this table; it has been removed.
 testpaths = ["tests"]
-norecursedirs = ["examples", "docs", ".*", "tmp", "out", "logs"]
+# NOTE: norecursedirs matches on directory *basename*, so an "examples" entry
+# would also skip tests/examples/. The root-level examples/ is already excluded
+# by testpaths.
+norecursedirs = [".*", "tmp", "out", "logs", "site", "build", "dist"]
 addopts = "-v --tb=short --cov=abses"
+# Used by `make test-notebooks` / the notebook workflow (pytest --nbmake).
+nbmake_timeout = 180
 
 [tool.isort]
 profile = "black"
@@ -204,7 +211,7 @@ ignore-private = true
 ignore-nested-functions = true
 ignore-semiprivate = false
 fail-under = 70
-exclude = ["setup.py", "docs", "build", "tests", "examples"]
+exclude = ["docs", "build", "tests", "examples"]
 verbose = 1
 quiet = false
 color = true

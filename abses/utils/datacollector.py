@@ -31,12 +31,9 @@ if TYPE_CHECKING:
     from abses.core.model import MainModel
     from abses.core.time_driver import TimeDriver
 
-from abses.utils.tracker import TrackerProtocol
+from typing import TypeAlias
 
-try:
-    from typing import TypeAlias
-except ImportError:
-    from typing_extensions import TypeAlias
+from abses.utils.tracker import TrackerProtocol
 
 Reporter: TypeAlias = Callable[..., Any]
 ReporterDict: TypeAlias = Dict[str, Reporter]

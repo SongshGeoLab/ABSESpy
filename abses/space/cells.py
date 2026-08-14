@@ -194,8 +194,6 @@ class PatchCell(_LinkNodeCell, BaseModelElement, ActorProtocol):
         Raises:
             AttributeError: Attribute value of the associated patch cell.
         """
-        # if attr in self.layer.dynamic_variables:
-        #     self.layer.dynamic_var(attr_name=attr)
         return super().get(attr=attr, target=target, default=default)
 
     def neighboring(

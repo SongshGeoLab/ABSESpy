@@ -29,13 +29,9 @@ from typing import (
     Optional,
     Tuple,
     Type,
+    TypeAlias,
     TypeVar,
 )
-
-try:
-    from typing import TypeAlias
-except ImportError:
-    from typing_extensions import TypeAlias
 
 import numpy as np
 import pandas as pd
@@ -482,11 +478,8 @@ class Experiment:
 
             setup_logger_info(self)
 
-        # For merge mode, log separator before first repeat
-        if logging_mode == "merge" and repeats > 1:
-            # Note: This will be logged in the model's logger setup
-            pass
-
+        # Note: in merge mode the repeat separator is emitted by the model's own
+        # logger setup (see MainModel._setup_logger), not here.
         if self._is_hydra_parallel() or number_process == 1:
             # Hydra 并行或指定单进程时，顺序执行
             disable = repeats == 1 or not display_progress
@@ -495,11 +488,6 @@ class Experiment:
                 disable=disable,
                 desc=f"Job {self.job_id} repeats {repeats} times.",
             ):
-                # Log separator for merge mode
-                if logging_mode == "merge" and run_id > 1:
-                    # Note: Separator will be logged in model setup
-                    pass
-
                 # Get log file path for this repeat
                 log_path = self._get_log_file_path(log_name, run_id, logging_mode)
 
