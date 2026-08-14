@@ -20,8 +20,8 @@ from typing import (
     Iterable,
     List,
     Optional,
-    Set,
     Tuple,
+    TypeVar,
     Union,
     overload,
 )
@@ -44,6 +44,8 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+T = TypeVar("T")
+
 
 def get_node_unique_id(node: Any) -> UniqueID:
     """Gets a unique ID for a node when importing actors from graph.
@@ -63,6 +65,24 @@ def get_node_unique_id(node: Any) -> UniqueID:
     return node
 
 
+def _ordered_union(*groups: Iterable[T]) -> List[T]:
+    """Concatenate groups, dropping repeats but keeping first-seen order.
+
+    Used instead of set union so results stay reproducible: unlike a `set`,
+    `dict` iterates in insertion order rather than identity-hash order.
+
+    Args:
+        *groups: Iterables to merge, in priority order.
+
+    Returns:
+        A list holding each distinct item once, at its earliest position.
+    """
+    merged: Dict[T, None] = {}
+    for group in groups:
+        merged.update(dict.fromkeys(group))
+    return list(merged)
+
+
 class _LinkContainer:
     """容器类，用于管理节点之间的链接。
 
@@ -76,8 +96,12 @@ class _LinkContainer:
     """
 
     def __init__(self, model=None) -> None:
-        self._back_links: Dict[str, Dict[UniqueID, Set[UniqueID]]] = {}
-        self._links: Dict[str, Dict[UniqueID, Set[UniqueID]]] = {}
+        # The inner `Dict[UniqueID, None]` is an *ordered set*: it keeps O(1)
+        # add/remove/lookup while preserving link creation order. A plain
+        # `set` here iterates in identity-hash order, which varies per
+        # process and makes `link.get()` unreproducible across runs.
+        self._back_links: Dict[str, Dict[UniqueID, Dict[UniqueID, None]]] = {}
+        self._links: Dict[str, Dict[UniqueID, Dict[UniqueID, None]]] = {}
         self._cached_networks: Dict[str, object] = {}
         self._node_cache: Dict[UniqueID, LinkingNode] = {}
 
@@ -127,11 +151,11 @@ class _LinkContainer:
         elif direction is None:
             links_in = self.owns_links(node, direction="in")
             links_out = self.owns_links(node, direction="out")
-            return tuple(set(links_in) | set(links_out))
+            return tuple(_ordered_union(links_out, links_in))
         else:
             raise ValueError(f"Invalid direction '{direction}'.")
-        links = {link for link, agents in data.items() if node_id in agents}
-        return tuple(links)
+        # Follows `_links` key order, i.e. link-type registration order.
+        return tuple(link for link, agents in data.items() if node_id in agents)
 
     @overload
     def get_graph(self, link_name: str, directions: bool = False) -> "nx.Graph": ...
@@ -162,9 +186,9 @@ class _LinkContainer:
         links_dict = {}
         for source_id, target_ids in self._links[link_name].items():
             source_node = self._get_node(source_id)
-            links_dict[source_node] = {
+            links_dict[source_node] = [
                 self._get_node(target_id) for target_id in target_ids
-            }
+            ]
 
         graph = nx.from_dict_of_lists(links_dict, creating_using)
         self._cached_networks[link_name] = graph
@@ -180,9 +204,9 @@ class _LinkContainer:
         if link_name not in self._links:
             self._add_a_link_name(link_name)
         if source_id not in self._links[link_name]:
-            self._links[link_name][source_id] = set()
+            self._links[link_name][source_id] = {}
         if target_id not in self._back_links[link_name]:
-            self._back_links[link_name][target_id] = set()
+            self._back_links[link_name][target_id] = {}
 
     def has_link(
         self, link_name: str, source: LinkingNode, target: LinkingNode
@@ -233,8 +257,10 @@ class _LinkContainer:
         source_id = source.unique_id
         target_id = target.unique_id
 
-        self._links[link_name][source_id].add(target_id)
-        self._back_links[link_name][target_id].add(source_id)
+        # Re-adding an existing link keeps its original position, matching the
+        # previous `set.add` semantics.
+        self._links[link_name][source_id][target_id] = None
+        self._back_links[link_name][target_id][source_id] = None
         if mutual:
             self.add_a_link(link_name, target=source, source=target, mutual=False)
 
@@ -267,8 +293,8 @@ class _LinkContainer:
         source_id = source.unique_id
         target_id = target.unique_id
 
-        self._links[link_name].get(source_id, set()).remove(target_id)
-        self._back_links[link_name].get(target_id, set()).remove(source_id)
+        self._links[link_name].get(source_id, {}).pop(target_id, None)
+        self._back_links[link_name].get(target_id, {}).pop(source_id, None)
         if mutual:
             self.remove_a_link(link_name, target=source, source=target, mutual=False)
 
@@ -318,9 +344,9 @@ class _LinkContainer:
                 f"Invalid direction {direction}, please choose from 'in' or 'out'."
             )
         for name in self._clean_link_name(link_name):
-            to_clean = data[name].pop(node_id, set())
+            to_clean = data[name].pop(node_id, {})
             for another_node_id in to_clean:
-                another_data[name][another_node_id].remove(node_id)
+                another_data[name][another_node_id].pop(node_id, None)
 
     def linked(
         self,
@@ -328,7 +354,7 @@ class _LinkContainer:
         link_name: Optional[str] = None,
         direction: Direction = None,
         default: Any = ...,
-    ) -> Set[LinkingNode]:
+    ) -> List[LinkingNode]:
         """获取链接的节点。
 
         Parameters:
@@ -345,7 +371,8 @@ class _LinkContainer:
                 如果方向不是 'in' 或 'out'。
 
         Returns:
-            与输入节点链接的 Actors 或 PatchCells。
+            与输入节点链接的 Actors 或 PatchCells，按链接创建顺序排列。
+            当 `direction` 为 None 时，出向链接在前、入向链接在后，去重保留首次出现。
         """
         node_id = node.unique_id
         link_names = self._clean_link_name(link_name=link_name)
@@ -355,20 +382,23 @@ class _LinkContainer:
         elif direction == "out":
             data = self._links
         elif direction is None:
-            in_links = self.linked(node, link_name, direction="in")
-            out_links = self.linked(node, link_name, direction="out")
-            return in_links | out_links
+            # `default` must be forwarded, or `direction=None` would raise
+            # KeyError for a missing link name while the directional branches
+            # honour the default.
+            in_links = self.linked(node, link_name, "in", default)
+            out_links = self.linked(node, link_name, "out", default)
+            return _ordered_union(out_links, in_links)
         else:
             raise ValueError(f"Invalid direction {direction}")
 
-        linked_ids: Set[UniqueID] = set()
+        linked_ids: Dict[UniqueID, None] = {}
         for name in link_names:
             if name not in data and default is not ...:
                 continue
-            linked_ids = linked_ids.union(data[name].get(node_id, set()))
+            linked_ids.update(data[name].get(node_id, {}))
 
         # 将 ID 转换回节点对象
-        return {self._get_node(node_id) for node_id in linked_ids}
+        return [self._get_node(node_id) for node_id in linked_ids]
 
     def _check_is_node(
         self,
@@ -608,7 +638,11 @@ class _LinkNode:
         link: 管理链接的代理。
     """
 
-    unique_id: UniqueID = -1
+    # Declared, but deliberately *not* given a default: links index nodes by
+    # `unique_id`, so a shared class-level fallback would silently collapse
+    # every node into one bucket. Subclasses must assign it per instance
+    # (mesa does this for `Actor`; `PatchCell` uses `model.next_cell_id()`).
+    unique_id: UniqueID
     breed = _BreedDescriptor()
 
     @abstractmethod

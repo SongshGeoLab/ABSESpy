@@ -433,7 +433,14 @@ class ActorsList(AgentSet, Generic[A]):
 
     @random.setter
     def random(self, random: np.random.Generator) -> None:
-        pass
+        """Intentionally a no-op.
+
+        mesa's `AgentSet.__init__` assigns `self.random`, which would clash
+        with the getter above. Discarding it is safe because the `ListRandom`
+        the getter returns already delegates to `model.random` -- so mesa's
+        `shuffle` / `shuffle_do` / `select` draw from the same seeded stream
+        they would have gotten from the assignment.
+        """
 
     @property
     def is_cells(self) -> bool:

@@ -98,3 +98,49 @@ class TestPatchCell:
         assert "actor_1" in cell.link
         assert cell.link == ("actor_1",)
         assert actor in cell.link.get("actor_1")
+
+
+class TestCellUniqueID:
+    """Every cell needs its own ID.
+
+    `_LinkNode.unique_id` used to default to the class attribute -1, and
+    `PatchCell` never overrode it. Since links index nodes by `unique_id`,
+    every cell in the model shared a single link bucket.
+    """
+
+    @pytest.fixture(name="layer")
+    def a_layer(self, model: MainModel):
+        """A 4x4 layer of cells."""
+        return model.nature.create_module(shape=(4, 4))
+
+    def test_cell_ids_are_unique(self, layer):
+        """No two cells share a unique_id."""
+        ids = [cell.unique_id for cell in layer.cells_lst]
+        assert len(set(ids)) == len(ids)
+
+    def test_cell_ids_are_disjoint_from_actor_ids(self, model: MainModel, layer):
+        """Cells and actors share a key space, so IDs must not collide."""
+        # arrange
+        actors = model.agents.new(Actor, num=5)
+
+        # act
+        cell_ids = {cell.unique_id for cell in layer.cells_lst}
+        actor_ids = {actor.unique_id for actor in actors}
+
+        # assert
+        assert not cell_ids & actor_ids
+
+    def test_cells_have_independent_links(self, model: MainModel, layer):
+        """Each cell's links belong to that cell alone."""
+        # arrange
+        cells = layer.cells_lst
+        actor_a, actor_b = model.agents.new(Actor, num=2, singleton=False)
+
+        # act
+        cells[0].link.to(actor_a, "owns")
+        cells[1].link.to(actor_b, "owns")
+
+        # assert
+        assert list(cells[0].link.get("owns")) == [actor_a]
+        assert list(cells[1].link.get("owns")) == [actor_b]
+        assert len(cells[2].link.get("owns", default=None)) == 0

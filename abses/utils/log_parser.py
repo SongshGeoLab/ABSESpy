@@ -14,12 +14,9 @@ access to different logging levels (hydra, exp, run).
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict
+from typing import Any, Dict
 
 from omegaconf import DictConfig, OmegaConf
-
-if TYPE_CHECKING:
-    pass
 
 # Default values
 DEFAULT_FORMAT = "[%(asctime)s][%(name)s][%(levelname)s] - %(message)s"

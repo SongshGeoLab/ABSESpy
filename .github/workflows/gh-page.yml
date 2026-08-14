@@ -66,7 +66,10 @@ jobs:
         if: ${{ (github.event_name != 'workflow_dispatch' || inputs.dry_run != 'true') && github.ref == 'refs/heads/master' }}
         run: |
           git fetch origin gh-pages --depth=1 || true
-          uv run mike deploy --push --update-aliases 0.8 latest
+          # Derive the alias from pyproject.toml so it never drifts from the
+          # released version (it was hardcoded to 0.8 while the package was 0.10.0).
+          MAJOR_MINOR=$(uv run python -c "import tomllib,pathlib;print('.'.join(tomllib.loads(pathlib.Path('pyproject.toml').read_text())['project']['version'].split('.')[:2]))")
+          uv run mike deploy --push --update-aliases "$MAJOR_MINOR" latest
           uv run mike set-default --push latest
 
       - name: Deploy documentation (version tags)

@@ -562,9 +562,10 @@ class _CellAgentsContainer(_AgentsContainer):
             e2 = "You may use 'actor.move.to()' to change its location."
             e3 = "Or you may use 'actor.move.off()' before adding it."
             raise ABSESpyError(e1 + e2 + e3)
+        # `Actor.at` setter requires the agent to already be in this container,
+        # so the add must happen before assigning the location.
         self._agents.add(agent)
         agent.at = self._cell
-        self._agents.add(agent)
 
     def remove(self, agent: Optional[ActorProtocol] = None) -> None:
         """Remove the given agent from the cell.

@@ -17,11 +17,7 @@ import logging
 import sys
 from logging.handlers import RotatingFileHandler, TimedRotatingFileHandler
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, Optional
-
-if TYPE_CHECKING:
-    pass
-
+from typing import Any, Dict, Optional
 
 # Standard format for ABSESpy
 ABSES_FORMAT = "[%(asctime)s][%(name)s][%(levelname)s] - %(message)s"
@@ -61,19 +57,6 @@ def get_mesa_logger() -> logging.Logger:
         Mesa logger instance.
     """
     return logging.getLogger(MESA_LOGGER_NAME)
-
-
-def configure_root_logger(level: str = "INFO") -> None:
-    """Configure root logger with basic settings.
-
-    Args:
-        level: Logging level.
-    """
-    logging.basicConfig(
-        level=level,
-        format=ABSES_FORMAT,
-        datefmt=DATE_FORMAT,
-    )
 
 
 def create_console_handler(

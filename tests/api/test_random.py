@@ -164,3 +164,76 @@ class TestRandomActorsList:
         # assert
         assert isclose(agents.array("test").sum(), value)
         assert isclose(values.sum(), value)
+
+
+class TestSharedRandomStream:
+    """`.random` must share the model's seeded RNG, not re-seed its own.
+
+    `.random` builds a new `ListRandom` on every access. It used to seed that
+    object from `model._seed`, which froze every method inherited from
+    `random.Random` -- `shuffle()` returned the same order forever, so the
+    canonical mesa activation pattern never actually shuffled.
+    """
+
+    @pytest.fixture(name="main")
+    def mock_main(self):
+        """有随机种子的测试模型"""
+        return MainModel(seed=42)
+
+    def test_consecutive_draws_advance(self, main: MainModel):
+        """Repeated draws must differ -- the stream advances."""
+        # arrange
+        actors = main.agents.new(Actor, num=6)
+
+        # act
+        draws = [actors.random.random() for _ in range(5)]
+
+        # assert
+        assert len(set(draws)) == len(draws)
+
+    def test_consecutive_shuffles_differ(self, main: MainModel):
+        """`shuffle()` must not return the same order every call."""
+        # arrange
+        actors = main.agents.new(Actor, num=8)
+
+        # act
+        orders = [tuple(a.unique_id for a in actors.shuffle()) for _ in range(5)]
+
+        # assert
+        assert len(set(orders)) > 1
+
+    @staticmethod
+    def _draw(seed: int) -> list:
+        """Draw a fixed sequence from a freshly seeded model."""
+        model = MainModel(seed=seed)
+        actors = model.agents.new(Actor, num=6)
+        return [actors.random.randint(0, 1000) for _ in range(5)]
+
+    def test_same_seed_reproduces_draws(self):
+        """Two models with the same seed produce the same draw sequence."""
+        assert self._draw(7) == self._draw(7)
+
+    def test_different_seeds_diverge(self):
+        """Different seeds produce different draw sequences."""
+        assert self._draw(7) != self._draw(8)
+
+    def test_seed_is_a_method_not_an_int(self, main: MainModel):
+        """`self.seed = seed` used to shadow the inherited `Random.seed`."""
+        # arrange
+        actors = main.agents.new(Actor, num=2)
+
+        # act / assert
+        assert callable(actors.random.seed)
+
+    def test_seeding_the_list_warns_and_does_not_reset_the_model(self, main: MainModel):
+        """`ListRandom.seed()` must warn rather than silently do nothing."""
+        # arrange
+        actors = main.agents.new(Actor, num=6)
+        before = actors.random.random()
+
+        # act
+        with pytest.warns(UserWarning, match="cannot be re-seeded"):
+            actors.random.seed(123)
+
+        # assert -- the stream kept advancing instead of restarting
+        assert actors.random.random() != before

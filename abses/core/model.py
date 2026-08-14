@@ -12,6 +12,7 @@ The main modelling framework of ABSESpy.
 from __future__ import annotations
 
 import functools
+import itertools
 from pathlib import Path
 from typing import (
     TYPE_CHECKING,
@@ -121,6 +122,10 @@ class MainModel(Model, BaseStateManager):
         self._names: Set[str] = set()
         Model.__init__(self, seed=seed, rng=rng)
         BaseStateManager.__init__(self)
+        # Cells are not mesa `Agent`s, so they need their own ID allocator.
+        # Counting *down* keeps them disjoint from mesa's agent IDs, which
+        # count up from 1 -- both share the `_links` / `_node_cache` key space.
+        self._cell_id_counter = itertools.count(-1, -1)
         self._exp = experiment
         self._run_id: Optional[int] = run_id
         # Filter out None values from kwargs for type safety
@@ -227,16 +232,26 @@ class MainModel(Model, BaseStateManager):
         """
         return f"<[{self.version}] {self.name}({self.state.name})>"
 
+    def next_cell_id(self) -> int:
+        """Allocate a model-unique ID for a `PatchCell`.
+
+        Cells are not mesa `Agent`s, so mesa does not assign them a
+        `unique_id`. Since links index actors and cells in the same key
+        space, cell IDs count *down* from -1 to stay disjoint from mesa's
+        agent IDs, which count up from 1.
+
+        Returns:
+            A negative integer, unique within this model.
+        """
+        return next(self._cell_id_counter)
+
     def _logging_begin(self) -> None:
         """Logging the beginning of the model."""
-        # settings = OmegaConf.to_container(self._settings)
         msg = (
             f"Model: {self.__class__.__name__}\n"
             f"ABSESpy version: {__version__}\n"
             f"Outpath: {self.outpath}\n"
-            # f"Model parameters: {json.dumps(settings, indent=4)}\n"
         )
-        # logger.bind(data=self._settings).info("Params:")
         log_session(title="MainModel", msg=msg)
 
     def _logging_step(self) -> None:
@@ -367,15 +382,9 @@ class MainModel(Model, BaseStateManager):
                 total_repeats = exp_cfg.get("repeats", 1)
             log_repeat_separator(self.run_id, total_repeats)
 
-        # Display startup info
-        # In separate mode, setup_logger_info should only go to experiment log
-        # For model run logs, only log model-specific info
-        if logging_mode == "separate":
-            # In separate mode, don't log framework banner to model run log
-            # It will be logged to experiment log file instead
-            pass
-        else:
-            # In once/merge mode, log to model run log
+        # Display startup info. In separate mode the framework banner goes to the
+        # experiment log instead, so only once/merge mode logs it here.
+        if logging_mode != "separate":
             setup_logger_info(self.exp)
         # Always log model-specific info to model run log
         self._logging_begin()
@@ -547,22 +556,3 @@ class MainModel(Model, BaseStateManager):
         # End tracker run if available
         if self.datacollector.tracker is not None:
             self.datacollector.tracker.end_run()
-
-    # def summary(self, verbose: bool = False) -> pd.DataFrame:
-    #     """Generates a summary report of the model's current state.
-
-    #     Args:
-    #         verbose: If True, includes additional details about model and agent variables.
-
-    #     Returns:
-    #         DataFrame containing model statistics and state information.
-    #     """
-    #     print(f"Using ABSESpy version: {self.version}")
-    #     # Basic reports
-    #     to_report = {"name": self.name, "state": self.state, "tick": self.time.tick}
-    #     for breed in self.agents_by_type:
-    #         to_report[breed] = self.agents.has(breed)
-    #     if verbose:
-    #         to_report["model_vars"] = self.datacollector.model_reporters.keys()
-    #         to_report["agent_vars"] = self.datacollector.agent_reporters.keys()
-    #     return pd.Series(to_report)

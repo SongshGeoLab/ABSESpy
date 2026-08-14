@@ -33,23 +33,6 @@ if TYPE_CHECKING:
 _std_logger = get_abses_logger(ABSES_LOGGER_NAME)
 logger = LoggerAdapter(_std_logger)
 
-# Legacy format constant for compatibility
-FORMAT = "[{time:HH:mm:ss}][{level}][{module}] {message}\n"
-
-
-def formatter(record: logging.LogRecord) -> str:
-    """Customize formatter for compatibility.
-
-    Args:
-        record: Log record.
-
-    Returns:
-        Formatted string.
-    """
-    # This is kept for backward compatibility but not actively used
-    # Standard logging uses Formatter objects instead
-    return "{message}\n"
-
 
 def log_session(title: str, msg: str = "") -> None:
     """Log a new session with decorative formatting.
@@ -202,13 +185,10 @@ def setup_model_logger(
     return abses_logger, mesa_logger, mesa_upper_logger
 
 
-# Legacy exports for backward compatibility
 __all__ = [
     "logger",
-    "formatter",
     "log_session",
     "log_repeat_separator",
     "setup_logger_info",
     "setup_model_logger",
-    "FORMAT",
 ]

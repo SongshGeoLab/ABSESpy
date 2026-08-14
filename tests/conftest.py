@@ -41,15 +41,13 @@ def mock_model_fixture():
 
 
 @pytest.fixture(name="mock_model")
-def mock_model_fixture_alias():
-    """创建模拟的主模型"""
+def mock_model_fixture_alias(model):
+    """`model` 的别名，保持既有测试的命名不变。
 
-    class TestModel(MainModel):
-        """测试用模型"""
-
-        name = "Test"
-
-    return TestModel(parameters={"test_module": {"param1": "value1"}})
+    以前这里是 `model` fixture 的逐字复制，导致请求 `mock_model` 的测试
+    拿到的是另一个 `MainModel` 实例。现在两个名字指向同一个实例。
+    """
+    return model
 
 
 @pytest.fixture(name="test_config")

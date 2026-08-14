@@ -58,6 +58,23 @@ class TestShop:
         assert model is not None
         assert shop1.area_count is not None
 
+    def test_area_counts_cover_every_cell(self, hotelling_fixture):
+        """Every customer cell prefers exactly one shop.
+
+        Cells used to share a single link bucket (all had unique_id -1), so
+        each `Customer.find_preference()` wiped the previous cell's link and
+        the counts summed to 1 instead of the number of cells.
+        """
+        # arrange
+        model = hotelling_fixture
+        n_cells = len(model.nature.major_layer.cells_lst)
+
+        # act
+        model.recalculate_preferences()
+
+        # assert
+        assert sum(shop.area_count for shop in model.actors) == n_cells
+
     # TODO: Add mroe test for the price and position adjustment functionalities
 
 

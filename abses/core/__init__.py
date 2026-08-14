@@ -13,33 +13,3 @@ Documentation: https://absespy.github.io/ABSESpy
 Examples: https://absespy.github.io/ABSESpy/tutorial/user_guide/
 Source: https://github.com/SongshGeoLab/ABSESpy
 """
-
-# from .types import (
-#     MainModel,
-#     TimeDriver,
-#     DynamicVariable,
-#     Observer,
-#     Observable,
-#     ModelElement,
-#     StateManagement,
-#     ModuleType,
-#     MainModule,
-#     BaseObject,
-#     SubSystemProtocol,
-# )
-#     Observable,
-#     Observer,
-# )
-# from .base import BaseObject
-
-# __all__ = [
-#     'ModelComponent',
-#     'Agent',
-#     'AgentID',
-#     'Position',
-#     'GeometryType',
-#     'StateManagement',
-#     'Observable',
-#     'Observer',
-#     'BaseObject',
-# ]

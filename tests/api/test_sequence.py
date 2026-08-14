@@ -57,22 +57,22 @@ class TestSequences:
         # arrange
         actors = create_actors_with_metric(model, 5)
         # Actor test values are: [0, 1, 2, 3, 4]
-        
+
         # act
         best = actors.better("test", than=None)
-        
+
         # assert
         assert len(best) == 1, "Should return only the actor with max value"
         assert best[0].test == 4, "Should return actor with test=4"
-        
+
     def test_sequences_better_default_none(self, model: MainModel):
         """Test that better() defaults to than=None when not provided."""
         # arrange
         actors = create_actors_with_metric(model, 5)
-        
+
         # act - call without 'than' parameter
         best = actors.better("test")
-        
+
         # assert
         assert len(best) == 1
         assert best[0].test == 4
@@ -86,22 +86,24 @@ class TestSequences:
         actors[2].test = 5  # max
         actors[3].test = 2
         actors[4].test = 5  # also max (tie)
-        
+
         # act
         best = actors.better("test")
-        
+
         # assert
         assert len(best) == 2, "Should return both actors with max value"
-        assert all(actor.test == 5 for actor in best), "All returned actors should have test=5"
-        
+        assert all(actor.test == 5 for actor in best), (
+            "All returned actors should have test=5"
+        )
+
     def test_sequences_better_empty_list(self, model: MainModel):
         """Test that better() handles empty lists gracefully."""
         # arrange
         empty_actors = ActorsList(model=model, objs=[])
-        
+
         # act
         result = empty_actors.better("test")
-        
+
         # assert
         assert len(result) == 0, "Should return empty list for empty input"
         assert isinstance(result, ActorsList), "Should return ActorsList instance"
@@ -111,10 +113,10 @@ class TestSequences:
         # arrange
         actors = create_actors_with_metric(model, 5)
         reference_actor = actors[2]  # Has test=2
-        
+
         # act
         better = actors.better("test", than=reference_actor)
-        
+
         # assert
         assert len(better) == 2, "Should return actors with test > 2"
         assert all(actor.test > 2 for actor in better), "All should have test > 2"

@@ -20,6 +20,7 @@ from typing import (
     Optional,
     Sequence,
     Tuple,
+    TypeAlias,
     TypeVar,
     overload,
 )
@@ -27,13 +28,6 @@ from typing import (
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy import ndimage
-
-from abses.utils.regex import CAMEL_NAME
-
-try:
-    from typing import TypeAlias
-except ImportError:
-    from typing_extensions import TypeAlias
 
 F = TypeVar("F", bound=Callable[..., Any])
 
@@ -127,20 +121,6 @@ def iter_apply_func_to(elements: str) -> Callable:
         return broadcast_func
 
     return broadcast
-
-
-def camel_to_snake(name: str) -> str:
-    """Convert camel name to snake name.
-
-    Parameters:
-        name:
-            The name to convert.
-
-    Returns:
-        The converted name.
-    """
-    # https://stackoverflow.com/questions/1175208/elegant-python-function-to-convert-camelcase-to-snake-case
-    return CAMEL_NAME.sub("_", name).lower()
 
 
 def with_axes(

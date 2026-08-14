@@ -17,19 +17,11 @@ from __future__ import annotations
 import logging
 from functools import cached_property, lru_cache
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Dict, Generator, List
+from typing import Any, Callable, Dict, Generator, List, TypeAlias
 
 import pandas as pd
 import yaml  # type: ignore[import-untyped]
 from omegaconf import DictConfig, ListConfig, OmegaConf
-
-try:
-    from typing import TypeAlias
-except ImportError:
-    from typing_extensions import TypeAlias
-
-if TYPE_CHECKING:
-    pass
 
 PathLike: TypeAlias = str | Path
 

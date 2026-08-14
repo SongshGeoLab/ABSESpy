@@ -106,6 +106,7 @@ class PatchCell(_LinkNodeCell, BaseModelElement, ActorProtocol):
     ):
         BaseModelElement.__init__(self, model=layer.model)
         _LinkNodeCell.__init__(self)
+        self.unique_id = layer.model.next_cell_id()
         self.indices = indices
         self.pos = pos
         self._set_layer(layer=layer)
@@ -194,8 +195,6 @@ class PatchCell(_LinkNodeCell, BaseModelElement, ActorProtocol):
         Raises:
             AttributeError: Attribute value of the associated patch cell.
         """
-        # if attr in self.layer.dynamic_variables:
-        #     self.layer.dynamic_var(attr_name=attr)
         return super().get(attr=attr, target=target, default=default)
 
     def neighboring(
