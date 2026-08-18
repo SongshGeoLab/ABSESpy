@@ -100,6 +100,27 @@ def relative_path_from_to(from_path: Path, to_path: Path) -> Path:
     )
 
 
+# Hydra's built-in launchers live under this prefix and all execute jobs
+# sequentially; every genuinely parallel launcher ships as a plugin under
+# `hydra_plugins.*`.
+_SERIAL_LAUNCHER_PREFIX = "hydra._internal.core_plugins."
+
+
+def launcher_is_parallel(launcher: Any) -> bool:
+    """Whether a Hydra launcher config actually runs jobs concurrently.
+
+    Hydra always populates `hydra.launcher`, for plain runs as well as for
+    multirun, defaulting to `BasicLauncher` -- which executes jobs in a plain
+    `for` loop. "A launcher is configured" therefore says nothing about
+    concurrency; only a launcher *plugin* (joblib, submitit, ray, ...) runs
+    jobs in parallel.
+    """
+    if not launcher:
+        return False
+    target = str(launcher.get("_target_", ""))
+    return bool(target) and not target.startswith(_SERIAL_LAUNCHER_PREFIX)
+
+
 def run_single(
     model_cls: Type[MainModelProtocol],
     cfg: DictConfig,
@@ -228,9 +249,13 @@ class Experiment:
         self._cfg = cfg
 
     def _is_hydra_parallel(self) -> bool:
-        """检查是否在 Hydra 并行环境中"""
+        """Whether Hydra is already running jobs in parallel for us.
+
+        When it is, `batch_run` runs its repeats sequentially rather than
+        nesting a second layer of processes inside each Hydra job.
+        """
         if self.is_hydra_job():
-            return self.hydra_config.launcher is not None
+            return launcher_is_parallel(self.hydra_config.launcher)
         return False
 
     @classmethod
