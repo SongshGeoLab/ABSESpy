@@ -5,6 +5,8 @@
 # GitHub   : https://github.com/SongshGeo
 # Website: https://cv.songshgeo.com/
 
+import os
+
 from abses import Actor, MainModel
 
 
@@ -30,3 +32,17 @@ def create_actors_with_metric(model: MainModel, n: int):
     for i, actor in enumerate(actors):
         actor.test = float(i)
     return actors
+
+
+class PidReportingMod(MainModel):
+    """Reports the OS process it ran in, so parallelism is observable.
+
+    `run_single` executes in a worker process and only its reported vars travel
+    back, so a final reporter on this attribute is how a test can see which
+    process each repeat actually ran in.
+    """
+
+    @property
+    def worker_pid(self) -> int:
+        """PID of the process running this model."""
+        return os.getpid()
