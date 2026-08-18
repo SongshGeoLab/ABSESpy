@@ -1,5 +1,118 @@
 # Changelog
 
+## [0.11.7](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.6...v0.11.7) (2026-08-14)
+
+
+### Bug Fixes
+
+* **links:** :bug: Return linked nodes in a reproducible order ([bb925c6](https://github.com/SongshGeoLab/ABSESpy/commit/bb925c68a09d727715701b34e34bb49aa32b3e12))
+* **random:** :bug: Share the model's RNG instead of re-seeding per access ([c570cac](https://github.com/SongshGeoLab/ABSESpy/commit/c570cac774eff88f46d3c4a7c60a3469ac869294))
+* **space:** :bug: Give every PatchCell its own unique_id ([f93ed22](https://github.com/SongshGeoLab/ABSESpy/commit/f93ed22766a6da3b74ae5f55392c35ab292c04e4))
+
+## [0.11.6](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.5...v0.11.6) (2026-04-18)
+
+
+### Bug Fixes
+
+* **agents:** :bug: Swap ActorsList base order to fix mesa 3.5 MRO error ([2c17215](https://github.com/SongshGeoLab/ABSESpy/commit/2c17215975f8cc68ebe2c5f5f2abf1e5b5015ee2))
+* **compatibility:** :bug: Introduce mesa-geo compatibility handling and regression tests ([c92eefd](https://github.com/SongshGeoLab/ABSESpy/commit/c92eefd887df29ebf2e013df48758612fe6c92c7))
+
+## [0.11.5](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.4...v0.11.5) (2026-01-17)
+
+
+### Bug Fixes
+
+* **tracker:** :bug: Rename 'distribution' to 'samples' in AimTracker for API compatibility ([a387f1e](https://github.com/SongshGeoLab/ABSESpy/commit/a387f1ee21bc6f748c617b386573889515861b11))
+
+## [0.11.4](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.3...v0.11.4) (2026-01-07)
+
+
+### Bug Fixes
+
+* **analysis:** :bug: Improve data handling in ResultAnalyzer for missing CSV files ([e0b5d5f](https://github.com/SongshGeoLab/ABSESpy/commit/e0b5d5f2a5c8e8182cd26b1d2a7c6d6a3fce1f8d))
+* **tracker:** :bug: Resolved the issue where configurations could only be recorded as strings. ([1745558](https://github.com/SongshGeoLab/ABSESpy/commit/1745558440abcb6ed043265a1fb099ab96121499))
+
+## [0.11.3](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.2...v0.11.3) (2026-01-07)
+
+
+### Bug Fixes
+
+* **experiment:** :bug: Update repeat_id to run_id for consistency in experiment logging ([93cf775](https://github.com/SongshGeoLab/ABSESpy/commit/93cf7759906a23823a18a5a5cc274db61c6e43a0))
+
+## [0.11.2](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.1...v0.11.2) (2026-01-07)
+
+
+### Bug Fixes
+
+* **logging:** :memo: Clarify logging configuration in absespy.yaml ([892f098](https://github.com/SongshGeoLab/ABSESpy/commit/892f098a7dfcfc2b215d4a7b6fed6cc5a40b65f0))
+
+## [0.11.1](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.0...v0.11.1) (2026-01-06)
+
+
+### Bug Fixes
+
+* **analysis:** :bug: Improve error handling for uninitialized data in ResultAnalyzer ([ef99a6d](https://github.com/SongshGeoLab/ABSESpy/commit/ef99a6d8ca740b6497efcf6c4bb6153bd596288f))
+* **logging:** :bug: Enhance logging setup for experiments and user modules ([63cf80d](https://github.com/SongshGeoLab/ABSESpy/commit/63cf80dcad54805809d7c040d24c9a59116046cd))
+* **logging:** :bug: Update logging configuration to prevent empty log files and improve experiment log naming ([82e9e44](https://github.com/SongshGeoLab/ABSESpy/commit/82e9e44e3efb392a711f9cf7acc83b7a554ec433))
+
+## [0.11.0](https://github.com/SongshGeoLab/ABSESpy/compare/v0.10.0...v0.11.0) (2026-01-06)
+
+
+### Features
+
+* **analysis:** :sparkles: Add analysis utilities and documentation for experiment results ([d6267d8](https://github.com/SongshGeoLab/ABSESpy/commit/d6267d87295291c64f724f9aeef7c636a353b6cd))
+
+
+### Bug Fixes
+
+* **project:** :construction_worker: Update pre-commit configuration and tox settings ([8e115f6](https://github.com/SongshGeoLab/ABSESpy/commit/8e115f642d80423ec47e298fdf4fc93fe71c48a2))
+
+## [0.10.0](https://github.com/SongshGeoLab/ABSESpy/compare/v0.9.4...v0.10.0) (2026-01-01)
+
+
+### Features
+
+* **tracking:** :sparkles: Integrate Aim and MLflow tracking backends with configuration updates ([27a7606](https://github.com/SongshGeoLab/ABSESpy/commit/27a7606342dd7fe19926c85fde0b9376ff4c59d2))
+
+
+### Bug Fixes
+
+* **config:** :bug: Improve error handling in tracker configuration validation ([1bb75b0](https://github.com/SongshGeoLab/ABSESpy/commit/1bb75b0d7ed0583a2186280ffba5d4bffabcf101))
+* **dependencies:** :bug: Update Aim version constraint and improve compatibility with Mesa 3.4.0 ([5b10768](https://github.com/SongshGeoLab/ABSESpy/commit/5b10768a56e632c9680c8592d2e4f65c5f6fa74b))
+* **dependencies:** :bug: Update MLflow version constraint and improve configuration handling ([7259e53](https://github.com/SongshGeoLab/ABSESpy/commit/7259e53d250207a27673e82ffd81a8b63d8d93d4))
+
+## [0.9.4](https://github.com/SongshGeoLab/ABSESpy/compare/v0.9.3...v0.9.4) (2025-12-12)
+
+
+### Bug Fixes
+
+* **dependencies:** :bug: update numpy version constraint in pyproject.toml and uv.lock ([157af45](https://github.com/SongshGeoLab/ABSESpy/commit/157af45f9ca3c6fbbb13b8ce6dff3ffd06d2e263))
+
+## [0.9.3](https://github.com/SongshGeoLab/ABSESpy/compare/v0.9.2...v0.9.3) (2025-11-10)
+
+
+### Bug Fixes
+
+* **model:** :bug: Enhance steps calculation in MainModel class ([9d688e4](https://github.com/SongshGeoLab/ABSESpy/commit/9d688e4a9662823baaff4cb1a1f2d684d0588be0))
+
+## [0.9.2](https://github.com/SongshGeoLab/ABSESpy/compare/v0.9.1...v0.9.2) (2025-11-09)
+
+
+### Bug Fixes
+
+* **core:** :bug: Update type annotations and docstrings for Experiment and TimeDriver classes ([cf1ffec](https://github.com/SongshGeoLab/ABSESpy/commit/cf1ffec6778d02eea8d1aeaa5b02f3361dd0823f))
+* **model:** :bug: Improve type checking in MainModel class ([ae46993](https://github.com/SongshGeoLab/ABSESpy/commit/ae469938e70c5c2bccb21cf58a884cc21de3a3dd))
+* **model:** :bug: Remove unnecessary time.go() call in MainModel class. ([b4cbbe6](https://github.com/SongshGeoLab/ABSESpy/commit/b4cbbe6868294edfe42938f322ef21ff4471e3cd))
+* **nature:** :bug: Prevent duplicate layers from being added in BaseNature class ([0d85c4e](https://github.com/SongshGeoLab/ABSESpy/commit/0d85c4e7f9f6f1b4c0894ee541346f606068e98c))
+
+## [0.9.1](https://github.com/SongshGeoLab/ABSESpy/compare/v0.9.0...v0.9.1) (2025-10-29)
+
+
+### Bug Fixes
+
+* **ci:** :wrench: update GitHub Actions workflows to install documentation dependencies ([c9b99fe](https://github.com/SongshGeoLab/ABSESpy/commit/c9b99fe96effdfc373d9c7a960ee32f47915b62e))
+* **dependencies:** :bug: reorganize documentation dependencies in pyproject.toml so that mkdocs-jupyter is not required anymore ([6e1dd9e](https://github.com/SongshGeoLab/ABSESpy/commit/6e1dd9e813e40700ce7a823bd0f8d08276eb1630))
+
 ## [0.9.0](https://github.com/SongshGeoLab/ABSESpy/compare/v0.8.5...v0.9.0) (2025-10-29)
 
 
