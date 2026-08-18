@@ -100,20 +100,27 @@ def relative_path_from_to(from_path: Path, to_path: Path) -> Path:
     )
 
 
-# Hydra's built-in launchers live under this prefix and all execute jobs
-# sequentially; every genuinely parallel launcher ships as a plugin under
-# `hydra_plugins.*`.
+# Hydra ships exactly one built-in launcher, `BasicLauncher`, and it is serial.
+# Anything outside this prefix is a third-party launcher plugin, which we treat
+# as parallel: the launchers that exist in practice (joblib, submitit, ray) all
+# are, and assuming parallel only costs us a layer of nesting we skip.
 _SERIAL_LAUNCHER_PREFIX = "hydra._internal.core_plugins."
 
 
-def launcher_is_parallel(launcher: Any) -> bool:
+def launcher_is_parallel(launcher: Optional[DictConfig]) -> bool:
     """Whether a Hydra launcher config actually runs jobs concurrently.
 
     Hydra always populates `hydra.launcher`, for plain runs as well as for
     multirun, defaulting to `BasicLauncher` -- which executes jobs in a plain
     `for` loop. "A launcher is configured" therefore says nothing about
-    concurrency; only a launcher *plugin* (joblib, submitit, ray, ...) runs
-    jobs in parallel.
+    concurrency.
+
+    Args:
+        launcher: The `hydra.launcher` config node, if there is one.
+
+    Returns:
+        True when the launcher is a plugin that runs jobs in parallel, so the
+        caller should not add a second layer of processes of its own.
     """
     if not launcher:
         return False
@@ -415,6 +422,26 @@ class Experiment:
         r = random.Random(self._base_seed + job_id * 1000 + run_id)
         return r.randrange(2**32)
 
+    def _record_result(
+        self, result: Tuple[Tuple[int, int], Optional[int], pd.DataFrame]
+    ) -> None:
+        """Register what one `run_single` call produced.
+
+        Both the sequential and the parallel branch of `_batch_run_repeats`
+        record through here, so a repeat is stored the same way whichever
+        branch ran it.
+
+        Args:
+            result: The `(key, seed, datasets)` triple `run_single` returns.
+        """
+        key, seed, datasets = result
+        self._manager.update_result(
+            key=key,
+            datasets=datasets,
+            seed=seed,
+            overrides=self.overrides,
+        )
+
     def _get_logging_mode(self) -> str:
         """Get logging mode from experiment configuration.
 
@@ -526,20 +553,16 @@ class Experiment:
                     # Use print instead of logger to avoid writing to model run log files
                     print(f"Repeat {run_id}: Logging to {log_path}")
 
-                key, seed, dataset = run_single(
-                    model_cls=self.model_cls,
-                    cfg=cfg,
-                    key=(self.job_id, run_id),
-                    outpath=self.outpath,
-                    seed=self._get_seed(run_id),
-                    hooks=self._manager.hooks,
-                    **self._extra_kwargs,
-                )
-                self._manager.update_result(
-                    key=key,
-                    datasets=dataset,
-                    seed=seed,
-                    overrides=self.overrides,
+                self._record_result(
+                    run_single(
+                        model_cls=self.model_cls,
+                        cfg=cfg,
+                        key=(self.job_id, run_id),
+                        outpath=self.outpath,
+                        seed=self._get_seed(run_id),
+                        hooks=self._manager.hooks,
+                        **self._extra_kwargs,
+                    )
                 )
         else:
             if number_process is None:
@@ -568,13 +591,8 @@ class Experiment:
                 )
             )
             # 在主进程中批量更新结果
-            for key, seed, dataset in results:
-                self._manager.update_result(
-                    key=key,
-                    datasets=dataset,
-                    seed=seed,
-                    overrides=self.overrides,
-                )
+            for result in results:
+                self._record_result(result)
 
     def batch_run(
         self,

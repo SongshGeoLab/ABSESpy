@@ -176,3 +176,18 @@ def mock_points_gdf():
         "geometry": [Point(0, 0), Point(1, 1), Point(2, 2)],
     }
     return gpd.GeoDataFrame(data, crs="epsg:4326")
+
+
+@pytest.fixture(name="reset_experiment_manager")
+def reset_experiment_manager():
+    """Reset the ExperimentManager singleton between tests.
+
+    The manager is a singleton pinned to the first model class it sees, so a
+    test that experiments on a different model class has to clear it first.
+    """
+    from abses.core.job_manager import ExperimentManager
+
+    original = getattr(ExperimentManager, "_instance", None)
+    ExperimentManager._instance = None
+    yield
+    ExperimentManager._instance = original
