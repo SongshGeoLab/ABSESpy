@@ -53,3 +53,49 @@ jobs:
         run: |
           uv build
           uv publish --token ${{ secrets.PYPI_TOKEN }}
+
+  # release-please only bumps the version and changelog on master. Without this
+  # dev keeps whatever version it had -- it sat at 0.10.0 while 0.11.7 was on
+  # PyPI, so `abses.__version__` read 0.10.0 from a dev checkout.
+  backmerge-dev:
+    needs: release-please
+    if: ${{ needs.release-please.outputs.release_created }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Open a PR merging the release back into dev
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          set -euo pipefail
+          git fetch origin master dev
+
+          if [ "$(git rev-list --count origin/dev..origin/master)" -eq 0 ]; then
+            echo "dev already contains master; nothing to back-merge."
+            exit 0
+          fi
+
+          existing=$(gh pr list --base dev --head master --state open \
+            --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            echo "Back-merge PR already open: #$existing"
+            exit 0
+          fi
+
+          gh pr create --base dev --head master \
+            --title "chore(release): merge ${TAG} back into dev" \
+            --body "Automated back-merge after ${TAG}.
+
+          release-please commits the version bump and changelog on \`master\` only,
+          so \`dev\` needs this to stay in step. Merging is safe to do without review
+          when the diff is just \`pyproject.toml\` and \`CHANGELOG.md\`.
+
+          Note: PRs opened by \`GITHUB_TOKEN\` do not trigger workflows, so this one
+          starts with no checks. Close and reopen it if you want CI to run."

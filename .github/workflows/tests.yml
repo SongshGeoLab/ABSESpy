@@ -45,6 +45,11 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
         python-version: ["3.11", "3.12", "3.13"]
 
+    # A hard interpreter crash (see #171) is silent without this: the job just
+    # reports an exit code and no Python traceback at all.
+    env:
+      PYTHONFAULTHANDLER: "1"
+
     steps:
       - uses: actions/checkout@v4
 
@@ -67,6 +72,12 @@ jobs:
       - name: Install dependencies
         run: |
           uv sync --dev
+
+      # Separates "importing abses crashes" from "the test run crashes", which
+      # the combined `make test-all` step cannot distinguish -- see #171.
+      - name: Import smoke test
+        run: |
+          uv run python -X faulthandler -c "import abses; print(abses.__version__)"
 
       - name: Run Make test-all (unit + notebooks + tox)
         run: |
