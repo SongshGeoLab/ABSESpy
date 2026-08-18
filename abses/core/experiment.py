@@ -526,7 +526,7 @@ class Experiment:
                     # Use print instead of logger to avoid writing to model run log files
                     print(f"Repeat {run_id}: Logging to {log_path}")
 
-                run_single(
+                key, seed, dataset = run_single(
                     model_cls=self.model_cls,
                     cfg=cfg,
                     key=(self.job_id, run_id),
@@ -534,6 +534,12 @@ class Experiment:
                     seed=self._get_seed(run_id),
                     hooks=self._manager.hooks,
                     **self._extra_kwargs,
+                )
+                self._manager.update_result(
+                    key=key,
+                    datasets=dataset,
+                    seed=seed,
+                    overrides=self.overrides,
                 )
         else:
             if number_process is None:

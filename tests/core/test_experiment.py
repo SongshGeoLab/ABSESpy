@@ -175,6 +175,23 @@ class TestNumProcessInsideHydra:
         yield
         setattr(ExperimentManager, "_instance", original)
 
+    def test_sequential_path_still_records_results(self, test_config, tmp_path):
+        """Running the repeats in-process must not lose their results.
+
+        Only the parallel branch used to feed `run_single`'s return value back
+        to the manager, so any sequential run reported an empty summary.
+        """
+        cfg = deepcopy(test_config)
+        cfg.reports.final = {"worker_pid": "worker_pid"}
+        cfg.outpath = str(tmp_path)
+
+        exp = Experiment.new(PidReportingMod, cfg)
+        exp.batch_run(repeats=3, parallels=1, display_progress=False)
+
+        summary = exp.summary()
+        assert len(summary) == 3, f"expected 3 recorded runs, got {len(summary)}"
+        assert set(summary["worker_pid"]) == {os.getpid()}
+
     def test_repeats_span_multiple_processes(self, test_config, tmp_path):
         """Repeats run in worker processes, not all in the parent."""
         cfg = deepcopy(test_config)
@@ -194,3 +211,22 @@ class TestNumProcessInsideHydra:
         pids = set(summary["worker_pid"])
         assert pids != {os.getpid()}, "every repeat ran in the parent process"
         assert len(pids) > 1, f"all repeats shared one process: {pids}"
+
+    def test_yields_to_a_real_parallel_launcher(self, test_config, tmp_path):
+        """A launcher plugin already parallelises, so abses must not nest."""
+        cfg = deepcopy(test_config)
+        cfg.reports.final = {"worker_pid": "worker_pid"}
+        cfg.outpath = str(tmp_path)
+
+        exp = Experiment.new(PidReportingMod, cfg)
+        with _inside_hydra_job(
+            "hydra_plugins.hydra_joblib_launcher.joblib_launcher.JoblibLauncher",
+            tmp_path,
+        ):
+            exp.batch_run(repeats=3, parallels=4, display_progress=False)
+
+        summary = exp.summary()
+        assert len(summary) == 3, f"expected 3 recorded runs, got {len(summary)}"
+        assert set(summary["worker_pid"]) == {os.getpid()}, (
+            "abses nested its own workers inside an already-parallel launcher"
+        )
