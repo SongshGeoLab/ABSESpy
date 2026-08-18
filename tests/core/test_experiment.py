@@ -178,8 +178,8 @@ class TestNumProcessInsideHydra:
         assert len(summary) == 3, f"expected 3 recorded runs, got {len(summary)}"
         assert set(summary["worker_pid"]) == {os.getpid()}
 
-    def test_repeats_span_multiple_processes(self, pid_config, tmp_path):
-        """Repeats run in worker processes, not all in the parent."""
+    def test_repeats_runs_in_worker_processes(self, pid_config, tmp_path):
+        """Repeats run in worker processes rather than in the parent."""
         exp = Experiment.new(PidReportingMod, pid_config)
         with _inside_hydra_job(
             "hydra._internal.core_plugins.basic_launcher.BasicLauncher",
@@ -190,9 +190,15 @@ class TestNumProcessInsideHydra:
         summary = exp.summary()
         assert len(summary) == 4, f"expected 4 recorded runs, got {len(summary)}"
 
+        # Whether the repeats land on one worker or four is joblib's dispatch
+        # timing, not a promise this code makes: these runs are short enough
+        # that one worker can take all four before the others have started.
+        # What distinguishes the two branches is the parent process, and loky
+        # never executes in it.
         pids = set(summary["worker_pid"])
-        assert pids != {os.getpid()}, "every repeat ran in the parent process"
-        assert len(pids) > 1, f"all repeats shared one process: {pids}"
+        assert os.getpid() not in pids, (
+            f"repeats ran in the parent, so the parallel branch was skipped: {pids}"
+        )
 
     def test_yields_to_a_real_parallel_launcher(self, pid_config, tmp_path):
         """A launcher plugin already parallelises, so abses must not nest."""
