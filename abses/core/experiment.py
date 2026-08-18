@@ -566,8 +566,13 @@ class Experiment:
                 )
         else:
             if number_process is None:
-                cpu_count = os.cpu_count()
-                number_process = max(1, cpu_count or 1 // 2)
+                # `or 1` covers os.cpu_count() returning None on exotic
+                # platforms. This used to read `cpu_count or 1 // 2`, where
+                # `1 // 2` binds first and evaluates to 0, so the default has
+                # always been every core rather than half of them; spelling it
+                # out keeps that behaviour instead of silently halving it.
+                cpu_count = os.cpu_count() or 1
+                number_process = max(1, cpu_count)
                 number_process = min(number_process, repeats)
 
             results = Parallel(
