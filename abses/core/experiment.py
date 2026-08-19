@@ -40,6 +40,7 @@ from hydra.core.global_hydra import GlobalHydra
 from hydra.core.hydra_config import HydraConf, HydraConfig
 from joblib import Parallel, delayed
 from omegaconf import DictConfig, OmegaConf
+from omegaconf.errors import OmegaConfBaseException
 from tqdm.auto import tqdm
 
 from abses.core.job_manager import ExperimentManager
@@ -102,8 +103,9 @@ def relative_path_from_to(from_path: Path, to_path: Path) -> Path:
 
 # Hydra ships exactly one built-in launcher, `BasicLauncher`, and it is serial.
 # Anything outside this prefix is a third-party launcher plugin, which we treat
-# as parallel: the launchers that exist in practice (joblib, submitit, ray) all
-# are, and assuming parallel only costs us a layer of nesting we skip.
+# as parallel unless its own config says otherwise: the launchers that exist in
+# practice (joblib, submitit, ray) all are, and assuming parallel only costs us
+# a layer of nesting we skip.
 _SERIAL_LAUNCHER_PREFIX = "hydra._internal.core_plugins."
 
 
@@ -125,7 +127,20 @@ def launcher_is_parallel(launcher: Optional[DictConfig]) -> bool:
     if not launcher:
         return False
     target = str(launcher.get("_target_", ""))
-    return bool(target) and not target.startswith(_SERIAL_LAUNCHER_PREFIX)
+    if not target or target.startswith(_SERIAL_LAUNCHER_PREFIX):
+        return False
+    # A plugin can still be told to run serially. `n_jobs` is joblib's knob and
+    # joblib is the only launcher that spells it that way; `n_jobs: 1` selects
+    # joblib's sequential backend, which runs every job in the calling process
+    # exactly like BasicLauncher does. Other values -- including the -1 default
+    # and an absent key -- leave the launcher concurrent.
+    try:
+        n_jobs = OmegaConf.select(launcher, "n_jobs", default=None)
+    except OmegaConfBaseException:
+        # An unreadable value tells us nothing; keep the optimistic default
+        # rather than aborting the run from inside a predicate.
+        return True
+    return n_jobs != 1
 
 
 def run_single(
