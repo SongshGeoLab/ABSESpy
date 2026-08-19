@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.11.8](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.7...v0.11.8) (2026-08-19)
+
+
+### Bug Fixes
+
+* **experiment:** :bug: Detect real parallel launchers, not just any launcher ([b65abf0](https://github.com/SongshGeoLab/ABSESpy/commit/b65abf0dcfb49a6d8f3df22093ba1940c5472c81)), closes [#169](https://github.com/SongshGeoLab/ABSESpy/issues/169)
+* **experiment:** :bug: Keep results from repeats that run in-process ([29f4ac9](https://github.com/SongshGeoLab/ABSESpy/commit/29f4ac9715e11d63d6e9ac3f3935efa2fd8fcf5a))
+* **experiment:** :bug: Respect a Joblib launcher pinned to one job ([46a4ae1](https://github.com/SongshGeoLab/ABSESpy/commit/46a4ae1efee7d4c874360d4ae6d6816930fcb1a1))
+* **tests:** :white_check_mark: Stop asserting joblib's dispatch timing ([d42a60c](https://github.com/SongshGeoLab/ABSESpy/commit/d42a60ce57d016f98cd8c2709f72a891b27a5064))
+
 ## [0.11.7](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.6...v0.11.7) (2026-08-14)
 
 
