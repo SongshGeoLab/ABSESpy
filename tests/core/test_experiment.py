@@ -130,6 +130,36 @@ class TestLauncherIsParallel:
         launcher = OmegaConf.create({"_target_": target})
         assert launcher_is_parallel(launcher) is True
 
+    def test_joblib_with_one_job_is_not_parallel(self):
+        """`n_jobs: 1` makes joblib run every job in the calling process.
+
+        joblib's `Parallel(n_jobs=1)` uses the sequential backend, so this
+        launcher is as serial as BasicLauncher despite being a plugin.
+        """
+        launcher = OmegaConf.create(
+            {
+                "_target_": "hydra_plugins.hydra_joblib_launcher"
+                ".joblib_launcher.JoblibLauncher",
+                "n_jobs": 1,
+            }
+        )
+        assert launcher_is_parallel(launcher) is False
+
+    def test_unreadable_n_jobs_falls_back_to_parallel(self):
+        """An `n_jobs` we cannot read must not crash the run.
+
+        This is a predicate on the way to `batch_run`; raising here would abort
+        the whole experiment. Assuming parallel only costs a layer of nesting.
+        """
+        launcher = OmegaConf.create(
+            {
+                "_target_": "hydra_plugins.hydra_joblib_launcher"
+                ".joblib_launcher.JoblibLauncher",
+                "n_jobs": "${undefined_key}",
+            }
+        )
+        assert launcher_is_parallel(launcher) is True
+
 
 @contextmanager
 def _inside_hydra_job(launcher_target: str, output_dir: Path):
