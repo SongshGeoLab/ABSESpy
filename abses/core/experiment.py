@@ -40,6 +40,7 @@ from hydra.core.global_hydra import GlobalHydra
 from hydra.core.hydra_config import HydraConf, HydraConfig
 from joblib import Parallel, delayed
 from omegaconf import DictConfig, OmegaConf
+from omegaconf.errors import OmegaConfBaseException
 from tqdm.auto import tqdm
 
 from abses.core.job_manager import ExperimentManager
@@ -98,6 +99,48 @@ def relative_path_from_to(from_path: Path, to_path: Path) -> Path:
     return Path(
         os.path.relpath(Path(to_path).resolve(), start=Path(from_path).resolve())
     )
+
+
+# Hydra ships exactly one built-in launcher, `BasicLauncher`, and it is serial.
+# Anything outside this prefix is a third-party launcher plugin, which we treat
+# as parallel unless its own config says otherwise: the launchers that exist in
+# practice (joblib, submitit, ray) all are, and assuming parallel only costs us
+# a layer of nesting we skip.
+_SERIAL_LAUNCHER_PREFIX = "hydra._internal.core_plugins."
+
+
+def launcher_is_parallel(launcher: Optional[DictConfig]) -> bool:
+    """Whether a Hydra launcher config actually runs jobs concurrently.
+
+    Hydra always populates `hydra.launcher`, for plain runs as well as for
+    multirun, defaulting to `BasicLauncher` -- which executes jobs in a plain
+    `for` loop. "A launcher is configured" therefore says nothing about
+    concurrency.
+
+    Args:
+        launcher: The `hydra.launcher` config node, if there is one.
+
+    Returns:
+        True when the launcher is a plugin that runs jobs in parallel, so the
+        caller should not add a second layer of processes of its own.
+    """
+    if not launcher:
+        return False
+    target = str(launcher.get("_target_", ""))
+    if not target or target.startswith(_SERIAL_LAUNCHER_PREFIX):
+        return False
+    # A plugin can still be told to run serially. `n_jobs` is joblib's knob and
+    # joblib is the only launcher that spells it that way; `n_jobs: 1` selects
+    # joblib's sequential backend, which runs every job in the calling process
+    # exactly like BasicLauncher does. Other values -- including the -1 default
+    # and an absent key -- leave the launcher concurrent.
+    try:
+        n_jobs = OmegaConf.select(launcher, "n_jobs", default=None)
+    except OmegaConfBaseException:
+        # An unreadable value tells us nothing; keep the optimistic default
+        # rather than aborting the run from inside a predicate.
+        return True
+    return n_jobs != 1
 
 
 def run_single(
@@ -228,9 +271,13 @@ class Experiment:
         self._cfg = cfg
 
     def _is_hydra_parallel(self) -> bool:
-        """检查是否在 Hydra 并行环境中"""
+        """Whether Hydra is already running jobs in parallel for us.
+
+        When it is, `batch_run` runs its repeats sequentially rather than
+        nesting a second layer of processes inside each Hydra job.
+        """
         if self.is_hydra_job():
-            return self.hydra_config.launcher is not None
+            return launcher_is_parallel(self.hydra_config.launcher)
         return False
 
     @classmethod
@@ -390,6 +437,26 @@ class Experiment:
         r = random.Random(self._base_seed + job_id * 1000 + run_id)
         return r.randrange(2**32)
 
+    def _record_result(
+        self, result: Tuple[Tuple[int, int], Optional[int], pd.DataFrame]
+    ) -> None:
+        """Register what one `run_single` call produced.
+
+        Both the sequential and the parallel branch of `_batch_run_repeats`
+        record through here, so a repeat is stored the same way whichever
+        branch ran it.
+
+        Args:
+            result: The `(key, seed, datasets)` triple `run_single` returns.
+        """
+        key, seed, datasets = result
+        self._manager.update_result(
+            key=key,
+            datasets=datasets,
+            seed=seed,
+            overrides=self.overrides,
+        )
+
     def _get_logging_mode(self) -> str:
         """Get logging mode from experiment configuration.
 
@@ -501,19 +568,26 @@ class Experiment:
                     # Use print instead of logger to avoid writing to model run log files
                     print(f"Repeat {run_id}: Logging to {log_path}")
 
-                run_single(
-                    model_cls=self.model_cls,
-                    cfg=cfg,
-                    key=(self.job_id, run_id),
-                    outpath=self.outpath,
-                    seed=self._get_seed(run_id),
-                    hooks=self._manager.hooks,
-                    **self._extra_kwargs,
+                self._record_result(
+                    run_single(
+                        model_cls=self.model_cls,
+                        cfg=cfg,
+                        key=(self.job_id, run_id),
+                        outpath=self.outpath,
+                        seed=self._get_seed(run_id),
+                        hooks=self._manager.hooks,
+                        **self._extra_kwargs,
+                    )
                 )
         else:
             if number_process is None:
-                cpu_count = os.cpu_count()
-                number_process = max(1, cpu_count or 1 // 2)
+                # `or 1` covers os.cpu_count() returning None on exotic
+                # platforms. This used to read `cpu_count or 1 // 2`, where
+                # `1 // 2` binds first and evaluates to 0, so the default has
+                # always been every core rather than half of them; spelling it
+                # out keeps that behaviour instead of silently halving it.
+                cpu_count = os.cpu_count() or 1
+                number_process = max(1, cpu_count)
                 number_process = min(number_process, repeats)
 
             results = Parallel(
@@ -537,13 +611,8 @@ class Experiment:
                 )
             )
             # 在主进程中批量更新结果
-            for key, seed, dataset in results:
-                self._manager.update_result(
-                    key=key,
-                    datasets=dataset,
-                    seed=seed,
-                    overrides=self.overrides,
-                )
+            for result in results:
+                self._record_result(result)
 
     def batch_run(
         self,
