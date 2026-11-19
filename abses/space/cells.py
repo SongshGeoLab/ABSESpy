@@ -114,6 +114,15 @@ class PatchCell(_LinkNodeCell, BaseModelElement, ActorProtocol):
     def __repr__(self) -> str:
         return f"<Cell at {self.layer}[{self.indices}]>"
 
+    @property
+    def rowcol(self) -> Pos:
+        """Raster indices in (row, col) format, the same as `indices`.
+
+        mesa-geo 0.9.3 renamed a cell's `indices` to `rowcol` and reads it
+        when syncing cell centers to the layer's transform (#179).
+        """
+        return self.indices
+
     @classmethod
     def __attribute_properties__(cls) -> set[str]:
         """Properties that should be found in the `RasterLayer`.

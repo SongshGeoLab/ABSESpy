@@ -121,11 +121,13 @@ jobs:
       - name: Override mesa / mesa-geo for this matrix leg
         run: ${{ matrix.install_cmd }}
 
+      # `uv run` re-syncs the environment to uv.lock by default, which would
+      # silently undo the override above (#179); `--no-sync` keeps it.
       - name: Show installed mesa versions
         run: |
-          uv run python -c "import importlib.metadata as m; print('mesa', m.version('mesa')); print('mesa-geo', m.version('mesa-geo'))"
+          uv run --no-sync python -c "import importlib.metadata as m; print('mesa', m.version('mesa')); print('mesa-geo', m.version('mesa-geo'))"
 
       - name: Run spatial / raster regression tests
         run: |
-          uv run pytest tests/api/test_patch_mesa_compat.py tests/api/test_nature.py tests/foundation/test_basic_functionality.py -v --tb=short
+          uv run --no-sync pytest tests/api/test_patch_mesa_compat.py tests/api/test_nature.py tests/foundation/test_basic_functionality.py -v --tb=short
 
