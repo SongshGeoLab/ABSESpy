@@ -8,16 +8,21 @@ of the right answer or an error.
 
 from __future__ import annotations
 
-from unittest import mock
+import logging
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 import pytest
+import xarray as xr
 
 from abses.agents.actor import Actor
+from abses.agents.sequences import ActorsList
 from abses.core.model import MainModel
-from abses.space import patch as patch_module
 from abses.space.patch import PatchModule
 from abses.utils.func import set_null_values
+
+if TYPE_CHECKING:
+    from _pytest.logging import LogCaptureFixture
 
 
 @pytest.fixture(name="grid")
@@ -42,6 +47,29 @@ class TestMaskAppliesToEveryDtype:
         assert np.isnan(grid.array_cells[0, 0].x)
         assert grid.array_cells[1, 1].x == 4
 
+    @pytest.mark.parametrize("dtype", [np.uint8, np.bool_], ids=["uint8", "bool"])
+    def test_unsigned_and_bool_rasters_are_masked(
+        self, grid: PatchModule, dtype: type
+    ) -> None:
+        """Unsigned integers and booleans, common raster dtypes, mask too."""
+        data = np.ones((3, 3), dtype=dtype)
+
+        grid.apply_raster(data, attr_name="x", apply_mask=True)
+
+        assert np.isnan(grid.array_cells[0, 0].x)
+        assert grid.array_cells[1, 1].x == 1
+
+    def test_dataarray_raster_is_masked(self, grid: PatchModule) -> None:
+        """The xarray path accepts `apply_mask` like the ndarray path."""
+        data = xr.DataArray(
+            np.arange(9, dtype=float).reshape(3, 3), coords=grid.coords
+        ).rio.write_crs(grid.crs)
+
+        grid.apply_raster(data, attr_name="x", apply_mask=True)
+
+        assert np.isnan(grid.array_cells[0, 0].x)
+        assert grid.array_cells[1, 1].x == 4
+
     def test_caller_array_is_left_untouched(self, grid: PatchModule) -> None:
         """Masking works on a copy, so the caller's array keeps its values."""
         data = np.arange(9, dtype=float).reshape(3, 3)
@@ -59,7 +87,9 @@ class TestMaskAppliesToEveryDtype:
             pytest.param(np.array([b"a", b"b"]), b"", id="bytes"),
         ],
     )
-    def test_set_null_values_returns_a_new_array(self, arr, null) -> None:
+    def test_set_null_values_returns_a_new_array(
+        self, arr: np.ndarray, null: Any
+    ) -> None:
         """Every dtype gets the same contract: a new array, input unchanged."""
         original = arr.copy()
 
@@ -89,7 +119,7 @@ def test_mask_change_refreshes_cells_lst(grid: PatchModule) -> None:
     new_mask[:, 0] = False
     grid.mask = new_mask
 
-    assert len(grid.cells_lst) == int(new_mask.sum()) == 6
+    assert len(grid.cells_lst) == int(grid.xda.sum()) == 6
     assert grid.array_cells[1, 0] not in grid.cells_lst
 
 
@@ -104,25 +134,38 @@ class TestApplyAgentsFailures:
             cell.agents.new(Actor, singleton=True)
         return module
 
-    def test_failing_aggregator_warns_once(self, occupied: PatchModule) -> None:
+    def test_failing_aggregator_warns_once(
+        self, occupied: PatchModule, caplog: LogCaptureFixture
+    ) -> None:
         """Nine failing cells give NaN everywhere and a single warning."""
 
-        def broken(_actors) -> float:
+        def broken(_actors: ActorsList[Actor]) -> float:
             raise RuntimeError("boom")
 
-        with mock.patch.object(patch_module.logger, "warning") as warn:
+        with caplog.at_level(logging.WARNING, logger="abses.space.patch"):
             arr = occupied.apply_agents(aggregator=broken)
 
         assert np.isnan(arr).all()
-        assert warn.call_count == 1
-        message = warn.call_args.args[0] % warn.call_args.args[1:]
-        assert "9" in message and "boom" in message
+        warnings = [r for r in caplog.records if r.name == "abses.space.patch"]
+        assert len(warnings) == 1
+        assert "9 cell(s)" in warnings[0].getMessage()
+        assert "boom" in warnings[0].getMessage()
 
-    def test_memory_error_propagates(self, occupied: PatchModule) -> None:
-        """Running out of memory is not a per-cell failure to paper over."""
+    @pytest.mark.parametrize(
+        "error",
+        [
+            pytest.param(MemoryError, id="memory"),
+            pytest.param(AttributeError, id="typo-attribute"),
+            pytest.param(NameError, id="typo-name"),
+        ],
+    )
+    def test_bug_errors_propagate(
+        self, occupied: PatchModule, error: type[Exception]
+    ) -> None:
+        """Errors that signal a bug, not a missing value, are not hidden."""
 
-        def exhausted(_agent) -> float:
-            raise MemoryError
+        def failing(_agent: Actor) -> float:
+            raise error
 
-        with pytest.raises(MemoryError):
-            occupied.apply_agents(func=exhausted)
+        with pytest.raises(error):
+            occupied.apply_agents(func=failing)

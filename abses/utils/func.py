@@ -165,13 +165,13 @@ def set_null_values(arr: np.ndarray, mask: np.ndarray) -> np.ndarray:
 
     Parameters:
         arr:
-            The input array, of integers, floats or strings.
+            The input array, of booleans, integers, floats or strings.
         mask:
             A boolean array where True indicates that a null value should be set.
 
     Returns:
-        A new array with null values set: NaN for numbers, an empty string
-        for unicode and byte strings.
+        A new array with null values set: NaN for numbers and booleans, an
+        empty string for unicode and byte strings.
 
     Raises:
         ValueError:
@@ -179,10 +179,10 @@ def set_null_values(arr: np.ndarray, mask: np.ndarray) -> np.ndarray:
     """
     if arr.shape != mask.shape:
         raise ValueError(f"Mismatching shape {mask.shape} and {arr.shape}.")
-    if arr.dtype.kind in {"f", "i"}:
-        # Integer arrays must be upcast to float to hold NaN; floats keep
-        # their precision.
-        result = arr.astype(float) if arr.dtype.kind == "i" else arr.copy()
+    if arr.dtype.kind in {"f", "i", "u", "b"}:
+        # Integer and boolean arrays must be upcast to float to hold NaN;
+        # floats keep their precision.
+        result = arr.copy() if arr.dtype.kind == "f" else arr.astype(float)
         null_value: Any = np.nan
     elif arr.dtype.kind == "U":
         result = arr.copy()

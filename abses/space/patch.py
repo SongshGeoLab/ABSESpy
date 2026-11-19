@@ -62,6 +62,11 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+# Raised from a user callable in `apply_agents`, these mean a bug (a typo'd
+# attribute or name) or a broken process, not a value missing for one cell,
+# so they propagate instead of turning into NaN.
+_PROPAGATED_ERRORS = (MemoryError, AttributeError, NameError)
+
 
 class PatchModule(BaseModule, RasterLayer):
     """Base class for managing raster-based spatial modules in ABSESpy.
@@ -716,6 +721,7 @@ class PatchModule(BaseModule, RasterLayer):
         cover_crs: bool = False,
         resampling_method: str = "nearest",
         flipud: bool = False,
+        apply_mask: bool = False,
     ) -> None:
         if cover_crs:
             data.rio.write_crs(self.crs, inplace=True)
@@ -724,7 +730,7 @@ class PatchModule(BaseModule, RasterLayer):
             self.xda,
             resampling=resampling,
         ).to_numpy()
-        self._add_attribute(data, attr_name, flipud=flipud)
+        self._add_attribute(data, attr_name, flipud=flipud, apply_mask=apply_mask)
 
     def apply_raster(
         self, data: Raster, attr_name: Optional[str] = None, **kwargs: Any
@@ -741,6 +747,7 @@ class PatchModule(BaseModule, RasterLayer):
                 cover_crs: Whether to override input data CRS
                 resampling_method: Method for resampling ("nearest", etc.)
                 flipud: Whether to flip data vertically
+                apply_mask: Whether to set masked cells to a null value
 
         Raises:
             TypeError: If data is none of the supported types.
@@ -985,16 +992,25 @@ class PatchModule(BaseModule, RasterLayer):
 
         # Per-cell failures become NaN, but are reported once per call: this
         # runs inside `np.vectorize`, so warning per cell would flood the log
-        # with as many lines as the raster has cells.
-        failures: List[BaseException] = []
+        # with as many lines as the raster has cells. Only the first error is
+        # kept, so memory does not grow with the raster either.
+        failures: Dict[str, Any] = {"count": 0, "first": None}
 
         def _fail(exc: Exception) -> float:
-            if isinstance(exc, MemoryError):
+            """Record a per-cell failure and return NaN for that cell.
+
+            Errors that signal a bug or a broken process rather than a
+            cell-level data problem are re-raised instead.
+            """
+            if isinstance(exc, _PROPAGATED_ERRORS):
                 raise exc
-            failures.append(exc)
+            if failures["first"] is None:
+                failures["first"] = exc
+            failures["count"] += 1
             return float("nan")
 
         def _to_float(val: Any) -> float:
+            """Cast a computed value to float, recording NaN on failure."""
             try:
                 return float(val)
             except (TypeError, ValueError) as exc:
@@ -1032,12 +1048,12 @@ class PatchModule(BaseModule, RasterLayer):
         # infer it, which would run user callables twice there.
         data = np.vectorize(_cell_compute, otypes=[float])(self.array_cells)
 
-        if failures:
-            first = failures[0]
+        first = failures["first"]
+        if first is not None:
             logger.warning(
                 "apply_agents filled %d cell(s) with NaN because computing "
                 "their value raised. First error:\n%s",
-                len(failures),
+                failures["count"],
                 "".join(
                     traceback.format_exception(type(first), first, first.__traceback__)
                 ).rstrip(),
