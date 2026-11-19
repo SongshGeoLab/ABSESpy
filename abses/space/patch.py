@@ -300,10 +300,19 @@ class PatchModule(BaseModule, RasterLayer):
 
     def _initialize_cells(
         self,
-        model: MainModelProtocol,
-        cell_cls: type[PatchCell],
+        model: Optional[MainModelProtocol] = None,
+        cell_cls: Optional[type[PatchCell]] = None,
     ) -> None:
-        """Override the method of RasterLayer."""
+        """Override the method of RasterLayer.
+
+        mesa-geo up to 0.9.2 calls this as `_initialize_cells(model, cell_cls)`;
+        0.9.3 calls `_initialize_cells()` and reads both from the layer
+        instead (#179). Both arguments are optional so either works.
+        """
+        if model is None:
+            model = self.model
+        if cell_cls is None:
+            cell_cls = self.cell_cls
         if model is not self.model:
             raise ValueError("Model mismatching.")
         self._cells = []
