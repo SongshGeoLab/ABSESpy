@@ -14,16 +14,19 @@ import os
 from contextlib import contextmanager
 from copy import deepcopy
 from pathlib import Path
+from typing import Iterator, Optional
 
 import pytest
 from hydra import compose, initialize
 from hydra.core.global_hydra import GlobalHydra
 from hydra.core.hydra_config import HydraConfig
-from omegaconf import OmegaConf
+from omegaconf import DictConfig, OmegaConf
 
 from abses import MainModel
 from abses.core.experiment import Experiment, launcher_is_parallel
 from tests.helper import PidReportingMod, RandomAddingMod
+
+BASIC_LAUNCHER = "hydra._internal.core_plugins.basic_launcher.BasicLauncher"
 
 
 class TestExperimentBasic:
@@ -111,9 +114,7 @@ class TestLauncherIsParallel:
 
     def test_basic_launcher_is_not_parallel(self):
         """BasicLauncher runs jobs in a `for` loop, which is not parallel."""
-        launcher = OmegaConf.create(
-            {"_target_": "hydra._internal.core_plugins.basic_launcher.BasicLauncher"}
-        )
+        launcher = OmegaConf.create({"_target_": BASIC_LAUNCHER})
         assert launcher_is_parallel(launcher) is False
 
     @pytest.mark.parametrize(
@@ -162,18 +163,24 @@ class TestLauncherIsParallel:
 
 
 @contextmanager
-def _inside_hydra_job(launcher_target: str, output_dir: Path, job_num: int = 0):
+def _inside_hydra_job(
+    launcher_target: str,
+    output_dir: Path,
+    job_num: int = 0,
+    job_id: Optional[str] = None,
+) -> Iterator[None]:
     """Make the process look like a running Hydra job with the given launcher.
 
-    Hydra's schema types `hydra.job.id` as `str` and `hydra.job.num` as `int`,
-    so assigning the same integer to both reproduces what a multirun sets.
+    Hydra's schema types `hydra.job.id` as `str` and `hydra.job.num` as `int`.
+    `job_id` defaults to the job number, as the BasicLauncher sets it; pass a
+    scheduler-style id such as `"12345_0"` to mimic launchers like submitit.
     """
     GlobalHydra.instance().clear()
     with initialize(version_base=None, config_path="../config"):
         cfg = compose(config_name="test_config.yaml", return_hydra_config=True)
         OmegaConf.set_struct(cfg, False)
         cfg.hydra.launcher = OmegaConf.create({"_target_": launcher_target})
-        cfg.hydra.job.id = job_num
+        cfg.hydra.job.id = str(job_num) if job_id is None else job_id
         cfg.hydra.job.num = job_num
         cfg.hydra.runtime.output_dir = str(output_dir)
         HydraConfig.instance().set_config(cfg)
@@ -216,10 +223,7 @@ class TestNumProcessInsideHydra:
     def test_repeats_runs_in_worker_processes(self, pid_config, tmp_path):
         """Repeats run in worker processes rather than in the parent."""
         exp = Experiment.new(PidReportingMod, pid_config)
-        with _inside_hydra_job(
-            "hydra._internal.core_plugins.basic_launcher.BasicLauncher",
-            tmp_path,
-        ):
+        with _inside_hydra_job(BASIC_LAUNCHER, tmp_path):
             exp.batch_run(repeats=4, parallels=4, display_progress=False)
 
         summary = exp.summary()
@@ -256,24 +260,33 @@ class TestSeedInsideHydraMultirun:
 
     pytestmark = pytest.mark.usefixtures("reset_experiment_manager")
 
-    def test_job_id_is_an_int_inside_hydra(self, test_config, tmp_path):
-        """`job_id` reads the integer job number, not Hydra's string job id."""
-        exp = Experiment(MainModel, test_config, seed=42)
-        with _inside_hydra_job(
-            "hydra._internal.core_plugins.basic_launcher.BasicLauncher",
-            tmp_path,
-            job_num=2,
-        ):
-            assert exp.job_id == 2
+    @pytest.fixture(name="seeded_exp")
+    def fixture_seeded_exp(self, test_config: DictConfig) -> Experiment:
+        """An experiment with a base seed, so `_get_seed` does arithmetic."""
+        return Experiment(MainModel, test_config, seed=42)
 
-    def test_seed_is_derived_from_the_job_number(self, test_config, tmp_path):
-        """Seeding a repeat inside a multirun job must not do `int + str`."""
-        exp = Experiment(MainModel, test_config, seed=42)
-        with _inside_hydra_job(
-            "hydra._internal.core_plugins.basic_launcher.BasicLauncher",
-            tmp_path,
-            job_num=2,
-        ):
-            seed = exp._get_seed(run_id=1)
+    @pytest.mark.parametrize(
+        "job_id",
+        [
+            pytest.param(None, id="basic-launcher"),
+            pytest.param("12345_0", id="scheduler-id"),
+        ],
+    )
+    def test_job_id_is_the_integer_job_number(
+        self, seeded_exp: Experiment, tmp_path: Path, job_id: Optional[str]
+    ) -> None:
+        """`job_id` is Hydra's `job.num`, whatever string `job.id` holds."""
+        with _inside_hydra_job(BASIC_LAUNCHER, tmp_path, job_num=2, job_id=job_id):
+            assert seeded_exp.job_id == 2
 
-        assert seed == exp._get_seed(run_id=1, job_id=2)
+    def test_each_job_seeds_its_repeats_differently(
+        self, seeded_exp: Experiment, tmp_path: Path
+    ) -> None:
+        """Seeding inside a multirun job yields ints that differ across jobs."""
+        seeds = []
+        for job_num in (0, 1):
+            with _inside_hydra_job(BASIC_LAUNCHER, tmp_path, job_num=job_num):
+                seeds.append(seeded_exp._get_seed(run_id=1))
+
+        assert all(isinstance(seed, int) for seed in seeds)
+        assert seeds[0] != seeds[1]

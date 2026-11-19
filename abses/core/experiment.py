@@ -348,8 +348,10 @@ class Experiment:
         Each job means a combination of the configuration.
         If the experiment is running in Hydra, it will return the hydra's job
         number. Hydra types `hydra.job.id` as a string (and some launchers,
-        such as submitit, fill it with a scheduler id like ``"12345_0"``), so
-        the integer `hydra.job.num` is used instead.
+        such as submitit, fill it with a scheduler id like `"12345_0"`), so
+        the integer `hydra.job.num` is used instead. The default output
+        `subdir` is still named after `hydra.job.id`, so under such launchers
+        the folder name and this id differ.
         """
         if self.is_hydra_job():
             return self.hydra_config.job.get("num", 0)
