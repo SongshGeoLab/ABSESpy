@@ -714,13 +714,15 @@ class PatchModule(BaseModule, RasterLayer):
                 f"Data shape does not match raster shape. "
                 f"Expected {self.shape2d}, received {data.shape}."
             ) from e
+        # Flip first: the mask is in the layer's orientation, so it must be
+        # applied to the data as it will land on the cells.
+        if flipud:
+            data = np.flipud(data)
         if apply_mask:
             data = set_null_values(data, ~self.mask)
         if attr_name is None:
             attr_name = f"attribute_{len(self.attributes)}"
         self._attributes.add(attr_name)
-        if flipud:
-            data = np.flipud(data)
         np.vectorize(setattr)(self.array_cells, attr_name, data)
 
     def _add_dataarray(
@@ -1022,7 +1024,7 @@ class PatchModule(BaseModule, RasterLayer):
             """Cast a computed value to float, recording NaN on failure."""
             try:
                 return float(val)
-            except (TypeError, ValueError) as exc:
+            except Exception as exc:  # e.g. TypeError, ValueError, OverflowError
                 return _fail(exc)
 
         def _cell_compute(cell: PatchCell) -> Any:
