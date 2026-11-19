@@ -70,6 +70,18 @@ class TestMaskAppliesToEveryDtype:
         assert np.isnan(grid.array_cells[0, 0].x)
         assert grid.array_cells[1, 1].x == 4
 
+    def test_mask_applies_to_the_flipped_raster(self, model: MainModel) -> None:
+        """With `flipud`, the mask hits the cells the data lands on."""
+        module = model.nature.create_module(shape=(2, 1), name="flip_grid")
+        module.mask = np.array([[False], [True]])
+
+        module.apply_raster(
+            np.array([[1], [2]]), attr_name="x", flipud=True, apply_mask=True
+        )
+
+        assert np.isnan(module.array_cells[0, 0].x)
+        assert module.array_cells[1, 0].x == 1
+
     def test_caller_array_is_left_untouched(self, grid: PatchModule) -> None:
         """Masking works on a copy, so the caller's array keeps its values."""
         data = np.arange(9, dtype=float).reshape(3, 3)
@@ -150,6 +162,12 @@ class TestApplyAgentsFailures:
         assert len(warnings) == 1
         assert "9 cell(s)" in warnings[0].getMessage()
         assert "boom" in warnings[0].getMessage()
+
+    def test_unconvertible_value_becomes_nan(self, occupied: PatchModule) -> None:
+        """A value `float()` cannot hold, e.g. a huge int, is a per-cell NaN."""
+        arr = occupied.apply_agents(aggregator=lambda _actors: 10**1000)
+
+        assert np.isnan(arr).all()
 
     @pytest.mark.parametrize(
         "error",

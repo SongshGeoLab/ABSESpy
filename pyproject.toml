@@ -168,13 +168,15 @@ include = [
 ]
 
 # Keep the sdist to what builds the wheel and runs its tests, rather than
-# hatchling's default of the whole repository (docs, examples, CI, images).
+# hatchling's default of the whole repository (docs, CI, images). `examples`
+# is included because tests/examples imports the example models.
 # Patterns are gitignore-style: the leading `/` anchors them to the root, or
 # `README.md` would also pull in every `examples/*/README.md`.
 [tool.hatch.build.targets.sdist]
 include = [
     "/abses",
     "/hydra_plugins",
+    "/examples",
     "/tests",
     "/README.md",
     "/CHANGELOG.md",
