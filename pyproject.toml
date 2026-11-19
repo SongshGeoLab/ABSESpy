@@ -159,10 +159,27 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["abses", "hydra_plugins"]
+# Hatch already ships every tracked file inside `packages`; these globs only
+# document which non-Python files the wheel must carry (#154).
 include = [
     "abses/data/*",
     "abses/conf/**/*.yaml",
     "abses/conf/*.py",
+]
+
+# Keep the sdist to what builds the wheel and runs its tests, rather than
+# hatchling's default of the whole repository (docs, examples, CI, images).
+# Patterns are gitignore-style: the leading `/` anchors them to the root, or
+# `README.md` would also pull in every `examples/*/README.md`.
+[tool.hatch.build.targets.sdist]
+include = [
+    "/abses",
+    "/hydra_plugins",
+    "/tests",
+    "/README.md",
+    "/CHANGELOG.md",
+    "/LICENSE",
+    "/LICENSES",
 ]
 
 [tool.ruff]
