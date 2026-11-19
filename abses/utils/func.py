@@ -156,38 +156,44 @@ def with_axes(
     return decorator(decorated_func) if decorated_func else decorator
 
 
-def set_null_values(arr: np.ndarray, mask: np.ndarray):
+def set_null_values(arr: np.ndarray, mask: np.ndarray) -> np.ndarray:
     """
-    Set null values in an array based on a boolean mask and the array's data type.
+    Return a copy of an array with null values where a boolean mask is True.
+
+    The input array is never modified. Callers must use the return value:
+    integer arrays come back as float, because NaN has no integer form.
 
     Parameters:
         arr:
-            The input array that can contain float or strings.
+            The input array, of booleans, integers, floats or strings.
         mask:
             A boolean array where True indicates that a null value should be set.
 
     Returns:
-        The modified array with null values set.
-        Note: Integer arrays will be upcast to float to support NaN values.
+        A new array with null values set: NaN for numbers and booleans, an
+        empty string for unicode and byte strings.
+
+    Raises:
+        ValueError:
+            If the shapes differ or the dtype has no null value.
     """
     if arr.shape != mask.shape:
         raise ValueError(f"Mismatching shape {mask.shape} and {arr.shape}.")
-    # Check if the dtype is float or integer
-    if arr.dtype.kind in {"f", "i"}:
-        # Integer arrays must be upcast to float to support NaN
-        if arr.dtype.kind == "i":
-            arr = arr.astype(float, copy=True)
-        null_value = np.nan
-    # Unicode string
+    if arr.dtype.kind in {"f", "i", "u", "b"}:
+        # Integer and boolean arrays must be upcast to float to hold NaN;
+        # floats keep their precision.
+        result = arr.copy() if arr.dtype.kind == "f" else arr.astype(float)
+        null_value: Any = np.nan
     elif arr.dtype.kind == "U":
+        result = arr.copy()
         null_value = ""
-    # # Byte string
     elif arr.dtype.kind == "S":
+        result = arr.copy()
         null_value = b""
     else:
         raise ValueError(f"Unsupported data type {arr.dtype}")
-    arr[mask] = null_value
-    return arr
+    result[mask] = null_value
+    return result
 
 
 @overload
