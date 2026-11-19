@@ -162,14 +162,19 @@ class TestLauncherIsParallel:
 
 
 @contextmanager
-def _inside_hydra_job(launcher_target: str, output_dir: Path):
-    """Make the process look like a running Hydra job with the given launcher."""
+def _inside_hydra_job(launcher_target: str, output_dir: Path, job_num: int = 0):
+    """Make the process look like a running Hydra job with the given launcher.
+
+    Hydra's schema types `hydra.job.id` as `str` and `hydra.job.num` as `int`,
+    so assigning the same integer to both reproduces what a multirun sets.
+    """
     GlobalHydra.instance().clear()
     with initialize(version_base=None, config_path="../config"):
         cfg = compose(config_name="test_config.yaml", return_hydra_config=True)
         OmegaConf.set_struct(cfg, False)
         cfg.hydra.launcher = OmegaConf.create({"_target_": launcher_target})
-        cfg.hydra.job.id = 0
+        cfg.hydra.job.id = job_num
+        cfg.hydra.job.num = job_num
         cfg.hydra.runtime.output_dir = str(output_dir)
         HydraConfig.instance().set_config(cfg)
         try:
@@ -244,3 +249,31 @@ class TestNumProcessInsideHydra:
         assert set(summary["worker_pid"]) == {os.getpid()}, (
             "abses nested its own workers inside an already-parallel launcher"
         )
+
+
+class TestSeedInsideHydraMultirun:
+    """A seeded experiment must survive a Hydra multirun (#168)."""
+
+    pytestmark = pytest.mark.usefixtures("reset_experiment_manager")
+
+    def test_job_id_is_an_int_inside_hydra(self, test_config, tmp_path):
+        """`job_id` reads the integer job number, not Hydra's string job id."""
+        exp = Experiment(MainModel, test_config, seed=42)
+        with _inside_hydra_job(
+            "hydra._internal.core_plugins.basic_launcher.BasicLauncher",
+            tmp_path,
+            job_num=2,
+        ):
+            assert exp.job_id == 2
+
+    def test_seed_is_derived_from_the_job_number(self, test_config, tmp_path):
+        """Seeding a repeat inside a multirun job must not do `int + str`."""
+        exp = Experiment(MainModel, test_config, seed=42)
+        with _inside_hydra_job(
+            "hydra._internal.core_plugins.basic_launcher.BasicLauncher",
+            tmp_path,
+            job_num=2,
+        ):
+            seed = exp._get_seed(run_id=1)
+
+        assert seed == exp._get_seed(run_id=1, job_id=2)
