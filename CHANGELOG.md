@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.11.9](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.8...v0.11.9) (2026-11-19)
+
+
+### Bug Fixes
+
+* **build:** :package: Ship the example datasets inside the wheel ([b2e59da](https://github.com/SongshGeoLab/ABSESpy/commit/b2e59da0039aa2d91c0c05835ab1f01f84da7d5e)), closes [#154](https://github.com/SongshGeoLab/ABSESpy/issues/154)
+* **experiment:** :bug: Seed multirun jobs from Hydra's integer job number ([a997c23](https://github.com/SongshGeoLab/ABSESpy/commit/a997c2389851131ea020d38d553b70f2d77ab3af)), closes [#168](https://github.com/SongshGeoLab/ABSESpy/issues/168)
+* **space:** :bug: Build PatchModule cells under mesa-geo 0.9.3 ([b28e151](https://github.com/SongshGeoLab/ABSESpy/commit/b28e1515f2bd085d7ca2ae7bb11c6e2e1f932bd6)), closes [#179](https://github.com/SongshGeoLab/ABSESpy/issues/179)
+* **space:** :bug: Close the gaps review found in the [#153](https://github.com/SongshGeoLab/ABSESpy/issues/153) fixes ([4df9fd5](https://github.com/SongshGeoLab/ABSESpy/commit/4df9fd56a2cbaf0b195a0c1078f12332760a20c6))
+* **space:** :bug: Mask flipped rasters in place and NaN any unconvertible value ([2db0d4b](https://github.com/SongshGeoLab/ABSESpy/commit/2db0d4bfb0b9a037cdc4bee5674f13e364fba5aa))
+* **space:** :bug: Stop four hot paths from returning silently wrong data ([d133996](https://github.com/SongshGeoLab/ABSESpy/commit/d133996b73529d09aaeb6560768b56666df8cea4)), closes [#153](https://github.com/SongshGeoLab/ABSESpy/issues/153)
+
 ## [0.11.8](https://github.com/SongshGeoLab/ABSESpy/compare/v0.11.7...v0.11.8) (2026-08-19)
 
 
