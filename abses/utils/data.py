@@ -5,24 +5,19 @@
 # GitHub   : https://github.com/SongshGeo
 # Website: https://cv.songshgeo.com/
 
-"""Handling some example datasets."""
+"""Example datasets shipped inside the `abses.data` package."""
 
 from importlib import resources
 from pathlib import Path
-from typing import Literal, TypeAlias
+from typing import List, Literal, TypeAlias, get_args
 
-DATA_LIST = [
-    "farmland.tif",
-    "precipitation.nc",
-    "irr_lands.csv",
-    "YR_cities.zip",
-]
 DataChoices: TypeAlias = Literal[
     "farmland.tif",
     "precipitation.nc",
     "irr_lands.csv",
     "YR_cities.zip",
 ]
+DATA_LIST: List[str] = list(get_args(DataChoices))
 
 
 def load_data(filename: DataChoices) -> Path:
