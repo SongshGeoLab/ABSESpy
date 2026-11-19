@@ -36,6 +36,31 @@ jobs:
         run: |
           uv run mypy abses/
 
+  wheel-smoke:
+    name: Wheel smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+
+      - name: Build wheel
+        run: |
+          uv build --wheel --out-dir dist
+
+      # A clean venv outside the checkout, with nothing but the wheel, so
+      # files that exist only in the repository cannot mask a packaging gap.
+      - name: Install wheel into a clean environment
+        run: |
+          uv venv --python 3.11 "$RUNNER_TEMP/wheel-venv"
+          VIRTUAL_ENV="$RUNNER_TEMP/wheel-venv" uv pip install dist/*.whl
+
+      - name: Run the smoke test against the installed wheel
+        working-directory: ${{ runner.temp }}
+        run: |
+          "$RUNNER_TEMP/wheel-venv/bin/python" -I "$GITHUB_WORKSPACE/.github/scripts/wheel_smoke.py"
+
   tests:
     name: Tests ${{ matrix.python-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -121,11 +146,13 @@ jobs:
       - name: Override mesa / mesa-geo for this matrix leg
         run: ${{ matrix.install_cmd }}
 
+      # `uv run` re-syncs the environment to uv.lock by default, which would
+      # silently undo the override above (#179); `--no-sync` keeps it.
       - name: Show installed mesa versions
         run: |
-          uv run python -c "import importlib.metadata as m; print('mesa', m.version('mesa')); print('mesa-geo', m.version('mesa-geo'))"
+          uv run --no-sync python -c "import importlib.metadata as m; print('mesa', m.version('mesa')); print('mesa-geo', m.version('mesa-geo'))"
 
       - name: Run spatial / raster regression tests
         run: |
-          uv run pytest tests/api/test_patch_mesa_compat.py tests/api/test_nature.py tests/foundation/test_basic_functionality.py -v --tb=short
+          uv run --no-sync pytest tests/api/test_patch_mesa_compat.py tests/api/test_nature.py tests/foundation/test_basic_functionality.py -v --tb=short
 

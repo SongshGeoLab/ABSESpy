@@ -44,12 +44,10 @@ dependencies = [
     "pendulum>=3.0.0",
     "geopandas>=0,<1",
     "typing-extensions>=4,<5",
-    "fontawesome>=5",
     "seaborn>=0.13",
     "geocube>=0.5.0",
     "numpy>=1.26",
     "urllib3",
-    "icons",
 ]
 
 [project.urls]
@@ -161,10 +159,29 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["abses", "hydra_plugins"]
+# Hatch already ships every tracked file inside `packages`; these globs only
+# document which non-Python files the wheel must carry (#154).
 include = [
-    "abses/icons/*.otf",
+    "abses/data/*",
     "abses/conf/**/*.yaml",
     "abses/conf/*.py",
+]
+
+# Keep the sdist to what builds the wheel and runs its tests, rather than
+# hatchling's default of the whole repository (docs, CI, images). `examples`
+# is included because tests/examples imports the example models.
+# Patterns are gitignore-style: the leading `/` anchors them to the root, or
+# `README.md` would also pull in every `examples/*/README.md`.
+[tool.hatch.build.targets.sdist]
+include = [
+    "/abses",
+    "/hydra_plugins",
+    "/examples",
+    "/tests",
+    "/README.md",
+    "/CHANGELOG.md",
+    "/LICENSE",
+    "/LICENSES",
 ]
 
 [tool.ruff]

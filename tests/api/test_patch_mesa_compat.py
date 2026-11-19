@@ -49,3 +49,37 @@ def test_create_module_various_shapes(model: MainModel, shape: tuple[int, int]) 
     assert module.height == shape[0]
     module.apply_raster(np.ones(module.shape3d), attr_name="ones")
     assert module.get_raster("ones").sum() == shape[0] * shape[1]
+
+
+class TestMesaGeo093Signatures:
+    """PatchModule works with both mesa-geo cell-initialization APIs (#179)."""
+
+    def test_initialize_cells_without_arguments(self, model: MainModel) -> None:
+        """mesa-geo 0.9.3 calls `_initialize_cells()` with no arguments."""
+        module = model.nature.create_module(shape=(2, 3), resolution=1.0)
+
+        module._initialize_cells()
+
+        assert module.array_cells.shape == (2, 3)
+
+    def test_initialize_cells_with_arguments(self, model: MainModel) -> None:
+        """mesa-geo up to 0.9.2 passes the model and the cell class."""
+        module = model.nature.create_module(shape=(2, 3), resolution=1.0)
+
+        module._initialize_cells(module.model, module.cell_cls)
+
+        assert module.array_cells.shape == (2, 3)
+
+    def test_initialize_cells_rejects_a_foreign_model(self, model: MainModel) -> None:
+        """Passing another model's instance is still an error."""
+        module = model.nature.create_module(shape=(2, 3), resolution=1.0)
+
+        with pytest.raises(ValueError, match="Model mismatching"):
+            module._initialize_cells(MainModel(), module.cell_cls)
+
+    def test_cell_rowcol_matches_indices(self, model: MainModel) -> None:
+        """`rowcol`, which mesa-geo 0.9.3 reads, is the cell's `indices`."""
+        module = model.nature.create_module(shape=(2, 3), resolution=1.0)
+        cell = module.array_cells[1, 2]
+
+        assert cell.rowcol == cell.indices == (1, 2)
