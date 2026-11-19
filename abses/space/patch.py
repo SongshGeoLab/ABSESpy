@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import functools
 import logging
+import traceback
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -339,6 +340,8 @@ class PatchModule(BaseModule, RasterLayer):
                 f"but the module is expecting shape {self.shape2d}."
             )
         self._mask = array.astype(bool)
+        # `cells_lst` is cached from the mask, so a new mask must drop it.
+        self.__dict__.pop("cells_lst", None)
 
     def __repr__(self):
         return f"<{self.name}{self.shape2d}: {len(self.attributes)} vars>"
@@ -698,7 +701,7 @@ class PatchModule(BaseModule, RasterLayer):
                 f"Expected {self.shape2d}, received {data.shape}."
             ) from e
         if apply_mask:
-            set_null_values(data, ~self.mask)
+            data = set_null_values(data, ~self.mask)
         if attr_name is None:
             attr_name = f"attribute_{len(self.attributes)}"
         self._attributes.add(attr_name)
@@ -740,6 +743,7 @@ class PatchModule(BaseModule, RasterLayer):
                 flipud: Whether to flip data vertically
 
         Raises:
+            TypeError: If data is none of the supported types.
             ValueError: If attr_name not provided for Dataset input.
             ValueError: If data shape doesn't match module shape.
 
@@ -758,6 +762,11 @@ class PatchModule(BaseModule, RasterLayer):
                 raise ValueError("Attribute name is required for xr.Dataset.")
             dataarray = data[attr_name]
             self._add_dataarray(dataarray, attr_name, **kwargs)
+        else:
+            raise TypeError(
+                "apply_raster expects a numpy.ndarray, xarray.DataArray or "
+                f"xarray.Dataset, got {type(data).__name__}."
+            )
 
     def get_raster(
         self,
@@ -974,12 +983,22 @@ class PatchModule(BaseModule, RasterLayer):
         if aggregator is None and func is None and attr is None:
             raise ValueError("One of 'aggregator', 'func', or 'attr' must be provided.")
 
+        # Per-cell failures become NaN, but are reported once per call: this
+        # runs inside `np.vectorize`, so warning per cell would flood the log
+        # with as many lines as the raster has cells.
+        failures: List[BaseException] = []
+
+        def _fail(exc: Exception) -> float:
+            if isinstance(exc, MemoryError):
+                raise exc
+            failures.append(exc)
+            return float("nan")
+
         def _to_float(val: Any) -> float:
-            """Cast to float, returning NaN on failure."""
             try:
                 return float(val)
-            except Exception:
-                return float("nan")
+            except (TypeError, ValueError) as exc:
+                return _fail(exc)
 
         def _cell_compute(cell: PatchCell) -> Any:
             # Aggregation path over all agents on the cell
@@ -988,40 +1007,41 @@ class PatchModule(BaseModule, RasterLayer):
                 if len(actors_list) == 0:
                     return default
                 try:
-                    return _to_float(aggregator(actors_list))
-                except Exception:
-                    logger.warning(
-                        "apply_agents aggregator raised; filling NaN.",
-                    )
-                    return float("nan")
+                    value = aggregator(actors_list)
+                except Exception as exc:
+                    return _fail(exc)
+                return _to_float(value)
 
             # Single-agent path (use first/only agent if present)
             agent = cell.agents.item(default=None)
             if agent is None:
                 return default
-            if attr is not None:
-                try:
-                    return _to_float(getattr(agent, attr, default))
-                except Exception:
-                    logger.warning(
-                        "apply_agents attr access raised; filling NaN. attr=%r",
-                        attr,
-                    )
-                    return float("nan")
-            # func provided
-            if func is None:
-                return default
             try:
-                return _to_float(func(agent))
-            except Exception:
-                logger.warning(
-                    "apply_agents func raised; filling NaN. func=%r",
-                    getattr(func, "__name__", repr(func)),
-                )
-                return float("nan")
+                if attr is not None:
+                    value = getattr(agent, attr, default)
+                elif func is not None:
+                    value = func(agent)
+                else:
+                    return default
+            except Exception as exc:
+                return _fail(exc)
+            return _to_float(value)
 
-        # compute and force float dtype for NaN safety
-        data = self.apply(_cell_compute).astype(float)
+        # Declaring the float output type up front also stops `np.vectorize`
+        # from calling `_cell_compute` an extra time on the first cell to
+        # infer it, which would run user callables twice there.
+        data = np.vectorize(_cell_compute, otypes=[float])(self.array_cells)
+
+        if failures:
+            first = failures[0]
+            logger.warning(
+                "apply_agents filled %d cell(s) with NaN because computing "
+                "their value raised. First error:\n%s",
+                len(failures),
+                "".join(
+                    traceback.format_exception(type(first), first, first.__traceback__)
+                ).rstrip(),
+            )
 
         if dtype == "xarray":
             xda = xr.DataArray(
